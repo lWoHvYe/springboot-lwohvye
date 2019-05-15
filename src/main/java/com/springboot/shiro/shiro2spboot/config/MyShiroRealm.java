@@ -3,7 +3,7 @@ package com.springboot.shiro.shiro2spboot.config;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.entity.User;
-import com.springboot.shiro.shiro2spboot.service.LoginService;
+import com.springboot.shiro.shiro2spboot.service.UserService;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MyShiroRealm extends AuthorizingRealm {
 
     @Autowired
-    private LoginService loginService;
+    private UserService userService;
 
     /**
      * 角色权限和对应权限添加
@@ -58,7 +58,7 @@ public class MyShiroRealm extends AuthorizingRealm {
 //          获取用户名
             String username = (String) authenticationToken.getPrincipal();
 //            根据用户名获取用户信息
-            User user = loginService.findByUsername(username);
+            User user = userService.findByUsername(username);
             if (user != null) {
 //                验证authenticationToken和authenticationInfo信息
                 return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()), getName());
