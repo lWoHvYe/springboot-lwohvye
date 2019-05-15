@@ -1,8 +1,8 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.springboot.shiro.shiro2spboot.entity.User;
-import com.springboot.shiro.shiro2spboot.service.UserService;
+import com.springboot.shiro.shiro2spboot.entity.Role;
+import com.springboot.shiro.shiro2spboot.service.RoleService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -17,37 +17,27 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Controller
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/role")
+public class RoleController {
 
     @Autowired
-    private UserService userService;
+    private RoleService roleService;
+
 
     /**
-     * 用户查询.
-     *
-     * @return
-     */
-    @RequestMapping("/getUser")
-    @RequiresPermissions("user:view")//权限管理;
-    public String getUser() {
-        return "userInfo";
-    }
-
-    /**
-     * 获取用户列表
+     * 获取角色列表
      *
      * @param response
-     * @param username
+     * @param role
      * @param curPage
      * @param pageSize
      * @param order
      * @return
      */
-    @RequestMapping("/findUser")
-    @RequiresPermissions("user:view")
+    @RequestMapping("/findRole")
+    @RequiresPermissions("role:view")
     @ResponseBody
-    public String findByUsername(HttpServletResponse response, String username, String curPage, String pageSize, String order) {
+    public String findByRole(HttpServletResponse response, String role, String curPage, String pageSize, String order) {
         JSONObject jsonObject = new JSONObject();
 //        设置分页默认值
         int page = 0;
@@ -58,12 +48,12 @@ public class UserController {
             size = Integer.parseInt(pageSize);
         if (StringUtils.isEmpty(order))
 //            默认排序字段，根据数据结构修改
-            order = "uid";
+            order = "id";
 //        创建sort
         Sort sort = new Sort(Sort.Direction.DESC, order);
 //        创建pageable
         Pageable pageable = PageRequest.of(page, size, sort);
-        List<User> list = userService.findUser(username, pageable);
+        List<Role> list = roleService.findRole(role, pageable);
         jsonObject.put("result", "success");
         jsonObject.put("list", list);
 //        解决跨域问题
@@ -73,30 +63,20 @@ public class UserController {
     }
 
 
-    /**
-     * 用户添加;
-     *
-     * @return
-     */
-    @RequestMapping("/addUser")
-    @RequiresPermissions("user:add")//权限管理;
-    public String addUser() {
-        return "addUser";
-    }
 
     /**
-     * 添加或修改用户
+     * 添加或修改角色
      * @param response
-     * @param user
-     * @param roleId 角色id，多个id使用逗号分开
+     * @param role
+     * @param permissionId 权限id，多个id使用逗号分开
      * @return
      */
-    @RequestMapping("/saveUser")
-    @RequiresPermissions("user:add")
+    @RequestMapping("/saveRole")
+    @RequiresPermissions("role:add")
     @ResponseBody
-    public String saveUser(HttpServletResponse response, User user,String roleId) {
+    public String saveRole(HttpServletResponse response, Role role, String permissionId) {
         JSONObject jsonObject = new JSONObject();
-        userService.saveUser(user,roleId);
+        roleService.saveRole(role,permissionId);
         jsonObject.put("result", "success");
 //        解决跨域问题
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -104,29 +84,19 @@ public class UserController {
         return jsonObject.toJSONString();
     }
 
-    /**
-     * 用户删除;
-     *
-     * @return
-     */
-    @RequestMapping("/delUser")
-    @RequiresPermissions("user:del")//权限管理;
-    public String delUser() {
-        return "deleteUser";
-    }
 
     /**
-     * 删除用户
+     * 删除角色
      * @param response
-     * @param user
+     * @param role
      * @return
      */
-    @RequestMapping("/deleteUser")
-    @RequiresPermissions("user:del")
+    @RequestMapping("/deleteRole")
+    @RequiresPermissions("role:del")
     @ResponseBody
-    public String deleteUser(HttpServletResponse response, User user) {
+    public String deleteRole(HttpServletResponse response, Role role) {
         JSONObject jsonObject = new JSONObject();
-        userService.deleteUser(user);
+        roleService.deleteRole(role);
         jsonObject.put("result", "success");
 //        解决跨域问题
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -134,11 +104,5 @@ public class UserController {
         return jsonObject.toJSONString();
     }
 
-    @RequestMapping("/test")
-    @RequiresPermissions("user:*")
-    public String test() {
-        System.out.println("test");
-        return "test";
-    }
 
 }

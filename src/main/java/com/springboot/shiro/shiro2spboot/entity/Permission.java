@@ -1,9 +1,7 @@
 package com.springboot.shiro.shiro2spboot.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.*;
 import java.io.Serializable;
