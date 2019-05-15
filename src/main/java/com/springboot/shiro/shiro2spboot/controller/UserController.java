@@ -88,14 +88,15 @@ public class UserController {
      * 添加或修改用户
      * @param response
      * @param user
+     * @param roleId 角色id，多个id使用逗号分开
      * @return
      */
     @RequestMapping("/saveUser")
     @RequiresPermissions("user:add")
     @ResponseBody
-    public String saveUser(HttpServletResponse response, User user) {
+    public String saveUser(HttpServletResponse response, User user,String roleId) {
         JSONObject jsonObject = new JSONObject();
-        userService.save(user);
+        userService.save(user,roleId);
         jsonObject.put("result", "success");
 //        解决跨域问题
         response.setHeader("Access-Control-Allow-Origin", "*");

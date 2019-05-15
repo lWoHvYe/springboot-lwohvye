@@ -24,7 +24,7 @@ public class User implements Serializable {
     private String salt;//加密密码的盐
     private byte state;//用户状态
     @ManyToMany(fetch = FetchType.EAGER)//立即从数据库中进行数据加载
-    @JoinTable(name = "SysUserRole",joinColumns = {@JoinColumn(name = "uid")},
+    @JoinTable(name = "UserRole",joinColumns = {@JoinColumn(name = "uid")},
         inverseJoinColumns = {@JoinColumn(name = "roleId")})//设置关联表、关联字段(主键)及副表的关联字段(主键)
     private List<Role> roles;
 

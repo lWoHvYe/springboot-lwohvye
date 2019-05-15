@@ -10,7 +10,7 @@ public interface UserService {
 
     List<User> findUser(String username, Pageable pageable);
 
-    void save(User user);
+    void save(User user, String roleId);
 
     void deleteUser(User user);
 }

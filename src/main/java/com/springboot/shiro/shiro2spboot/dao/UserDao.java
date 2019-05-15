@@ -1,6 +1,7 @@
 package com.springboot.shiro.shiro2spboot.dao;
 
 import com.springboot.shiro.shiro2spboot.entity.User;
+import com.springboot.shiro.shiro2spboot.entity.UserRole;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
