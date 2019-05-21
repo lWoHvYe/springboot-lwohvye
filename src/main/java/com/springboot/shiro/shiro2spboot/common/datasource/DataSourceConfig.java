@@ -80,16 +80,16 @@ public class DataSourceConfig {
     /**
      * jdbc模板
      *
-     * @param postgreSqlDataSource
+     * @param mysqlDataSource
      * @param oracleDataSource
      * @return
      */
     @Bean
     public JdbcTemplate jdbcTemplate(
-            @Qualifier("mysqlDataSource") DataSource postgreSqlDataSource,
+            @Qualifier("mysqlDataSource") DataSource mysqlDataSource,
             @Qualifier("oracleDataSource") DataSource oracleDataSource) {
         return new JdbcTemplate(this.dataSource(
-                postgreSqlDataSource,
+                mysqlDataSource,
                 oracleDataSource));
     }
 
