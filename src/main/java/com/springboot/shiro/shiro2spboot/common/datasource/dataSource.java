@@ -12,5 +12,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface dataSource {
-    DatabaseType value() default DatabaseType.mysql;
+    DatabaseType value() default DatabaseType.MYSQL;
 }
