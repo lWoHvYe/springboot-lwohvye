@@ -36,8 +36,11 @@ public class DataSourceConfig {
 
     /**
      * 创建数据源(数据源的名称：方法名可以取为XXXDataSource(),XXX为数据库名称,该名称也就是数据源的名称)
+     * @Primary 注解用于标识默认使用的 DataSource Bean，因为有三个 DataSource Bean，该注解可用于 master(主数据源)
+     * 或 slave(副数据源) DataSource Bean, 但不能用于 dynamicDataSource Bean, 否则会产生循环调用
      */
     @Bean
+    @Primary
     public DataSource mysqlDataSource() throws Exception {
         Properties props = new Properties();
         props.put("driverClassName", env.getProperty("spring.datasource.druid.mysql.driver-class-name"));
@@ -62,13 +65,12 @@ public class DataSourceConfig {
      * @Qualifier 根据名称进行注入，通常是在具有相同的多个类型的实例的一个注入（例如有多个DataSource类型的实例）
      */
     @Bean
-    @Primary
     public DynamicDataSource dataSource(
             @Qualifier("mysqlDataSource") DataSource mysqlDataSource,
             @Qualifier("oracleDataSource") DataSource oracleDataSource) {
         Map<Object, Object> targetDataSources = new HashMap<>();
-        targetDataSources.put(DatabaseType.mysql, mysqlDataSource);
-        targetDataSources.put(DatabaseType.oracle, oracleDataSource);
+        targetDataSources.put(DatabaseType.MYSQL, mysqlDataSource);
+        targetDataSources.put(DatabaseType.ORACLE, oracleDataSource);
 
         DynamicDataSource dataSource = new DynamicDataSource();
         dataSource.setTargetDataSources(targetDataSources);// 该方法是AbstractRoutingDataSource的方法
