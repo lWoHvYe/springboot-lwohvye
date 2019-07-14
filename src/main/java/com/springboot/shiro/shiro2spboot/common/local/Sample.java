@@ -23,11 +23,11 @@ public class Sample {
         List<Integer> list1 = Arrays.asList(20, 20, 25, 25, 25);
 
 //        池子2 2% 1.8% 1.8% 2.5% 5%
-//        List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
+        List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
         lists.add(list1);
-//        lists.add(list2);
+        lists.add(list2);
 //        初始化结果
-        int s50 = 0, s100 = 0, s150 = 0, s200 = 0, s250 = 0, s300 = 0, other = 0;
+        int s50 = 0, s100 = 0, s150 = 0, s200 = 0, s250 = 0, s300 = 0, s350 = 0, s400 = 0, s450 = 0, s500 = 0, other = 0;
 
         for (int j = 0; j < 1000000; j++) {
 //        抽卡数
@@ -84,6 +84,14 @@ public class Sample {
                 s250++;
             } else if (count > 250 && count <= 300) {
                 s300++;
+            } else if (count > 300 && count <= 350) {
+                s350++;
+            } else if (count > 350 && count <= 400) {
+                s400++;
+            } else if (count > 400 && count <= 450) {
+                s450++;
+            } else if (count > 450 && count <= 500) {
+                s500++;
             } else {
                 other++;
             }
@@ -94,7 +102,11 @@ public class Sample {
         System.out.println("200次以内：" + s200 * 0.0001 + "%;");
         System.out.println("250次以内：" + s250 * 0.0001 + "%;");
         System.out.println("300次以内：" + s300 * 0.0001 + "%;");
-        System.out.println("300次以上：" + other * 0.0001 + "%;");
+        System.out.println("350次以内：" + s350 * 0.0001 + "%;");
+        System.out.println("400次以内：" + s400 * 0.0001 + "%;");
+        System.out.println("450次以内：" + s450 * 0.0001 + "%;");
+        System.out.println("500次以内：" + s500 * 0.0001 + "%;");
+        System.out.println("500次以上：" + other * 0.0001 + "%;");
     }
 
 }
