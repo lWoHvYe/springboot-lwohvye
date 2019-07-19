@@ -39,7 +39,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSuccessUrl("/index");
 //        错误页面
         shiroFilterFactoryBean.setUnauthorizedUrl("/403");
-
+//        set filter role
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
 
         return shiroFilterFactoryBean;
