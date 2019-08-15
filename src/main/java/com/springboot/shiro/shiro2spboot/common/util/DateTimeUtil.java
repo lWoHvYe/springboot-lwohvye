@@ -24,6 +24,21 @@ public class DateTimeUtil {
     }
 
     /**
+     * 获取当前格式化日期
+     *
+     * @return yyyy-MM-dd
+     */
+    public static String getCurFormatDate() {
+//      获取本时区当前时间
+        ZonedDateTime now = Instant.now().atZone(ZoneId.of("Asia/Shanghai"));
+//      获取格式化时间
+        LocalDateTime localDateTime = now.toLocalDateTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String format = localDateTime.format(formatter);
+        return format;
+    }
+
+    /**
      * 获取当前时间毫秒值
      *
      * @return
