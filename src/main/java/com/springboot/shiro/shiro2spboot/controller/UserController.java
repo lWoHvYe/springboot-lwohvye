@@ -66,9 +66,6 @@ public class UserController {
         List<User> list = userService.findUser(username, pageable);
         jsonObject.put("result", "success");
         jsonObject.put("list", list);
-//        解决跨域问题
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Cache-Control", "no-cache");
         return jsonObject.toJSONString();
     }
 
@@ -98,9 +95,6 @@ public class UserController {
         JSONObject jsonObject = new JSONObject();
         userService.saveUser(user,roleId);
         jsonObject.put("result", "success");
-//        解决跨域问题
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Cache-Control", "no-cache");
         return jsonObject.toJSONString();
     }
 
@@ -128,9 +122,6 @@ public class UserController {
         JSONObject jsonObject = new JSONObject();
         userService.deleteUser(user);
         jsonObject.put("result", "success");
-//        解决跨域问题
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Cache-Control", "no-cache");
         return jsonObject.toJSONString();
     }
 

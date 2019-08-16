@@ -56,9 +56,6 @@ public class RoleController {
         List<Role> list = roleService.findRole(role, pageable);
         jsonObject.put("result", "success");
         jsonObject.put("list", list);
-//        解决跨域问题
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Cache-Control", "no-cache");
         return jsonObject.toJSONString();
     }
 
@@ -78,9 +75,6 @@ public class RoleController {
         JSONObject jsonObject = new JSONObject();
         roleService.saveRole(role,permissionId);
         jsonObject.put("result", "success");
-//        解决跨域问题
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Cache-Control", "no-cache");
         return jsonObject.toJSONString();
     }
 
@@ -98,9 +92,6 @@ public class RoleController {
         JSONObject jsonObject = new JSONObject();
         roleService.deleteRole(role);
         jsonObject.put("result", "success");
-//        解决跨域问题
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Cache-Control", "no-cache");
         return jsonObject.toJSONString();
     }
 

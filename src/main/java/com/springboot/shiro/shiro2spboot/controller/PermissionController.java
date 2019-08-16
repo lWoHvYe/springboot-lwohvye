@@ -56,9 +56,6 @@ public class PermissionController {
         List<Permission> list = permissionService.findPermission(name, pageable);
         jsonObject.put("result", "success");
         jsonObject.put("list", list);
-//        解决跨域问题
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Cache-Control", "no-cache");
         return jsonObject.toJSONString();
     }
 
@@ -77,9 +74,6 @@ public class PermissionController {
         JSONObject jsonObject = new JSONObject();
         permissionService.savePermission(permission);
         jsonObject.put("result", "success");
-//        解决跨域问题
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Cache-Control", "no-cache");
         return jsonObject.toJSONString();
     }
 
@@ -97,9 +91,6 @@ public class PermissionController {
         JSONObject jsonObject = new JSONObject();
         permissionService.deletePermission(permission);
         jsonObject.put("result", "success");
-//        解决跨域问题
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Cache-Control", "no-cache");
         return jsonObject.toJSONString();
     }
 
