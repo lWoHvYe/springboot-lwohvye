@@ -1,5 +1,6 @@
 package com.springboot.shiro.shiro2spboot.config;
 
+import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaFormAuthenticationFilter;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SessionsSecurityManager;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
+import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -28,6 +30,8 @@ public class ShiroConfig {
         Map<String, String> filterMap = new LinkedHashMap<>();
 //        配置不会被拦截的链接 顺序判断
         filterMap.put("/static/**", "anon");
+//        配置获取验证码不拦截
+        filterMap.put("/captcha/verify", "anon");
 //        配置登出 具体登出已有shiro内部完成
         filterMap.put("/logout", "logout");
 //        过滤器链，从上到下顺序执行，所以需要把/**放在最下面
@@ -41,6 +45,9 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 //        set filter role
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
+
+        Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
+        filters.put("authc", new CaptchaFormAuthenticationFilter());
 
         return shiroFilterFactoryBean;
 
