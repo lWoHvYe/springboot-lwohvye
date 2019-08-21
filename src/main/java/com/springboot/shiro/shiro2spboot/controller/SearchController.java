@@ -33,52 +33,59 @@ public class SearchController {
      * 根据关键字及类别搜索
      *
      * @param searchKey 关键字
-     * @param curPage
+     * @param pages
      * @return
      */
     @RequestMapping("/solrSearch")
     @ResponseBody
 //    solr搜索
     @SuppressWarnings("unchecked")
-    public String solrSearch(String searchKey, String curPage) {
+    public String solrSearch(String searchKey, String pages, String limits) {
         JSONObject json = new JSONObject();
         try {
             int currentPage = 1;
+            int limit = 10;
 //            未传curPage默认第一页
-            if (!StringUtils.isEmpty(curPage))
-                currentPage = Integer.parseInt(curPage);
+            if (!StringUtils.isEmpty(pages))
+                currentPage = Integer.parseInt(pages);
+            if (!StringUtils.isEmpty(limits))
+                limit = Integer.parseInt(limits);
             if (!StringUtils.isEmpty(searchKey)) {
                 searchKey = formatWords(searchKey);
-                SolrQuery params = new SolrQuery();
-                params.setQuery("name:" + searchKey);
-//                开启edismax方式进行自定义权重算法
-                params.set("defType", "edismax");
-//                对于top为true的，加上指定的评分
-                params.set("bf", "if(top,10,0)");
-//            frange函数设置查询范围
-                params.addFilterQuery("{!frange l=1}query($q)");
-                params.setFields("gid,name,rectype,geom");
-                params.set("start", (currentPage - 1) * 10); //起始行
-                params.set("rows", 10); //行
-                QueryResponse query = solrServer.query(params);
-                SolrDocumentList result = query.getResults();
-                long numFound = result.getNumFound();
-                List<SearchEntity> list = new ArrayList<>();
-                for (SolrDocument entries : result) {
-                    SearchEntity entity = new SearchEntity();
-                    entity.setId((Integer) entries.get("gid"));
-                    entity.setName((String) entries.get("name"));
-                    entity.setType((String) entries.get("rectype"));
-                    entity.setGeom((String) entries.get("geom"));
-                    list.add(entity);
-                }
-//            将结果拼接为geoJson
-                json.put("list", list);
-                json.put("numFound", numFound);
-                json.put("curPage", currentPage);
-                json.put("totalPage", numFound / 10 + 1);
-
+            } else {
+                searchKey = "*";
             }
+            SolrQuery params = new SolrQuery();
+            params.setQuery("name:" + searchKey);
+//              开启edismax方式进行自定义权重算法
+            params.set("defType", "edismax");
+//              对于top为true的，加上指定的评分，
+//              在生成索引时，需保证需置顶的记录的top值为布尔true
+            params.set("bf", "if(top,10,0)");
+//              frange函数设置查询范围
+            params.addFilterQuery("{!frange l=1}query($q)");
+            params.setFields("gid,name,rectype,geom");
+            params.set("start", (currentPage - 1) * limit); //起始行
+            params.set("rows", limit); //行
+            QueryResponse query = solrServer.query(params);
+            SolrDocumentList result = query.getResults();
+            long numFound = result.getNumFound();
+            List<SearchEntity> list = new ArrayList<>();
+            for (SolrDocument entries : result) {
+                SearchEntity entity = new SearchEntity();
+                entity.setId((Integer) entries.get("gid"));
+                entity.setName((String) entries.get("name"));
+                entity.setType((String) entries.get("rectype"));
+                entity.setGeom((String) entries.get("geom"));
+                list.add(entity);
+            }
+//            将结果拼接为geoJson
+            json.put("list", list);
+            json.put("numFound", numFound);
+            json.put("curPage", currentPage);
+            json.put("totalPage", numFound / limit + 1);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
