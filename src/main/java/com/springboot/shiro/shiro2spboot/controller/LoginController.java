@@ -83,4 +83,9 @@ public class LoginController {
     public String unauthorizedRole() {
         return "/403";
     }
+
+    @RequestMapping("/jsonTestPage")
+    public String jsonTestPage(){
+        return "/jsonTest";
+    }
 }

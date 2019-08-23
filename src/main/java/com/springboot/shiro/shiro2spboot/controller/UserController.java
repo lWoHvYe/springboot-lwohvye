@@ -129,7 +129,7 @@ public class UserController {
     @RequiresPermissions("user:*")
     public String test() {
         System.out.println("test");
-        return "test";
+        return "jsonTest";
     }
 
 }
