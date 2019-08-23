@@ -31,7 +31,7 @@ public class ShiroConfig {
 //        配置不会被拦截的链接 顺序判断
         filterMap.put("/static/**", "anon");
 //        配置获取验证码不拦截
-        filterMap.put("/captcha/verify", "anon");
+        filterMap.put("/verify", "anon");
 //        配置登出 具体登出已有shiro内部完成
         filterMap.put("/logout", "logout");
 //        过滤器链，从上到下顺序执行，所以需要把/**放在最下面

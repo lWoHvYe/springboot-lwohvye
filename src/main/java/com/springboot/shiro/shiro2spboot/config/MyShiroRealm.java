@@ -75,7 +75,7 @@ public class MyShiroRealm extends AuthorizingRealm {
             String sessionCaptchaCode = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
 
 //            验证码错误，抛出相应异常
-            if (!captchaCode.equals(sessionCaptchaCode))
+            if (!captchaCode.equalsIgnoreCase(sessionCaptchaCode))
                 throw new CaptchaErrorException();
 
 //          获取用户名
