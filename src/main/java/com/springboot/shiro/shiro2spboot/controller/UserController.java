@@ -111,14 +111,13 @@ public class UserController {
 
     /**
      * 删除用户
-     * @param response
      * @param user
      * @return
      */
     @RequestMapping("/deleteUser")
     @RequiresPermissions("user:del")
     @ResponseBody
-    public String deleteUser(HttpServletResponse response, User user) {
+    public String deleteUser(User user) {
         JSONObject jsonObject = new JSONObject();
         userService.deleteUser(user);
         jsonObject.put("result", "success");

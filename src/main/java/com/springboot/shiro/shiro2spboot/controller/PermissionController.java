@@ -27,7 +27,6 @@ public class PermissionController {
     /**
      * 获取权限列表
      *
-     * @param response
      * @param name
      * @param curPage
      * @param pageSize
@@ -37,7 +36,7 @@ public class PermissionController {
     @RequestMapping("/findPermission")
     @RequiresPermissions("permission:view")
     @ResponseBody
-    public String findByPermission(HttpServletResponse response, String name, String curPage, String pageSize, String order) {
+    public String findByPermission(String name, String curPage, String pageSize, String order) {
         JSONObject jsonObject = new JSONObject();
 //        设置分页默认值
         int page = 0;
@@ -63,14 +62,13 @@ public class PermissionController {
 
     /**
      * 添加或修改权限
-     * @param response
      * @param permission
      * @return
      */
     @RequestMapping("/savePermission")
     @RequiresPermissions("permission:add")
     @ResponseBody
-    public String savePermission(HttpServletResponse response, Permission permission) {
+    public String savePermission(Permission permission) {
         JSONObject jsonObject = new JSONObject();
         permissionService.savePermission(permission);
         jsonObject.put("result", "success");

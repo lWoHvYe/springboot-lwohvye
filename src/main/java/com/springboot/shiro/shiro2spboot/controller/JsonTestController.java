@@ -6,10 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.entity.JsonTestEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,7 +18,7 @@ import java.util.List;
 public class JsonTestController {
 
     //    设置部分参数
-    @RequestMapping(value = "/test", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/test", produces = "application/json")
 //    设置ResponseBody用于返回json串
     @ResponseBody
 //    设置RequestBody用于接收json串
@@ -103,7 +100,7 @@ public class JsonTestController {
         //}
         // 所以需将rows部分取出来
 //        将结果转为json对象，未传实体类class时，转换所有字段
-        JSONObject jsonObject = JSONObject.parseObject(result);
+        JSONObject jsonObject = JSON.parseObject(result);
 //        获取data部分
         JSONObject data = jsonObject.getJSONObject("data");
 //        获取rows部分

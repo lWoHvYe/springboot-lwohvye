@@ -11,7 +11,7 @@ public interface PermissionDao extends CrudRepository<Permission, Long> {
 
 
     //       使用sql语句查询时，需要设置nativeQuery=true
-    @Query(nativeQuery = true, value = "SELECT id,name,parent_id,parent_ids,permission,resource_type,url,available FROM permission " +
+    @Query(nativeQuery = true, value = "SELECT id,name,parent_id,parent_ids,permissionStr,resource_type,url,available FROM permission " +
 //             IF(条件，真执行，假执行)
             "where IF(:name is not null,name LIKE CONCAT('%',:name,'%'),1=1 ) ")
 //     在执行sql的同时，亦可通过Pageable织入分页和排序

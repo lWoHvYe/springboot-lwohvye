@@ -17,9 +17,9 @@ import java.io.IOException;
  */
 @Component
 public class InitCORSFilter extends OncePerRequestFilter {
-  private Logger logger = LoggerFactory.getLogger(InitCORSFilter.class);
+  private Logger logger4j = LoggerFactory.getLogger(InitCORSFilter.class);
   public InitCORSFilter() {
-    logger.info("==== 初始化系统允许跨域请求 ====");
+    logger4j.info("==== 初始化系统允许跨域请求 ====");
   }
   /**
    * 解决跨域：Access-Control-Allow-Origin，值为*表示服务器端允许任意Domain访问请求

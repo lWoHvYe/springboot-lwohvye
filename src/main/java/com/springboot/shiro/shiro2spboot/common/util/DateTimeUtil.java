@@ -8,6 +8,12 @@ import java.time.format.DateTimeFormatter;
  */
 public class DateTimeUtil {
 
+    private DateTimeUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    private static final String AREA_NAME = "Asia/Shanghai";
+
     /**
      * 获取当前格式化日期时间
      *
@@ -15,12 +21,11 @@ public class DateTimeUtil {
      */
     public static String getCurFormatTime() {
 //      获取本时区当前时间
-        ZonedDateTime now = Instant.now().atZone(ZoneId.of("Asia/Shanghai"));
+        ZonedDateTime now = Instant.now().atZone(ZoneId.of(AREA_NAME));
 //      获取格式化时间
         LocalDateTime localDateTime = now.toLocalDateTime();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String format = localDateTime.format(formatter);
-        return format;
+        return localDateTime.format(formatter);
     }
 
     /**
@@ -30,12 +35,11 @@ public class DateTimeUtil {
      */
     public static String getCurFormatDate() {
 //      获取本时区当前时间
-        ZonedDateTime now = Instant.now().atZone(ZoneId.of("Asia/Shanghai"));
+        ZonedDateTime now = Instant.now().atZone(ZoneId.of(AREA_NAME));
 //      获取格式化时间
         LocalDateTime localDateTime = now.toLocalDateTime();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String format = localDateTime.format(formatter);
-        return format;
+        return localDateTime.format(formatter);
     }
 
     /**
@@ -44,8 +48,7 @@ public class DateTimeUtil {
      * @return
      */
     public static long getCurMilli() {
-        long milli = LocalDateTime.now().toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
-        return milli;
+        return LocalDateTime.now().toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
     }
 
     /**
@@ -55,18 +58,17 @@ public class DateTimeUtil {
      * @return
      */
     public static long minusDayMin(int days) {
-        long milli = LocalDateTime.of(LocalDate.now().minusDays(days), LocalTime.MIN).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
-        return milli;
+        return LocalDateTime.of(LocalDate.now().minusDays(days), LocalTime.MIN).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
     }
 
     /**
      * 获取对应天前深夜对应的毫秒值
+     *
      * @param days
      * @return
      */
-    public static long minusDayMax(int days){
-        long milli = LocalDateTime.of(LocalDate.now().minusDays(days), LocalTime.MAX).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
-        return milli;
+    public static long minusDayMax(int days) {
+        return LocalDateTime.of(LocalDate.now().minusDays(days), LocalTime.MAX).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
     }
 
     /**
@@ -76,31 +78,30 @@ public class DateTimeUtil {
      * @return
      */
     public static long minusHoursMilli(int hours) {
-        long milli = LocalDateTime.now().minusHours(hours).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
-        return milli;
+        return LocalDateTime.now().minusHours(hours).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
     }
 
     /**
      * 获取对应分钟前对应的毫秒值
+     *
      * @param minutes
      * @return
      */
-    public static long minusMinutesMilli(int minutes){
-        long milli = LocalDateTime.now().minusMinutes(minutes).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
-        return milli;
+    public static long minusMinutesMilli(int minutes) {
+        return LocalDateTime.now().minusMinutes(minutes).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
     }
 
     /**
      * 根据毫秒值获取对应格式化时间
+     *
      * @param milli
      * @return
      */
-    public static String formatMillis(long milli){
+    public static String formatMillis(long milli) {
         Instant instant = Instant.ofEpochMilli(milli);
-        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+        ZoneId zoneId = ZoneId.of(AREA_NAME);
         LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zoneId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String format = localDateTime.format(formatter);
-        return format;
+        return localDateTime.format(formatter);
     }
 }

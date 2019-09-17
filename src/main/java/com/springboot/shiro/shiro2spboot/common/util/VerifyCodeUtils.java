@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -21,8 +23,17 @@ public class VerifyCodeUtils {
 
 	//使用到Algerian字体，系统里没有的话需要安装字体，字体只显示大写，去掉了1,0,i,o几个容易混淆的字符
 	public static final String VERIFY_CODES = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
-	private static Random random = new Random();
+	private static Random random;
 
+	static {
+		try {
+			random = SecureRandom.getInstanceStrong();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private VerifyCodeUtils(){}
 
 	/**
 	 * 使用系统默认字符源生成验证码
@@ -58,9 +69,8 @@ public class VerifyCodeUtils {
 	 * @param outputFile
 	 * @param verifySize
 	 * @return
-	 * @throws IOException
 	 */
-	public static String outputVerifyImage(int w, int h, File outputFile, int verifySize) throws IOException {
+	public static String outputVerifyImage(int w, int h, File outputFile, int verifySize) {
 		String verifyCode = generateVerifyCode(verifySize);
 		outputImage(w, h, outputFile, verifyCode);
 		return verifyCode;
@@ -87,9 +97,8 @@ public class VerifyCodeUtils {
 	 * @param h
 	 * @param outputFile
 	 * @param code
-	 * @throws IOException
 	 */
-	public static void outputImage(int w, int h, File outputFile, String code) throws IOException {
+	public static void outputImage(int w, int h, File outputFile, String code) {
 		if(outputFile == null){
 			return;
 		}
@@ -103,7 +112,7 @@ public class VerifyCodeUtils {
 			outputImage(w, h, fos, code);
 			fos.close();
 		} catch(IOException e){
-			throw e;
+			e.printStackTrace();
 		}
 	}
 	
@@ -118,7 +127,7 @@ public class VerifyCodeUtils {
 	public static void outputImage(int w, int h, OutputStream os, String code) throws IOException {
 		int verifySize = code.length();
 		BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-		Random rand = new Random();
+//		Random random = SecureRandom.getInstanceStrong();
 		Graphics2D g2 = image.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		Color[] colors = new Color[5];
@@ -127,8 +136,8 @@ public class VerifyCodeUtils {
 				Color.PINK, Color.YELLOW };
 		float[] fractions = new float[colors.length];
 		for(int i = 0; i < colors.length; i++){
-			colors[i] = colorSpaces[rand.nextInt(colorSpaces.length)];
-			fractions[i] = rand.nextFloat();
+			colors[i] = colorSpaces[random.nextInt(colorSpaces.length)];
+			fractions[i] = random.nextFloat();
 		}
 		Arrays.sort(fractions);
 		
@@ -140,13 +149,13 @@ public class VerifyCodeUtils {
 		g2.fillRect(0, 2, w, h-4);
 		
 		//绘制干扰线
-		Random random = new Random();
+//		Random random = new Random();
 		g2.setColor(getRandColor(160, 200));// 设置线条的颜色
 		for (int i = 0; i < 30; i++) {
-			int x = random.nextInt(w - 1);
-			int y = random.nextInt(h - 1);
-			int xl = random.nextInt(6) + 1;
-			int yl = random.nextInt(12) + 1;
+			int x = VerifyCodeUtils.random.nextInt(w - 1);
+			int y = VerifyCodeUtils.random.nextInt(h - 1);
+			int xl = VerifyCodeUtils.random.nextInt(6) + 1;
+			int yl = VerifyCodeUtils.random.nextInt(12) + 1;
 			g2.drawLine(x, y, x + xl + 40, y + yl + 20);
 		}
 		
@@ -154,8 +163,8 @@ public class VerifyCodeUtils {
 		float yawpRate = 0.15f;// 噪声率
 		int area = (int) (yawpRate * w * h);
 		for (int i = 0; i < area; i++) {
-			int x = random.nextInt(w);
-			int y = random.nextInt(h);
+			int x = VerifyCodeUtils.random.nextInt(w);
+			int y = VerifyCodeUtils.random.nextInt(h);
 			int rgb = getRandomIntColor();
 			image.setRGB(x, y, rgb);
 		}
@@ -169,7 +178,7 @@ public class VerifyCodeUtils {
 		char[] chars = code.toCharArray();
 		for(int i = 0; i < verifySize; i++){
 			AffineTransform affine = new AffineTransform();
-			affine.setToRotation(Math.PI / 4 * rand.nextDouble() * (rand.nextBoolean() ? 1 : -1), (w / verifySize) * i + fontSize/2, h/2);
+			affine.setToRotation(Math.PI / 4 * random.nextDouble() * (random.nextBoolean() ? 1 : -1), (w / verifySize) * i + fontSize/2, h/2);
 			g2.setTransform(affine);
 			g2.drawChars(chars, i, 1, ((w-10) / verifySize) * i + 5, h/2 + fontSize/2 - 10);
 		}
@@ -216,7 +225,6 @@ public class VerifyCodeUtils {
 
 		int period = random.nextInt(2);
 
-		boolean borderGap = true;
 		int frames = 1;
 		int phase = random.nextInt(2);
 
@@ -226,20 +234,17 @@ public class VerifyCodeUtils {
 							+ (6.2831853071795862D * (double) phase)
 							/ (double) frames);
 			g.copyArea(0, i, w1, 1, (int) d, 0);
-			if (borderGap) {
-				g.setColor(color);
-				g.drawLine((int) d, i, 0, i);
-				g.drawLine((int) d + w1, i, w1, i);
-			}
+			g.setColor(color);
+			g.drawLine((int) d, i, 0, i);
+			g.drawLine((int) d + w1, i, w1, i);
 		}
 
 	}
 
 	private static void shearY(Graphics g, int w1, int h1, Color color) {
 
-		int period = random.nextInt(40) + 10; // 50;
+		int period = random.nextInt(40) + 10;
 
-		boolean borderGap = true;
 		int frames = 20;
 		int phase = 7;
 		for (int i = 0; i < w1; i++) {
@@ -248,23 +253,21 @@ public class VerifyCodeUtils {
 							+ (6.2831853071795862D * (double) phase)
 							/ (double) frames);
 			g.copyArea(i, 0, 1, h1, 0, (int) d);
-			if (borderGap) {
-				g.setColor(color);
-				g.drawLine(i, (int) d, i, 0);
-				g.drawLine(i, (int) d + h1, i, h1);
-			}
+			g.setColor(color);
+			g.drawLine(i, (int) d, i, 0);
+			g.drawLine(i, (int) d + h1, i, h1);
 
 		}
 
 	}
-	public static void main(String[] args) throws IOException {
-		File dir = new File("F:/verifies");
-		int w = 200, h = 80;
-		for(int i = 0; i < 50000; i++){
-			String verifyCode = generateVerifyCode(4);
-			File file = new File(dir, verifyCode + ".jpg");
-			outputImage(w, h, file, verifyCode);
-		}
-	}
+//	public static void main(String[] args) throws IOException {
+//		File dir = new File("F:/verifies");
+//		int w = 200, h = 80;
+//		for(int i = 0; i < 50000; i++){
+//			String verifyCode = generateVerifyCode(4);
+//			File file = new File(dir, verifyCode + ".jpg");
+//			outputImage(w, h, file, verifyCode);
+//		}
+//	}
 	
 }

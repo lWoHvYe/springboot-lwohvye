@@ -26,6 +26,7 @@ public class DataSourceAspect {
 	 */
 	@Pointcut("execution(* com.springboot.shiro.shiro2spboot.service.*.*(..))")
 	public void declareJointPointExpression() {
+//	    空方法，不进行内容的定义
 	}
 	
 	/**
@@ -52,7 +53,7 @@ public class DataSourceAspect {
 	 * 方法执行结束后将数据源切换为默认
 	 */
 	@AfterReturning("declareJointPointExpression()")
-	public void addAfterReturningLogger(JoinPoint point){
+	public void addAfterReturningLogger(){
 		DynamicDataSource.toDefault();
 	}
 	

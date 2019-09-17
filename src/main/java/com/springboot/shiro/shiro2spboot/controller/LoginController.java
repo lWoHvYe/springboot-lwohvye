@@ -1,6 +1,5 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.code.kaptcha.Constants;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
@@ -26,7 +25,7 @@ public class LoginController {
     }
 
     @RequestMapping("/login")
-    public String login(HttpServletRequest request, Map<String, Object> map) throws Exception {
+    public String login(HttpServletRequest request, Map<String, Object> map) {
         String exception = (String) request.getAttribute("shiroLoginFailure");
 
         String msg = "";
@@ -55,7 +54,6 @@ public class LoginController {
      */
     @RequestMapping(value = "/verify")
     public void verifyCode(HttpServletRequest request, HttpServletResponse response) {
-        JSONObject json = new JSONObject();
         try {
             response.setHeader("Pragma", "No-cache");
             response.setHeader("Cache-Control", "no-cache");
@@ -71,11 +69,11 @@ public class LoginController {
             session.setAttribute(Constants.KAPTCHA_SESSION_KEY, verifyCode);
             session.setAttribute("verify_date", nowTime);
             //生成图片
-            int w = 150, h = 50;
+            int w = 150;
+            int h = 50;
             VerifyCodeUtils.outputImage(w, h, response.getOutputStream(), verifyCode);
         } catch (Exception e) {
             e.printStackTrace();
-            json.put("flag", true);
         }
     }
 
@@ -85,7 +83,7 @@ public class LoginController {
     }
 
     @RequestMapping("/jsonTestPage")
-    public String jsonTestPage(){
+    public String jsonTestPage() {
         return "/jsonTest";
     }
 }

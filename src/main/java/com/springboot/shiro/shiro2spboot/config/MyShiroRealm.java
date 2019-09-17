@@ -42,10 +42,10 @@ public class MyShiroRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         for (Role role : user.getRoles()) {
 //            添加角色
-            authorizationInfo.addRole(role.getRole());
+            authorizationInfo.addRole(role.getRoleName());
             for (Permission permission : role.getPermissions()) {
 //                添加权限
-                authorizationInfo.addStringPermission(permission.getPermission());
+                authorizationInfo.addStringPermission(permission.getPermissionStr());
             }
         }
         return authorizationInfo;
@@ -59,7 +59,7 @@ public class MyShiroRealm extends AuthorizingRealm {
      * @throws AuthenticationException
      */
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) {
 //        Post请求先进行认证，再到请求
         if (authenticationToken.getPrincipal() != null) {
 //            转为CaptchaToken
