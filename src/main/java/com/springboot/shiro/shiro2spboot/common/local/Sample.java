@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * 抽卡模拟
@@ -31,11 +32,10 @@ public class Sample {
     private volatile int s450 = 0;
     private volatile int s500 = 0;
     private volatile int other = 0;
-    private static volatile int c = 0;
+    private static final CountDownLatch latch = new CountDownLatch(5);
 
-    private Random random = SecureRandom.getInstanceStrong();
 
-    public Sample() throws NoSuchAlgorithmException {
+    public Sample() {
     }
 
     public static void main(String[] args) {
@@ -44,20 +44,18 @@ public class Sample {
             Sample sample = new Sample();
             sample.test();
 //            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
-            while (c < 5) {
-                Thread.sleep(10000);
-            }
+            latch.await();
             sample.printResult();
             long end = DateTimeUtil.getCurMilli();
             System.out.println(end - start);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
 
-    public void test() {
+    public void test() throws NoSuchAlgorithmException {
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -68,23 +66,8 @@ public class Sample {
         List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
         lists.add(list1);
         lists.add(list2);
-//        初始化结果
-////        ThreadLocal<Integer> s50 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s100 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s150 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s200 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s250 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s300 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s350 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s400 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s450 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s500 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> other = ThreadLocal.withInitial(() -> 0);
 
         doWork(lists);
-//        });
-//        thread.start();
-//        System.out.println(thread.getName());
     }
 
     private void printResult() {
@@ -104,7 +87,7 @@ public class Sample {
         System.out.println("总计模拟:" + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
     }
 
-    private synchronized void doWork(List<List<Integer>> lists) {
+    private synchronized void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
         for (int i = 0; i < 5; i++) {
             SimuThread simuThread = new SimuThread(lists);
             Thread thread = new Thread(simuThread);
@@ -117,7 +100,9 @@ public class Sample {
 
         private List<List<Integer>> lists;
 
-        public SimuThread(List<List<Integer>> lists) {
+        private Random random = SecureRandom.getInstanceStrong();
+
+        public SimuThread(List<List<Integer>> lists) throws NoSuchAlgorithmException {
             this.lists = lists;
         }
 
@@ -152,7 +137,7 @@ public class Sample {
                 }
             }
             System.out.println("运行结束");
-            c++;
+            latch.countDown();
         }
 
 
