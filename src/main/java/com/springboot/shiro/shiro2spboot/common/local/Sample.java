@@ -32,6 +32,7 @@ public class Sample {
     private volatile int s500 = 0;
     private volatile int other = 0;
     private static volatile int c = 0;
+    private volatile List<Integer> countList = new ArrayList<>(1000000);
 
     private Random random = SecureRandom.getInstanceStrong();
 
@@ -123,9 +124,12 @@ public class Sample {
 
         @Override
         public void run() {
+            List<Integer> cotList = new ArrayList<>(200000);
             for (int j = 0; j < 200000; j++) {
 //            开始模拟
                 int count = simulate(random, lists);
+                cotList.add(count);
+            }
 //            记录结果
                 if (count <= 50) {
                     s50++;
@@ -150,7 +154,7 @@ public class Sample {
                 } else {
                     other++;
                 }
-            }
+
             System.out.println("运行结束");
             c++;
         }
