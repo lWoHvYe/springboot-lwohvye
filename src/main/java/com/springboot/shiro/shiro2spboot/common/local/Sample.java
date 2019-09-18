@@ -34,7 +34,7 @@ public class Sample {
     //    模拟线程完成个数
 //    private static volatile int simu = 0;
 
-    private static final CountDownLatch latch = new CountDownLatch(5);
+    private static final CountDownLatch latch = new CountDownLatch(6);
 
     private volatile Map<String, Integer> countMap = new Hashtable<>() {
         {
@@ -118,7 +118,7 @@ public class Sample {
      * @param lists
      */
     private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 6; i++) {
             SimuThread simuThread = new SimuThread(lists);
             Thread thread = new Thread(simuThread);
             thread.start();
@@ -152,7 +152,7 @@ public class Sample {
 
         @Override
         public void run() {
-            for (int j = 0; j < 200000; j++) {
+            for (int j = 0; j < 180000; j++) {
 //            开始模拟
                 int count = simulate(random, lists);
 //                将模拟结果放入集合中
