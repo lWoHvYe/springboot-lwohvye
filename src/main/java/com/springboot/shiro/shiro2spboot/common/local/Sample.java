@@ -15,7 +15,9 @@ import java.util.Random;
  * 抽卡模拟
  * 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
- */
+ *
+ * 使用多线程时，有时需关注其他线程的完成情况
+ * */
 //@SpringBootTest
 public class Sample {
 
@@ -31,7 +33,11 @@ public class Sample {
     private volatile int s450 = 0;
     private volatile int s500 = 0;
     private volatile int other = 0;
-    private static volatile int c = 0;
+//    模拟线程完成个数
+    private static volatile int simu = 0;
+//    统计模拟完成标识
+    private static boolean cotDone = true;
+
     private volatile List<Integer> countList = new ArrayList<>(1000000);
 
     private Random random = SecureRandom.getInstanceStrong();
@@ -45,9 +51,11 @@ public class Sample {
             Sample sample = new Sample();
             sample.test();
 //            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
-            while (c < 5) {
+            while (simu < 5)
                 Thread.sleep(10000);
-            }
+            sample.countNumber();
+            while (cotDone)
+                Thread.sleep(10000);
             sample.printResult();
             long end = DateTimeUtil.getCurMilli();
             System.out.println(end - start);
@@ -88,6 +96,41 @@ public class Sample {
 //        System.out.println(thread.getName());
     }
 
+    /**
+     * 统计模拟结果
+     */
+    public void countNumber() {
+        for (Integer count : countList) {
+            if (count <= 50) {
+                s50++;
+            } else if (count <= 100) {
+                s100++;
+            } else if (count <= 150) {
+                s150++;
+            } else if (count <= 200) {
+                s200++;
+            } else if (count <= 250) {
+                s250++;
+            } else if (count <= 300) {
+                s300++;
+            } else if (count <= 350) {
+                s350++;
+            } else if (count <= 400) {
+                s400++;
+            } else if (count <= 450) {
+                s450++;
+            } else if (count <= 500) {
+                s500++;
+            } else {
+                other++;
+            }
+        }
+        cotDone = false;
+    }
+
+    /**
+     * 输出模拟结果
+     */
     private void printResult() {
         System.out.println("输出结果");
 //        Thread thread = new Thread(() -> {
@@ -105,6 +148,10 @@ public class Sample {
         System.out.println("总计模拟:" + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
     }
 
+    /**
+     * 启动模拟多线程
+     * @param lists
+     */
     private synchronized void doWork(List<List<Integer>> lists) {
         for (int i = 0; i < 5; i++) {
             SimuThread simuThread = new SimuThread(lists);
@@ -114,6 +161,9 @@ public class Sample {
         }
     }
 
+    /**
+     * 模拟多线程
+     */
     class SimuThread implements Runnable {
 
         private List<List<Integer>> lists;
@@ -128,37 +178,16 @@ public class Sample {
             for (int j = 0; j < 200000; j++) {
 //            开始模拟
                 int count = simulate(random, lists);
+//                将模拟结果放入集合中
                 cotList.add(count);
             }
+//            单进程结束，将结果放入公共集合
+            countList.addAll(cotList);
 //            记录结果
-                if (count <= 50) {
-                    s50++;
-                } else if (count <= 100) {
-                    s100++;
-                } else if (count <= 150) {
-                    s150++;
-                } else if (count <= 200) {
-                    s200++;
-                } else if (count <= 250) {
-                    s250++;
-                } else if (count <= 300) {
-                    s300++;
-                } else if (count <= 350) {
-                    s350++;
-                } else if (count <= 400) {
-                    s400++;
-                } else if (count <= 450) {
-                    s450++;
-                } else if (count <= 500) {
-                    s500++;
-                } else {
-                    other++;
-                }
 
             System.out.println("运行结束");
-            c++;
+            simu++;
         }
-
 
         private int simulate(Random random, List<List<Integer>> lists) {
             //        抽卡数
