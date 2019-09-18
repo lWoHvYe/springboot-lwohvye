@@ -15,9 +15,9 @@ import java.util.Random;
  * 抽卡模拟
  * 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
- *
+ * <p>
  * 使用多线程时，有时需关注其他线程的完成情况
- * */
+ */
 //@SpringBootTest
 public class Sample {
 
@@ -33,10 +33,10 @@ public class Sample {
     private volatile int s450 = 0;
     private volatile int s500 = 0;
     private volatile int other = 0;
-//    模拟线程完成个数
+    //    模拟线程完成个数
     private static volatile int simu = 0;
-//    统计模拟完成标识
-    private static boolean cotDone = true;
+    //    统计线程完成个数
+    private static volatile int han = 0;
 
     private volatile List<Integer> countList = new ArrayList<>(1000000);
 
@@ -53,8 +53,8 @@ public class Sample {
 //            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
             while (simu < 5)
                 Thread.sleep(10000);
-            sample.countNumber();
-            while (cotDone)
+            sample.handleList(5);
+            while (han < 5)
                 Thread.sleep(10000);
             sample.printResult();
             long end = DateTimeUtil.getCurMilli();
@@ -96,37 +96,6 @@ public class Sample {
 //        System.out.println(thread.getName());
     }
 
-    /**
-     * 统计模拟结果
-     */
-    public void countNumber() {
-        for (Integer count : countList) {
-            if (count <= 50) {
-                s50++;
-            } else if (count <= 100) {
-                s100++;
-            } else if (count <= 150) {
-                s150++;
-            } else if (count <= 200) {
-                s200++;
-            } else if (count <= 250) {
-                s250++;
-            } else if (count <= 300) {
-                s300++;
-            } else if (count <= 350) {
-                s350++;
-            } else if (count <= 400) {
-                s400++;
-            } else if (count <= 450) {
-                s450++;
-            } else if (count <= 500) {
-                s500++;
-            } else {
-                other++;
-            }
-        }
-        cotDone = false;
-    }
 
     /**
      * 输出模拟结果
@@ -150,6 +119,7 @@ public class Sample {
 
     /**
      * 启动模拟多线程
+     *
      * @param lists
      */
     private synchronized void doWork(List<List<Integer>> lists) {
@@ -162,7 +132,7 @@ public class Sample {
     }
 
     /**
-     * 模拟多线程
+     * 模拟线程
      */
     class SimuThread implements Runnable {
 
@@ -233,4 +203,80 @@ public class Sample {
             return count;
         }
     }
+
+    /**
+     * 处理模拟结果，开启多线程
+     *
+     * @param threadNum
+     */
+    public synchronized void handleList(int threadNum) {
+        int length = countList.size();
+        int tl = length % threadNum == 0 ? length / threadNum : (length
+                / threadNum + 1);
+
+        for (int i = 0; i < threadNum; i++) {
+            int end = (i + 1) * tl;
+//            给线程分工
+            HandleThread thread = new HandleThread("线程[" + (i + 1) + "] ", countList, i * tl, end > length ? length : end);
+            thread.start();
+        }
+    }
+
+    /**
+     * 处理模拟结果线程
+     */
+    class HandleThread extends Thread {
+        private String threadName;
+        private List<Integer> data;
+        private int start;
+        private int end;
+
+        public HandleThread(String threadName, List<Integer> data, int start, int end) {
+            this.threadName = threadName;
+            this.data = data;
+            this.start = start;
+            this.end = end;
+        }
+
+        public void run() {
+            List<Integer> subList = data.subList(start, end)/*.add("^&*")*/;
+            System.out.println(threadName + "处理了" + subList.size() + "条！");
+            countNumber(subList);
+            han++;
+        }
+
+        /**
+         * 统计模拟结果
+         *
+         * @param subList
+         */
+        private void countNumber(List<Integer> subList) {
+            for (Integer count : subList) {
+                if (count <= 50) {
+                    s50++;
+                } else if (count <= 100) {
+                    s100++;
+                } else if (count <= 150) {
+                    s150++;
+                } else if (count <= 200) {
+                    s200++;
+                } else if (count <= 250) {
+                    s250++;
+                } else if (count <= 300) {
+                    s300++;
+                } else if (count <= 350) {
+                    s350++;
+                } else if (count <= 400) {
+                    s400++;
+                } else if (count <= 450) {
+                    s450++;
+                } else if (count <= 500) {
+                    s500++;
+                } else {
+                    other++;
+                }
+            }
+        }
+    }
+
 }
