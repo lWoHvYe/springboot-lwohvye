@@ -1,23 +1,81 @@
 package com.springboot.shiro.shiro2spboot.common.local;
 
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
-import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * 抽卡模拟
  * 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
+ * <p>
+ * 使用多线程时，有时需关注其他线程的完成情况
  */
-@SpringBootTest
+//@SpringBootTest
 public class Sample {
-    @Test
-    public void Test() {
+
+    private Logger logger4j = LoggerFactory.getLogger(Sample.class);
+    //    private volatile int s50 = 0;
+//    private volatile int s100 = 0;
+//    private volatile int s150 = 0;
+//    private volatile int s200 = 0;
+//    private volatile int s250 = 0;
+//    private volatile int s300 = 0;
+//    private volatile int s350 = 0;
+//    private volatile int s400 = 0;
+//    private volatile int s450 = 0;
+//    private volatile int s500 = 0;
+//    private volatile int other = 0;
+    //    模拟线程完成个数
+//    private static volatile int simu = 0;
+
+    private static final CountDownLatch latch = new CountDownLatch(5);
+
+    private volatile Map<String, Integer> countMap = new Hashtable<>() {
+        {
+            put("s50", 0);
+            put("s100", 0);
+            put("s150", 0);
+            put("s200", 0);
+            put("s250", 0);
+            put("s300", 0);
+            put("s350", 0);
+            put("s400", 0);
+            put("s450", 0);
+            put("s500", 0);
+            put("other", 0);
+        }
+    };
+
+    private Random random = SecureRandom.getInstanceStrong();
+
+    public Sample() throws NoSuchAlgorithmException {
+    }
+
+    public static void main(String[] args) {
+        try {
+            long start = DateTimeUtil.getCurMilli();
+            Sample sample = new Sample();
+            sample.test();
+//            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
+            latch.await();
+            sample.printResult();
+            long end = DateTimeUtil.getCurMilli();
+            System.out.println(end - start);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void test() {
+//        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
 //        池子1 2% 2% 2.5% 2.5% 2.5%
@@ -27,13 +85,96 @@ public class Sample {
         List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
         lists.add(list1);
         lists.add(list2);
-//        初始化结果
-        int s50 = 0, s100 = 0, s150 = 0, s200 = 0, s250 = 0, s300 = 0, s350 = 0, s400 = 0, s450 = 0, s500 = 0, other = 0;
 
-        long startMill = DateTimeUtil.getCurMilli();
+        doWork(lists);
+    }
 
-        for (int j = 0; j < 1000000; j++) {
-//        抽卡数
+
+    /**
+     * 输出模拟结果
+     */
+    private void printResult() {
+        System.out.println("输出结果");
+//        Thread thread = new Thread(() -> {
+
+        logger4j.info("50次以内：" + countMap.get("s50") * 0.0001 + "%;");
+        logger4j.info("100次以内：" + countMap.get("s100") * 0.0001 + "%;");
+        logger4j.info("150次以内：" + countMap.get("s150") * 0.0001 + "%;");
+        logger4j.info("200次以内：" + countMap.get("s200") * 0.0001 + "%;");
+        logger4j.info("250次以内：" + countMap.get("s250") * 0.0001 + "%;");
+        logger4j.info("300次以内：" + countMap.get("s300") * 0.0001 + "%;");
+        logger4j.info("350次以内：" + countMap.get("s350") * 0.0001 + "%;");
+        logger4j.info("400次以内：" + countMap.get("s400") * 0.0001 + "%;");
+        logger4j.info("450次以内：" + countMap.get("s450") * 0.0001 + "%;");
+        logger4j.info("500次以内：" + countMap.get("s500") * 0.0001 + "%;");
+        logger4j.info("500次以上：" + countMap.get("other") * 0.0001 + "%;");
+        System.out.println("总计模拟:" + (countMap.get("s50") + countMap.get("s100") + countMap.get("s150") + countMap.get("s200")
+                + countMap.get("s250") + countMap.get("s300") + countMap.get("s350") + countMap.get("s400") + countMap.get("s450")
+                + countMap.get("s500") + countMap.get("other")) + "次");
+    }
+
+    /**
+     * 启动模拟多线程
+     *
+     * @param lists
+     */
+    private synchronized void doWork(List<List<Integer>> lists) {
+        for (int i = 0; i < 5; i++) {
+            SimuThread simuThread = new SimuThread(lists);
+            Thread thread = new Thread(simuThread);
+            thread.start();
+//            System.out.println(thread.getName());
+        }
+    }
+
+    /**
+     * 模拟多线程
+     */
+    class SimuThread implements Runnable {
+
+        private List<List<Integer>> lists;
+        private int s50 = 0;
+        private int s100 = 0;
+        private int s150 = 0;
+        private int s200 = 0;
+        private int s250 = 0;
+        private int s300 = 0;
+        private int s350 = 0;
+        private int s400 = 0;
+        private int s450 = 0;
+        private int s500 = 0;
+        private int other = 0;
+
+        public SimuThread(List<List<Integer>> lists) {
+            this.lists = lists;
+        }
+
+        @Override
+        public void run() {
+            for (int j = 0; j < 200000; j++) {
+//            开始模拟
+                int count = simulate(random, lists);
+//                将模拟结果放入集合中
+                countNumber(count);
+            }
+
+            countMap.put("s50", countMap.get("s50") + s50);
+            countMap.put("s100", countMap.get("s100") + s100);
+            countMap.put("s150", countMap.get("s150") + s150);
+            countMap.put("s200", countMap.get("s200") + s200);
+            countMap.put("s250", countMap.get("s250") + s250);
+            countMap.put("s300", countMap.get("s300") + s300);
+            countMap.put("s350", countMap.get("s350") + s350);
+            countMap.put("s400", countMap.get("s400") + s400);
+            countMap.put("s450", countMap.get("s450") + s450);
+            countMap.put("s500", countMap.get("s500") + s500);
+            countMap.put("other", countMap.get("other") + other);
+            System.out.println("运行结束");
+            latch.countDown();
+        }
+
+        private int simulate(Random random, List<List<Integer>> lists) {
+            //        抽卡数
             int count = 0;
 //              存放目标集合，内部数个子集合
             List<List<Integer>> mblist = new ArrayList<>();
@@ -54,7 +195,6 @@ public class Sample {
                 }
 //            当目标值不为空时进行抽卡
                 while (!dblist.isEmpty()) {
-                    Random random = new Random();
 //            开始抽卡
                     int result = random.nextInt(1000) + 1;
 //                判断是否抽到目标卡
@@ -74,46 +214,33 @@ public class Sample {
 //            抽完一池，置空子集合
                 mblist.clear();
             }
-//            记录结果
+            return count;
+        }
+
+        public void countNumber(Integer count) {
             if (count <= 50) {
                 s50++;
-            } else if (count > 50 && count <= 100) {
+            } else if (count <= 100) {
                 s100++;
-            } else if (count > 100 && count <= 150) {
+            } else if (count <= 150) {
                 s150++;
-            } else if (count > 150 && count <= 200) {
+            } else if (count <= 200) {
                 s200++;
-            } else if (count > 200 && count <= 250) {
+            } else if (count <= 250) {
                 s250++;
-            } else if (count > 250 && count <= 300) {
+            } else if (count <= 300) {
                 s300++;
-            } else if (count > 300 && count <= 350) {
+            } else if (count <= 350) {
                 s350++;
-            } else if (count > 350 && count <= 400) {
+            } else if (count <= 400) {
                 s400++;
-            } else if (count > 400 && count <= 450) {
+            } else if (count <= 450) {
                 s450++;
-            } else if (count > 450 && count <= 500) {
+            } else if (count <= 500) {
                 s500++;
             } else {
                 other++;
             }
         }
-
-        long endMill = DateTimeUtil.getCurMilli();
-
-        System.out.println("50次以内：" + s50 * 0.0001 + "%;");
-        System.out.println("100次以内：" + s100 * 0.0001 + "%;");
-        System.out.println("150次以内：" + s150 * 0.0001 + "%;");
-        System.out.println("200次以内：" + s200 * 0.0001 + "%;");
-        System.out.println("250次以内：" + s250 * 0.0001 + "%;");
-        System.out.println("300次以内：" + s300 * 0.0001 + "%;");
-        System.out.println("350次以内：" + s350 * 0.0001 + "%;");
-        System.out.println("400次以内：" + s400 * 0.0001 + "%;");
-        System.out.println("450次以内：" + s450 * 0.0001 + "%;");
-        System.out.println("500次以内：" + s500 * 0.0001 + "%;");
-        System.out.println("500次以上：" + other * 0.0001 + "%;");
-        System.out.println("总计用时" + (endMill - startMill));
     }
-
 }
