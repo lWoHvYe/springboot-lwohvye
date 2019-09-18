@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * 抽卡模拟
@@ -22,23 +19,35 @@ import java.util.Random;
 public class Sample {
 
     private Logger logger4j = LoggerFactory.getLogger(Sample.class);
-    private volatile int s50 = 0;
-    private volatile int s100 = 0;
-    private volatile int s150 = 0;
-    private volatile int s200 = 0;
-    private volatile int s250 = 0;
-    private volatile int s300 = 0;
-    private volatile int s350 = 0;
-    private volatile int s400 = 0;
-    private volatile int s450 = 0;
-    private volatile int s500 = 0;
-    private volatile int other = 0;
+    //    private volatile int s50 = 0;
+//    private volatile int s100 = 0;
+//    private volatile int s150 = 0;
+//    private volatile int s200 = 0;
+//    private volatile int s250 = 0;
+//    private volatile int s300 = 0;
+//    private volatile int s350 = 0;
+//    private volatile int s400 = 0;
+//    private volatile int s450 = 0;
+//    private volatile int s500 = 0;
+//    private volatile int other = 0;
     //    模拟线程完成个数
     private static volatile int simu = 0;
-    //    统计线程完成个数
-    private static volatile int han = 0;
 
-    private volatile List<Integer> countList = new ArrayList<>(1000000);
+    private volatile Map<String, Integer> countMap = new Hashtable<>() {
+        {
+            put("s50", 0);
+            put("s100", 0);
+            put("s150", 0);
+            put("s200", 0);
+            put("s250", 0);
+            put("s300", 0);
+            put("s350", 0);
+            put("s400", 0);
+            put("s450", 0);
+            put("s500", 0);
+            put("other", 0);
+        }
+    };
 
     private Random random = SecureRandom.getInstanceStrong();
 
@@ -52,9 +61,6 @@ public class Sample {
             sample.test();
 //            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
             while (simu < 5)
-                Thread.sleep(10000);
-            sample.handleList(5);
-            while (han < 5)
                 Thread.sleep(10000);
             sample.printResult();
             long end = DateTimeUtil.getCurMilli();
@@ -77,23 +83,8 @@ public class Sample {
         List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
         lists.add(list1);
         lists.add(list2);
-//        初始化结果
-////        ThreadLocal<Integer> s50 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s100 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s150 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s200 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s250 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s300 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s350 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s400 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s450 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> s500 = ThreadLocal.withInitial(() -> 0);
-//        ThreadLocal<Integer> other = ThreadLocal.withInitial(() -> 0);
 
         doWork(lists);
-//        });
-//        thread.start();
-//        System.out.println(thread.getName());
     }
 
 
@@ -103,18 +94,18 @@ public class Sample {
     private void printResult() {
         System.out.println("输出结果");
 //        Thread thread = new Thread(() -> {
-        logger4j.info("50次以内：" + s50 * 0.0001 + "%;");
-        logger4j.info("100次以内：" + s100 * 0.0001 + "%;");
-        logger4j.info("150次以内：" + s150 * 0.0001 + "%;");
-        logger4j.info("200次以内：" + s200 * 0.0001 + "%;");
-        logger4j.info("250次以内：" + s250 * 0.0001 + "%;");
-        logger4j.info("300次以内：" + s300 * 0.0001 + "%;");
-        logger4j.info("350次以内：" + s350 * 0.0001 + "%;");
-        logger4j.info("400次以内：" + s400 * 0.0001 + "%;");
-        logger4j.info("450次以内：" + s450 * 0.0001 + "%;");
-        logger4j.info("500次以内：" + s500 * 0.0001 + "%;");
-        logger4j.info("500次以上：" + other * 0.0001 + "%;");
-        System.out.println("总计模拟:" + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
+        logger4j.info("50次以内：" + countMap.get("s50") * 0.0001 + "%;");
+        logger4j.info("100次以内：" + countMap.get("s100") * 0.0001 + "%;");
+        logger4j.info("150次以内：" + countMap.get("s150") * 0.0001 + "%;");
+        logger4j.info("200次以内：" + countMap.get("s200") * 0.0001 + "%;");
+        logger4j.info("250次以内：" + countMap.get("s250") * 0.0001 + "%;");
+        logger4j.info("300次以内：" + countMap.get("s300") * 0.0001 + "%;");
+        logger4j.info("350次以内：" + countMap.get("s350") * 0.0001 + "%;");
+        logger4j.info("400次以内：" + countMap.get("s400") * 0.0001 + "%;");
+        logger4j.info("450次以内：" + countMap.get("s450") * 0.0001 + "%;");
+        logger4j.info("500次以内：" + countMap.get("s500") * 0.0001 + "%;");
+        logger4j.info("500次以上：" + countMap.get("other") * 0.0001 + "%;");
+//        System.out.println("总计模拟:" + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
     }
 
     /**
@@ -132,11 +123,22 @@ public class Sample {
     }
 
     /**
-     * 模拟线程
+     * 模拟多线程
      */
     class SimuThread implements Runnable {
 
         private List<List<Integer>> lists;
+        private int s50 = 0;
+        private int s100 = 0;
+        private int s150 = 0;
+        private int s200 = 0;
+        private int s250 = 0;
+        private int s300 = 0;
+        private int s350 = 0;
+        private int s400 = 0;
+        private int s450 = 0;
+        private int s500 = 0;
+        private int other = 0;
 
         public SimuThread(List<List<Integer>> lists) {
             this.lists = lists;
@@ -144,17 +146,24 @@ public class Sample {
 
         @Override
         public void run() {
-            List<Integer> cotList = new ArrayList<>(200000);
             for (int j = 0; j < 200000; j++) {
 //            开始模拟
                 int count = simulate(random, lists);
 //                将模拟结果放入集合中
-                cotList.add(count);
+                countNumber(count);
             }
-//            单进程结束，将结果放入公共集合
-            countList.addAll(cotList);
-//            记录结果
 
+            countMap.put("s50", countMap.get("s50") + s50);
+            countMap.put("s100", countMap.get("s100") + s100);
+            countMap.put("s150", countMap.get("s150") + s150);
+            countMap.put("s200", countMap.get("s200") + s200);
+            countMap.put("s250", countMap.get("s250") + s250);
+            countMap.put("s300", countMap.get("s300") + s300);
+            countMap.put("s350", countMap.get("s350") + s350);
+            countMap.put("s400", countMap.get("s400") + s400);
+            countMap.put("s450", countMap.get("s450") + s450);
+            countMap.put("s500", countMap.get("s500") + s500);
+            countMap.put("other", countMap.get("other") + other);
             System.out.println("运行结束");
             simu++;
         }
@@ -202,81 +211,31 @@ public class Sample {
             }
             return count;
         }
-    }
 
-    /**
-     * 处理模拟结果，开启多线程
-     *
-     * @param threadNum
-     */
-    public synchronized void handleList(int threadNum) {
-        int length = countList.size();
-        int tl = length % threadNum == 0 ? length / threadNum : (length
-                / threadNum + 1);
-
-        for (int i = 0; i < threadNum; i++) {
-            int end = (i + 1) * tl;
-//            给线程分工
-            HandleThread thread = new HandleThread("线程[" + (i + 1) + "] ", countList, i * tl, end > length ? length : end);
-            thread.start();
-        }
-    }
-
-    /**
-     * 处理模拟结果线程
-     */
-    class HandleThread extends Thread {
-        private String threadName;
-        private List<Integer> data;
-        private int start;
-        private int end;
-
-        public HandleThread(String threadName, List<Integer> data, int start, int end) {
-            this.threadName = threadName;
-            this.data = data;
-            this.start = start;
-            this.end = end;
-        }
-
-        public void run() {
-            List<Integer> subList = data.subList(start, end)/*.add("^&*")*/;
-            System.out.println(threadName + "处理了" + subList.size() + "条！");
-            countNumber(subList);
-            han++;
-        }
-
-        /**
-         * 统计模拟结果
-         *
-         * @param subList
-         */
-        private void countNumber(List<Integer> subList) {
-            for (Integer count : subList) {
-                if (count <= 50) {
-                    s50++;
-                } else if (count <= 100) {
-                    s100++;
-                } else if (count <= 150) {
-                    s150++;
-                } else if (count <= 200) {
-                    s200++;
-                } else if (count <= 250) {
-                    s250++;
-                } else if (count <= 300) {
-                    s300++;
-                } else if (count <= 350) {
-                    s350++;
-                } else if (count <= 400) {
-                    s400++;
-                } else if (count <= 450) {
-                    s450++;
-                } else if (count <= 500) {
-                    s500++;
-                } else {
-                    other++;
-                }
+        public void countNumber(Integer count) {
+            if (count <= 50) {
+                s50++;
+            } else if (count <= 100) {
+                s100++;
+            } else if (count <= 150) {
+                s150++;
+            } else if (count <= 200) {
+                s200++;
+            } else if (count <= 250) {
+                s250++;
+            } else if (count <= 300) {
+                s300++;
+            } else if (count <= 350) {
+                s350++;
+            } else if (count <= 400) {
+                s400++;
+            } else if (count <= 450) {
+                s450++;
+            } else if (count <= 500) {
+                s500++;
+            } else {
+                other++;
             }
         }
     }
-
 }
