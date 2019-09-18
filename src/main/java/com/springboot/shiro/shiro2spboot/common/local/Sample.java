@@ -52,9 +52,8 @@ public class Sample {
         }
     };
 
-    private Random random = SecureRandom.getInstanceStrong();
 
-    public Sample() throws NoSuchAlgorithmException {
+    public Sample() {
     }
 
     public static void main(String[] args) {
@@ -67,14 +66,14 @@ public class Sample {
             sample.printResult();
             long end = DateTimeUtil.getCurMilli();
             System.out.println(end - start);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
 
-    public void test() {
+    public void test() throws NoSuchAlgorithmException {
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -118,7 +117,7 @@ public class Sample {
      *
      * @param lists
      */
-    private synchronized void doWork(List<List<Integer>> lists) {
+    private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
         for (int i = 0; i < 5; i++) {
             SimuThread simuThread = new SimuThread(lists);
             Thread thread = new Thread(simuThread);
@@ -145,7 +144,9 @@ public class Sample {
         private int s500 = 0;
         private int other = 0;
 
-        public SimuThread(List<List<Integer>> lists) {
+        private Random random = SecureRandom.getInstanceStrong();
+
+        public SimuThread(List<List<Integer>> lists) throws NoSuchAlgorithmException {
             this.lists = lists;
         }
 
