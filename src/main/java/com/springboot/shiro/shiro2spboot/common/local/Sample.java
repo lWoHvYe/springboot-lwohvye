@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * <p>
  * 使用多线程时，有时需关注其他线程的完成情况
+ * 采用线程的方式  Thread
  */
 //@SpringBootTest
 public class Sample {
