@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
  * 抽卡模拟
  * 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
- * 由于随机数的生成逻辑，池子与模拟只能有一个用随机数完成，当两者都使用随机数时，结果会大幅偏离预期
+ * 由于模拟采用了随机数的方式，所以池子可以任意配置，不影响结果
  * <p>
  * 使用多线程时，有时需关注其他线程的完成情况
  * 采用Feature的方式
@@ -43,11 +43,11 @@ public class AnotherSample {
 //        池子2 2% 1.8% 1.8% 2.5% 5%
         List<Integer> list2 = Arrays.asList(20, 18, 18, 25, 50);
 //        池子3 2% 2% 2.5% 5%
-        List<Integer> list3 = Arrays.asList(20, 20, 25, 50);
+//        List<Integer> list3 = Arrays.asList(20, 20, 25, 50);
 //        可以根据需求调整池子，将概率乘以1000即为预放入集合中的值，之后需要把池子放入总集
         lists.add(list1);
         lists.add(list2);
-        lists.add(list3);
+//        lists.add(list3);
 //        设置模拟池子
         SimuCallable simuCallable = new SimuCallable(lists);
 //            开启模拟线程，使用线程池的方式创建CompletableFuture
@@ -106,17 +106,17 @@ public class AnotherSample {
 
         System.out.println("输出结果");
 
-        logger4j.info(String.format("50次以内：%s%%;", countMap.get("s50") * 0.00001));
-        logger4j.info(String.format("100次以内：%s%%;", countMap.get("s100") * 0.00001));
-        logger4j.info(String.format("150次以内：%s%%;", countMap.get("s150") * 0.00001));
-        logger4j.info(String.format("200次以内：%s%%;", countMap.get("s200") * 0.00001));
-        logger4j.info(String.format("250次以内：%s%%;", countMap.get("s250") * 0.00001));
-        logger4j.info(String.format("300次以内：%s%%;", countMap.get("s300") * 0.00001));
-        logger4j.info(String.format("350次以内：%s%%;", countMap.get("s350") * 0.00001));
-        logger4j.info(String.format("400次以内：%s%%;", countMap.get("s400") * 0.00001));
-        logger4j.info(String.format("450次以内：%s%%;", countMap.get("s450") * 0.00001));
-        logger4j.info(String.format("500次以内：%s%%;", countMap.get("s500") * 0.00001));
-        logger4j.info(String.format("500次以上：%s%%;", countMap.get("other") * 0.00001));
+        logger4j.info(String.format("50次以内：%s%%;", countMap.get("s50") * 0.0001));
+        logger4j.info(String.format("100次以内：%s%%;", countMap.get("s100") * 0.0001));
+        logger4j.info(String.format("150次以内：%s%%;", countMap.get("s150") * 0.0001));
+        logger4j.info(String.format("200次以内：%s%%;", countMap.get("s200") * 0.0001));
+        logger4j.info(String.format("250次以内：%s%%;", countMap.get("s250") * 0.0001));
+        logger4j.info(String.format("300次以内：%s%%;", countMap.get("s300") * 0.0001));
+        logger4j.info(String.format("350次以内：%s%%;", countMap.get("s350") * 0.0001));
+        logger4j.info(String.format("400次以内：%s%%;", countMap.get("s400") * 0.0001));
+        logger4j.info(String.format("450次以内：%s%%;", countMap.get("s450") * 0.0001));
+        logger4j.info(String.format("500次以内：%s%%;", countMap.get("s500") * 0.0001));
+        logger4j.info(String.format("500次以上：%s%%;", countMap.get("other") * 0.0001));
         logger4j.info("总计模拟:" + (countMap.get("s50") + countMap.get("s100") + countMap.get("s150") + countMap.get("s200")
                 + countMap.get("s250") + countMap.get("s300") + countMap.get("s350") + countMap.get("s400") + countMap.get("s450")
                 + countMap.get("s500") + countMap.get("other")) + "次");
@@ -156,7 +156,8 @@ public class AnotherSample {
             Map<String, Integer> countHashMap = new HashMap<>();
             try {
                 Random random = SecureRandom.getInstanceStrong();
-                for (int j = 0; j < 2000000; j++) {
+//                int[] ranArray = ranArray();
+                for (int j = 0; j < 200000; j++) {
 //                开始模拟
                     int count = simulate(random, lists);
 //                将模拟结果放入集合中
@@ -208,12 +209,11 @@ public class AnotherSample {
 
         /**
          * 生成乱序不重复数组
-         *
          */
         public int[] ranArray() throws NoSuchAlgorithmException {
             int[] ranArrays = new int[1000];
             for (int i = 0; i < 1000; i++) {
-                ranArrays[i] = ++i;
+                ranArrays[i] = i + 1;
             }
             Random r = SecureRandom.getInstanceStrong();
             for (int i = 0; i < 1000; i++) {
