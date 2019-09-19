@@ -10,6 +10,7 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 抽卡模拟
@@ -23,29 +24,18 @@ import java.util.concurrent.CompletableFuture;
 public class AnotherSample {
 
     private Logger logger4j = LoggerFactory.getLogger(AnotherSample.class);
+    //    模拟线程完成个数
+//    private static volatile int simu = 0;
 
-    private volatile Map<String, Integer> countMap = new Hashtable<>() {
-        {
-            put("s50", 0);
-            put("s100", 0);
-            put("s150", 0);
-            put("s200", 0);
-            put("s250", 0);
-            put("s300", 0);
-            put("s350", 0);
-            put("s400", 0);
-            put("s450", 0);
-            put("s500", 0);
-            put("other", 0);
-        }
-    };
+//    private static final CountDownLatch latch = new CountDownLatch(5);
 
 
     public AnotherSample() {
     }
 
     @Test
-    public void test() throws NoSuchAlgorithmException {
+    public void test() throws ExecutionException, InterruptedException {
+        Map<String, Integer> countMap = new HashMap<>();
         long start = DateTimeUtil.getCurMilli();
         AnotherSample sample = new AnotherSample();
 //        创建随机数
@@ -60,35 +50,67 @@ public class AnotherSample {
         lists.add(list2);
         SimuCallable simuCallable = new SimuCallable(lists);
 //            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
-        CompletableFuture<String> work1 = CompletableFuture.supplyAsync(() ->
+        CompletableFuture<Map<String, Integer>> work1 = CompletableFuture.supplyAsync(() ->
                 simuCallable.call()
         );
-        CompletableFuture<String> work2 = CompletableFuture.supplyAsync(() ->
+        CompletableFuture<Map<String, Integer>> work2 = CompletableFuture.supplyAsync(() ->
                 simuCallable.call()
         );
-        CompletableFuture<String> work3 = CompletableFuture.supplyAsync(() ->
+        CompletableFuture<Map<String, Integer>> work3 = CompletableFuture.supplyAsync(() ->
                 simuCallable.call()
         );
-//        CompletableFuture<String> work4 = CompletableFuture.supplyAsync(() ->
-//                simuCallable.call()
-//        );
-//        CompletableFuture<String> work5 = CompletableFuture.supplyAsync(() ->
-//                simuCallable.call()
-//        );
+        CompletableFuture<Map<String, Integer>> work4 = CompletableFuture.supplyAsync(() ->
+                simuCallable.call()
+        );
+        CompletableFuture<Map<String, Integer>> work5 = CompletableFuture.supplyAsync(() ->
+                simuCallable.call()
+        );
 
-        CompletableFuture<Void> result = CompletableFuture.allOf(work1, work2, work3);
+        CompletableFuture<Void> result = CompletableFuture.allOf(work1, work2, work3, work4, work5);
         result.join();
-        sample.printResult();
+
+        Map<String, Integer> work1Map = work1.get();
+        Map<String, Integer> work2Map = work2.get();
+        Map<String, Integer> work3Map = work3.get();
+        Map<String, Integer> work4Map = work4.get();
+        Map<String, Integer> work5Map = work5.get();
+
+        int s50, s100, s150, s200, s250, s300, s350, s400, s450, s500, other;
+
+        s50 = work1Map.get("s50") + work2Map.get("s50") + work3Map.get("s50") + work4Map.get("s50") + work5Map.get("s50");
+        s100 = work1Map.get("s100") + work2Map.get("s100") + work3Map.get("s100") + work4Map.get("s100") + work5Map.get("s100");
+        s150 = work1Map.get("s150") + work2Map.get("s150") + work3Map.get("s150") + work4Map.get("s150") + work5Map.get("s150");
+        s200 = work1Map.get("s200") + work2Map.get("s200") + work3Map.get("s200") + work4Map.get("s200") + work5Map.get("s200");
+        s250 = work1Map.get("s250") + work2Map.get("s250") + work3Map.get("s250") + work4Map.get("s250") + work5Map.get("s250");
+        s300 = work1Map.get("s300") + work2Map.get("s300") + work3Map.get("s300") + work4Map.get("s300") + work5Map.get("s300");
+        s350 = work1Map.get("s350") + work2Map.get("s350") + work3Map.get("s350") + work4Map.get("s350") + work5Map.get("s350");
+        s400 = work1Map.get("s400") + work2Map.get("s400") + work3Map.get("s400") + work4Map.get("s400") + work5Map.get("s400");
+        s450 = work1Map.get("s450") + work2Map.get("s450") + work3Map.get("s450") + work4Map.get("s450") + work5Map.get("s450");
+        s500 = work1Map.get("s500") + work2Map.get("s500") + work3Map.get("s500") + work4Map.get("s500") + work5Map.get("s500");
+        other = work1Map.get("other") + work2Map.get("other") + work3Map.get("other") + work4Map.get("other") + work5Map.get("other");
+
+        countMap.put("s50", s50);
+        countMap.put("s100", s100);
+        countMap.put("s150", s150);
+        countMap.put("s200", s200);
+        countMap.put("s250", s250);
+        countMap.put("s300", s300);
+        countMap.put("s350", s350);
+        countMap.put("s400", s400);
+        countMap.put("s450", s450);
+        countMap.put("s500", s500);
+        countMap.put("other", other);
+
+        sample.printResult(countMap);
         long end = DateTimeUtil.getCurMilli();
         System.out.println(end - start);
     }
 
 
-
     /**
      * 输出模拟结果
      */
-    private void printResult() {
+    private void printResult(Map<String, Integer> countMap) {
         System.out.println("输出结果");
 
         logger4j.info("50次以内：" + countMap.get("s50") * 0.0001 + "%;");
@@ -111,51 +133,83 @@ public class AnotherSample {
     /**
      * 模拟多线程
      */
-    class SimuCallable implements Callable<String> {
+    class SimuCallable implements Callable<Map<String, Integer>> {
 
         private List<List<Integer>> lists;
-        private int s50 = 0;
-        private int s100 = 0;
-        private int s150 = 0;
-        private int s200 = 0;
-        private int s250 = 0;
-        private int s300 = 0;
-        private int s350 = 0;
-        private int s400 = 0;
-        private int s450 = 0;
-        private int s500 = 0;
-        private int other = 0;
 
-        private Random random = SecureRandom.getInstanceStrong();
-
-        public SimuCallable(List<List<Integer>> lists) throws NoSuchAlgorithmException {
+        public SimuCallable(List<List<Integer>> lists) {
             this.lists = lists;
         }
 
+        /**
+         * 不再使用同步变量，直接将各子线程结果返回，由主线程处理
+         *
+         * @return
+         */
         @Override
-        public String call() {
-            for (int j = 0; j < 1000; j++) {
+        public Map<String, Integer> call() {
+            int s50 = 0;
+            int s100 = 0;
+            int s150 = 0;
+            int s200 = 0;
+            int s250 = 0;
+            int s300 = 0;
+            int s350 = 0;
+            int s400 = 0;
+            int s450 = 0;
+            int s500 = 0;
+            int other = 0;
+
+            Map<String, Integer> countHashMap = new HashMap<>();
+            try {
+                Random random = SecureRandom.getInstanceStrong();
+                for (int j = 0; j < 200000; j++) {
 //            开始模拟
-                int count = simulate(random, lists);
+                    int count = simulate(random, lists);
 //                将模拟结果放入集合中
-                countNumber(count);
+                    if (count <= 50) {
+                        s50++;
+                    } else if (count <= 100) {
+                        s100++;
+                    } else if (count <= 150) {
+                        s150++;
+                    } else if (count <= 200) {
+                        s200++;
+                    } else if (count <= 250) {
+                        s250++;
+                    } else if (count <= 300) {
+                        s300++;
+                    } else if (count <= 350) {
+                        s350++;
+                    } else if (count <= 400) {
+                        s400++;
+                    } else if (count <= 450) {
+                        s450++;
+                    } else if (count <= 500) {
+                        s500++;
+                    } else {
+                        other++;
+                    }
+                }
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
             }
             System.out.println("计算完成:" + Thread.currentThread().getName()
                     + ":" + s50 + ":" + s100 + ":" + s150 + ":" + s200 + ":" + s250 + ":" + s300
                     + ":" + s350 + ":" + s400 + ":" + s450 + ":" + s500 + ":" + other);
-            countMap.put("s50", countMap.get("s50") + s50);
-            countMap.put("s100", countMap.get("s100") + s100);
-            countMap.put("s150", countMap.get("s150") + s150);
-            countMap.put("s200", countMap.get("s200") + s200);
-            countMap.put("s250", countMap.get("s250") + s250);
-            countMap.put("s300", countMap.get("s300") + s300);
-            countMap.put("s350", countMap.get("s350") + s350);
-            countMap.put("s400", countMap.get("s400") + s400);
-            countMap.put("s450", countMap.get("s450") + s450);
-            countMap.put("s500", countMap.get("s500") + s500);
-            countMap.put("other", countMap.get("other") + other);
+            countHashMap.put("s50", s50);
+            countHashMap.put("s100", s100);
+            countHashMap.put("s150", s150);
+            countHashMap.put("s200", s200);
+            countHashMap.put("s250", s250);
+            countHashMap.put("s300", s300);
+            countHashMap.put("s350", s350);
+            countHashMap.put("s400", s400);
+            countHashMap.put("s450", s450);
+            countHashMap.put("s500", s500);
+            countHashMap.put("other", other);
             System.out.println("运行结束");
-            return Thread.currentThread().getName();
+            return countHashMap;
         }
 
         private int simulate(Random random, List<List<Integer>> lists) {
@@ -200,32 +254,6 @@ public class AnotherSample {
                 mblist.clear();
             }
             return count;
-        }
-
-        public void countNumber(Integer count) {
-            if (count <= 50) {
-                s50++;
-            } else if (count <= 100) {
-                s100++;
-            } else if (count <= 150) {
-                s150++;
-            } else if (count <= 200) {
-                s200++;
-            } else if (count <= 250) {
-                s250++;
-            } else if (count <= 300) {
-                s300++;
-            } else if (count <= 350) {
-                s350++;
-            } else if (count <= 400) {
-                s400++;
-            } else if (count <= 450) {
-                s450++;
-            } else if (count <= 500) {
-                s500++;
-            } else {
-                other++;
-            }
         }
     }
 }
