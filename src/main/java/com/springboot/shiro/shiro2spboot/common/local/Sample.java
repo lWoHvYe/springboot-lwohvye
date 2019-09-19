@@ -21,22 +21,9 @@ import java.util.concurrent.CountDownLatch;
 public class Sample {
 
     private Logger logger4j = LoggerFactory.getLogger(Sample.class);
-    //    private volatile int s50 = 0;
-//    private volatile int s100 = 0;
-//    private volatile int s150 = 0;
-//    private volatile int s200 = 0;
-//    private volatile int s250 = 0;
-//    private volatile int s300 = 0;
-//    private volatile int s350 = 0;
-//    private volatile int s400 = 0;
-//    private volatile int s450 = 0;
-//    private volatile int s500 = 0;
-//    private volatile int other = 0;
-    //    模拟线程完成个数
-//    private static volatile int simu = 0;
-
+//    用于控制主线程等待子线程结束
     private static final CountDownLatch latch = new CountDownLatch(6);
-
+//    用来存放模拟的结果，同步变量
     private volatile Map<String, Integer> countMap = new Hashtable<>() {
         {
             put("s50", 0);
@@ -59,13 +46,18 @@ public class Sample {
 
     public static void main(String[] args) {
         try {
+//            记录开始时间
             long start = DateTimeUtil.getCurMilli();
             Sample sample = new Sample();
-            sample.test();
+//            开始模拟
+            sample.startWork();
 //            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
             latch.await();
+//            输出结果
             sample.printResult();
+//            记录结束时间
             long end = DateTimeUtil.getCurMilli();
+//            输出模拟用时
             System.out.println(end - start);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -74,7 +66,11 @@ public class Sample {
         }
     }
 
-    public void test() throws NoSuchAlgorithmException {
+    /**
+     * 模拟入口
+     * @throws NoSuchAlgorithmException
+     */
+    public void startWork() throws NoSuchAlgorithmException {
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -83,9 +79,10 @@ public class Sample {
 
 //        池子2 2% 1.8% 1.8% 2.5% 5%
         List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
+//        将池子放入总集
         lists.add(list1);
         lists.add(list2);
-
+//        开始模拟
         doWork(lists);
     }
 
@@ -95,7 +92,6 @@ public class Sample {
      */
     private void printResult() {
         System.out.println("输出结果");
-//        Thread thread = new Thread(() -> {
 
         logger4j.info("50次以内：" + countMap.get("s50") * 0.0001 + "%;");
         logger4j.info("100次以内：" + countMap.get("s100") * 0.0001 + "%;");
@@ -119,11 +115,11 @@ public class Sample {
      * @param lists
      */
     private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
+//        开启数个线程
         for (int i = 0; i < 6; i++) {
             SimuThread simuThread = new SimuThread(lists);
             Thread thread = new Thread(simuThread);
             thread.start();
-//            System.out.println(thread.getName());
         }
     }
 
@@ -159,7 +155,7 @@ public class Sample {
 //                将模拟结果放入集合中
                 countNumber(count);
             }
-
+//              将模拟结果放入共享集合
             countMap.put("s50", countMap.get("s50") + s50);
             countMap.put("s100", countMap.get("s100") + s100);
             countMap.put("s150", countMap.get("s150") + s150);
@@ -172,6 +168,7 @@ public class Sample {
             countMap.put("s500", countMap.get("s500") + s500);
             countMap.put("other", countMap.get("other") + other);
             System.out.println("运行结束");
+//            线程执行结束，latch值减1
             latch.countDown();
         }
 
@@ -219,6 +216,10 @@ public class Sample {
             return count;
         }
 
+        /**
+         * 根据单次模拟结果，确定区间
+         * @param count
+         */
         public void countNumber(Integer count) {
             if (count <= 50) {
                 s50++;
