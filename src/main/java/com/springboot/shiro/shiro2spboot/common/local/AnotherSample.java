@@ -18,24 +18,22 @@ import java.util.concurrent.ExecutionException;
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * <p>
  * 使用多线程时，有时需关注其他线程的完成情况
- * 采用Feature的方式，正在调整同步数据,已确定其他功能部分的完成
+ * 采用Feature的方式
  */
 //@SpringBootTest
 public class AnotherSample {
 
     private Logger logger4j = LoggerFactory.getLogger(AnotherSample.class);
-    //    模拟线程完成个数
-//    private static volatile int simu = 0;
-
-//    private static final CountDownLatch latch = new CountDownLatch(5);
 
 
     public AnotherSample() {
     }
 
     @Test
-    public void test() throws ExecutionException, InterruptedException {
+    public void startWork() throws ExecutionException, InterruptedException {
+//        存放总结果集
         Map<String, Integer> countMap = new HashMap<>();
+//        记录开始时间
         long start = DateTimeUtil.getCurMilli();
         AnotherSample sample = new AnotherSample();
 //        创建随机数
@@ -48,8 +46,9 @@ public class AnotherSample {
         List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
         lists.add(list1);
         lists.add(list2);
+//        设置模拟池子
         SimuCallable simuCallable = new SimuCallable(lists);
-//            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
+//            开启模拟线程
         CompletableFuture<Map<String, Integer>> work1 = CompletableFuture.supplyAsync(() ->
                 simuCallable.call()
         );
@@ -68,7 +67,7 @@ public class AnotherSample {
 
         CompletableFuture<Void> result = CompletableFuture.allOf(work1, work2, work3, work4, work5);
         result.join();
-
+//        获取各子线程模拟结果
         Map<String, Integer> work1Map = work1.get();
         Map<String, Integer> work2Map = work2.get();
         Map<String, Integer> work3Map = work3.get();
@@ -100,8 +99,9 @@ public class AnotherSample {
         countMap.put("s450", s450);
         countMap.put("s500", s500);
         countMap.put("other", other);
-
+//         输出总结果
         sample.printResult(countMap);
+//         记录结束时间
         long end = DateTimeUtil.getCurMilli();
         System.out.println(end - start);
     }
@@ -111,6 +111,7 @@ public class AnotherSample {
      * 输出模拟结果
      */
     private void printResult(Map<String, Integer> countMap) {
+
         System.out.println("输出结果");
 
         logger4j.info("50次以内：" + countMap.get("s50") * 0.0001 + "%;");
@@ -159,12 +160,12 @@ public class AnotherSample {
             int s450 = 0;
             int s500 = 0;
             int other = 0;
-
+//          记录本线程模拟结果集
             Map<String, Integer> countHashMap = new HashMap<>();
             try {
                 Random random = SecureRandom.getInstanceStrong();
                 for (int j = 0; j < 200000; j++) {
-//            开始模拟
+//                开始模拟
                     int count = simulate(random, lists);
 //                将模拟结果放入集合中
                     if (count <= 50) {
@@ -197,6 +198,7 @@ public class AnotherSample {
             System.out.println("计算完成:" + Thread.currentThread().getName()
                     + ":" + s50 + ":" + s100 + ":" + s150 + ":" + s200 + ":" + s250 + ":" + s300
                     + ":" + s350 + ":" + s400 + ":" + s450 + ":" + s500 + ":" + other);
+//            将模拟结果放入集合返回
             countHashMap.put("s50", s50);
             countHashMap.put("s100", s100);
             countHashMap.put("s150", s150);
