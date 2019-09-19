@@ -26,9 +26,6 @@ public class AnotherSample {
     private Logger logger4j = LoggerFactory.getLogger(AnotherSample.class);
 
 
-    public AnotherSample() {
-    }
-
     @Test
     public void startWork() throws ExecutionException, InterruptedException {
 //        存放总结果集
@@ -48,22 +45,12 @@ public class AnotherSample {
         lists.add(list2);
 //        设置模拟池子
         SimuCallable simuCallable = new SimuCallable(lists);
-//            开启模拟线程
-        CompletableFuture<Map<String, Integer>> work1 = CompletableFuture.supplyAsync(() ->
-                simuCallable.call()
-        );
-        CompletableFuture<Map<String, Integer>> work2 = CompletableFuture.supplyAsync(() ->
-                simuCallable.call()
-        );
-        CompletableFuture<Map<String, Integer>> work3 = CompletableFuture.supplyAsync(() ->
-                simuCallable.call()
-        );
-        CompletableFuture<Map<String, Integer>> work4 = CompletableFuture.supplyAsync(() ->
-                simuCallable.call()
-        );
-        CompletableFuture<Map<String, Integer>> work5 = CompletableFuture.supplyAsync(() ->
-                simuCallable.call()
-        );
+//            开启模拟线程，使用线程池的方式创建CompletableFuture
+        CompletableFuture<Map<String, Integer>> work1 = CompletableFuture.supplyAsync(simuCallable::call);
+        CompletableFuture<Map<String, Integer>> work2 = CompletableFuture.supplyAsync(simuCallable::call);
+        CompletableFuture<Map<String, Integer>> work3 = CompletableFuture.supplyAsync(simuCallable::call);
+        CompletableFuture<Map<String, Integer>> work4 = CompletableFuture.supplyAsync(simuCallable::call);
+        CompletableFuture<Map<String, Integer>> work5 = CompletableFuture.supplyAsync(simuCallable::call);
 
         CompletableFuture<Void> result = CompletableFuture.allOf(work1, work2, work3, work4, work5);
         result.join();
@@ -114,18 +101,18 @@ public class AnotherSample {
 
         System.out.println("输出结果");
 
-        logger4j.info("50次以内：" + countMap.get("s50") * 0.0001 + "%;");
-        logger4j.info("100次以内：" + countMap.get("s100") * 0.0001 + "%;");
-        logger4j.info("150次以内：" + countMap.get("s150") * 0.0001 + "%;");
-        logger4j.info("200次以内：" + countMap.get("s200") * 0.0001 + "%;");
-        logger4j.info("250次以内：" + countMap.get("s250") * 0.0001 + "%;");
-        logger4j.info("300次以内：" + countMap.get("s300") * 0.0001 + "%;");
-        logger4j.info("350次以内：" + countMap.get("s350") * 0.0001 + "%;");
-        logger4j.info("400次以内：" + countMap.get("s400") * 0.0001 + "%;");
-        logger4j.info("450次以内：" + countMap.get("s450") * 0.0001 + "%;");
-        logger4j.info("500次以内：" + countMap.get("s500") * 0.0001 + "%;");
-        logger4j.info("500次以上：" + countMap.get("other") * 0.0001 + "%;");
-        System.out.println("总计模拟:" + (countMap.get("s50") + countMap.get("s100") + countMap.get("s150") + countMap.get("s200")
+        logger4j.info(String.format("50次以内：%s%%;", countMap.get("s50") * 0.00001));
+        logger4j.info(String.format("100次以内：%s%%;", countMap.get("s100") * 0.00001));
+        logger4j.info(String.format("150次以内：%s%%;", countMap.get("s150") * 0.00001));
+        logger4j.info(String.format("200次以内：%s%%;", countMap.get("s200") * 0.00001));
+        logger4j.info(String.format("250次以内：%s%%;", countMap.get("s250") * 0.00001));
+        logger4j.info(String.format("300次以内：%s%%;", countMap.get("s300") * 0.00001));
+        logger4j.info(String.format("350次以内：%s%%;", countMap.get("s350") * 0.00001));
+        logger4j.info(String.format("400次以内：%s%%;", countMap.get("s400") * 0.00001));
+        logger4j.info(String.format("450次以内：%s%%;", countMap.get("s450") * 0.00001));
+        logger4j.info(String.format("500次以内：%s%%;", countMap.get("s500") * 0.00001));
+        logger4j.info(String.format("500次以上：%s%%;", countMap.get("other") * 0.00001));
+        logger4j.info("总计模拟:" + (countMap.get("s50") + countMap.get("s100") + countMap.get("s150") + countMap.get("s200")
                 + countMap.get("s250") + countMap.get("s300") + countMap.get("s350") + countMap.get("s400") + countMap.get("s450")
                 + countMap.get("s500") + countMap.get("other")) + "次");
     }
@@ -164,7 +151,7 @@ public class AnotherSample {
             Map<String, Integer> countHashMap = new HashMap<>();
             try {
                 Random random = SecureRandom.getInstanceStrong();
-                for (int j = 0; j < 200000; j++) {
+                for (int j = 0; j < 2000000; j++) {
 //                开始模拟
                     int count = simulate(random, lists);
 //                将模拟结果放入集合中
@@ -193,7 +180,7 @@ public class AnotherSample {
                     }
                 }
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                logger4j.info(e.getMessage());
             }
             System.out.println("计算完成:" + Thread.currentThread().getName()
                     + ":" + s50 + ":" + s100 + ":" + s150 + ":" + s200 + ":" + s250 + ":" + s300
