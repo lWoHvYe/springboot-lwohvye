@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
  * 抽卡模拟
  * 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
+ * 由于随机数的生成逻辑，池子与模拟只能有一个用随机数完成，当两者都使用随机数时，结果会大幅偏离预期
  * <p>
  * 使用多线程时，有时需关注其他线程的完成情况
  * 采用Feature的方式
@@ -40,9 +41,13 @@ public class AnotherSample {
         List<Integer> list1 = Arrays.asList(20, 20, 25, 25, 25);
 
 //        池子2 2% 1.8% 1.8% 2.5% 5%
-        List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
+        List<Integer> list2 = Arrays.asList(20, 18, 18, 25, 50);
+//        池子3 2% 2% 2.5% 5%
+        List<Integer> list3 = Arrays.asList(20, 20, 25, 50);
+//        可以根据需求调整池子，将概率乘以1000即为预放入集合中的值，之后需要把池子放入总集
         lists.add(list1);
         lists.add(list2);
+        lists.add(list3);
 //        设置模拟池子
         SimuCallable simuCallable = new SimuCallable(lists);
 //            开启模拟线程，使用线程池的方式创建CompletableFuture
@@ -201,22 +206,51 @@ public class AnotherSample {
             return countHashMap;
         }
 
+        /**
+         * 生成乱序不重复数组
+         *
+         */
+        public int[] ranArray() throws NoSuchAlgorithmException {
+            int[] ranArrays = new int[1000];
+            for (int i = 0; i < 1000; i++) {
+                ranArrays[i] = ++i;
+            }
+            Random r = SecureRandom.getInstanceStrong();
+            for (int i = 0; i < 1000; i++) {
+                int in = r.nextInt(1000 - i) + i;
+                int t = ranArrays[in];
+                ranArrays[in] = ranArrays[i];
+                ranArrays[i] = t;
+            }
+            return ranArrays;
+        }
+
+
+        /**
+         * 模拟抽卡，当前为单个池子，根据要求，生成数个不重复的数值集合，
+         * 当结果在某个数值集合中时，从目标集合中移除其所在的集合
+         * 当前使用连续生成数值的方式
+         *
+         * @param random
+         * @param lists
+         * @return
+         */
         private int simulate(Random random, List<List<Integer>> lists) {
             //        抽卡数
             int count = 0;
-//              存放目标集合，内部数个子集合
+//                存放目标集合，内部数个子集合
             List<List<Integer>> mblist = new ArrayList<>();
-//            存放目标值的集合
+//                存放目标值的集合
             List<Integer> dblist = new ArrayList<>();
             for (List<Integer> list : lists) {
-//            生成目标数值的开始值
-                int start = 1;
+//                  生成目标数值的开始值
+                int index = 1;
                 for (Integer integer : list) {
-//                单个子集合
+//                      单个子集合
                     List<Integer> zlist = new ArrayList<>();
                     for (int i = 0; i < integer; i++) {
-                        zlist.add(start);
-                        start++;
+                        zlist.add(index);
+                        index++;
                     }
                     mblist.add(zlist);
                     dblist.addAll(zlist);
