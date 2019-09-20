@@ -21,9 +21,9 @@ import java.util.concurrent.ExecutionException;
  * 使用多线程时，有时需关注其他线程的完成情况
  * 采用Feature的方式
  * 经过调整使用ThreadLocal修饰变量，简化线程内各函数的传值，但会一定程度上降低效率
+ * 需尤其注意变量的作用范围问题
  */
 //TODO 设置传入概率及池子的方法
-//TODO 继续探究是否可以固定池子，而非每次抽卡都重新生成
 //TODO 优化统计中的if else
 //@SpringBootTest
 public class AnotherSample {
@@ -150,6 +150,7 @@ public class AnotherSample {
 
         /**
          * 不再使用同步变量，直接将各子线程结果返回，由主线程处理
+         * 池子是否乱序并不影响结果，若每次模拟都重新生成乱序池子将大幅降低效率，可以一个线程只使用一个乱序池子，但实际意义不大
          *
          * @return
          */
@@ -160,9 +161,11 @@ public class AnotherSample {
             Map<String, Integer> countHashMap = new HashMap<>();
             try {
                 Random random = SecureRandom.getInstanceStrong();
+//              生成乱序池子
+                int[] ranArray = ranArray();
                 for (int j = 0; j < simuCount; j++) {
 //                开始模拟
-                    int count = simulateWork(random, lists);
+                    int count = simulateWork(random, lists, ranArray);
                     //TODO 后续需对统计进行优化
 //                将模拟结果放入集合中
                     if (count <= 50) {
@@ -224,17 +227,21 @@ public class AnotherSample {
         /**
          * 生成乱序不重复数组
          */
-        public int[] ranArray() throws NoSuchAlgorithmException {
+        public int[] ranArray() {
             int[] ranArrays = new int[1000];
-            for (int i = 0; i < 1000; i++) {
-                ranArrays[i] = i + 1;
-            }
-            Random r = SecureRandom.getInstanceStrong();
-            for (int i = 0; i < 1000; i++) {
-                int in = r.nextInt(1000 - i) + i;
-                int t = ranArrays[in];
-                ranArrays[in] = ranArrays[i];
-                ranArrays[i] = t;
+            try {
+                for (int i = 0; i < 1000; i++) {
+                    ranArrays[i] = i + 1;
+                }
+                Random r = SecureRandom.getInstanceStrong();
+                for (int i = 0; i < 1000; i++) {
+                    int in = r.nextInt(1000 - i) + i;
+                    int t = ranArrays[in];
+                    ranArrays[in] = ranArrays[i];
+                    ranArrays[i] = t;
+                }
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
             }
             return ranArrays;
         }
@@ -248,10 +255,10 @@ public class AnotherSample {
          *
          * @param random
          * @param lists
+         * @param ranArray
          * @return
          */
-        //TODO 接下来尝试优化池子 mblist 和 dblist
-        private int simulateWork(Random random, List<List<Integer>> lists) {
+        private int simulateWork(Random random, List<List<Integer>> lists, int[] ranArray) {
             //        抽卡数
             int count = 0;
 //                存放单个池子目标集合，内部数个子集合
@@ -266,7 +273,7 @@ public class AnotherSample {
 //                      单个子集合
                     List<Integer> zlist = new ArrayList<>();
                     for (int i = 0; i < integer; i++) {
-                        zlist.add(index);
+                        zlist.add(ranArray[index]);
                         index++;
                     }
                     dblist.addAll(zlist);
