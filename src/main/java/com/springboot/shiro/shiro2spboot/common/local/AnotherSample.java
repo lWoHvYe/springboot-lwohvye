@@ -22,6 +22,9 @@ import java.util.concurrent.ExecutionException;
  * 采用Feature的方式
  * 经过调整使用ThreadLocal修饰变量，简化线程内各函数的传值，但会一定程度上降低效率
  */
+//TODO 设置传入概率及池子的方法
+//TODO 继续探究是否可以固定池子，而非每次抽卡都重新生成
+//TODO 优化统计中的if else
 //@SpringBootTest
 public class AnotherSample {
 
@@ -159,7 +162,8 @@ public class AnotherSample {
                 Random random = SecureRandom.getInstanceStrong();
                 for (int j = 0; j < simuCount; j++) {
 //                开始模拟
-                    int count = simulate(random, lists);
+                    int count = simulateWork(random, lists);
+                    //TODO 后续需对统计进行优化
 //                将模拟结果放入集合中
                     if (count <= 50) {
                         Integer integer50 = s50.get();
@@ -246,13 +250,15 @@ public class AnotherSample {
          * @param lists
          * @return
          */
-        private int simulate(Random random, List<List<Integer>> lists) {
+        //TODO 接下来尝试优化池子 mblist 和 dblist
+        private int simulateWork(Random random, List<List<Integer>> lists) {
             //        抽卡数
             int count = 0;
-//                存放目标集合，内部数个子集合
+//                存放单个池子目标集合，内部数个子集合
             List<List<Integer>> mblist = new ArrayList<>();
-//                存放目标值的集合
+//                存放单个池子目标值的集合，主要为了避免每次模拟都要对mblist进行两次遍历
             List<Integer> dblist = new ArrayList<>();
+//            对池子进行模拟，抽完一个之后，再抽下一个
             for (List<Integer> list : lists) {
 //                  生成目标数值的开始值
                 int index = 1;
@@ -263,24 +269,22 @@ public class AnotherSample {
                         zlist.add(index);
                         index++;
                     }
-                    mblist.add(zlist);
                     dblist.addAll(zlist);
+                    mblist.add(zlist);
                 }
+                //TODO 模拟部分是花费时间最多的地方，是主要的优化部分
 //            当目标值不为空时进行抽卡
                 while (!dblist.isEmpty()) {
 //            开始抽卡
                     int result = random.nextInt(1000) + 1;
 //                判断是否抽到目标卡
-                    if (dblist.contains(result)) {
+                    if (dblist.contains(result))
 //                    当抽到目标卡时，遍历目标子集合
-                        for (List<Integer> integerList : mblist) {
+                        for (List<Integer> integerList : mblist)
 //                        判断目标是否在子集合中
-                            if (integerList.contains(result)) {
+                            if (integerList.contains(result))
 //                            当目标在子集合中时，从目标集合中移除对应子集合内容
                                 dblist.removeAll(integerList);
-                            }
-                        }
-                    }
 //                抽卡次数+1
                     count++;
                 }
