@@ -20,17 +20,33 @@ import java.util.concurrent.ExecutionException;
  * <p>
  * 使用多线程时，有时需关注其他线程的完成情况
  * 采用Feature的方式
+ * 经过调整使用ThreadLocal修饰变量，简化线程内各函数的传值，但会一定程度上降低效率
  */
 //@SpringBootTest
 public class AnotherSample {
 
     private Logger logger4j = LoggerFactory.getLogger(AnotherSample.class);
 
+    private ThreadLocal<Integer> s50 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> s100 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> s150 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> s200 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> s250 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> s300 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> s350 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> s400 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> s450 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> s500 = ThreadLocal.withInitial(() -> 0);
+    private ThreadLocal<Integer> other = ThreadLocal.withInitial(() -> 0);
+
 
     @Test
+    @SuppressWarnings("unchecked")
     public void startWork() throws ExecutionException, InterruptedException {
 //        存放总结果集
         Map<String, Integer> countMap = new HashMap<>();
+//        单个池子的模拟次数
+        Integer simuCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
         AnotherSample sample = new AnotherSample();
@@ -49,7 +65,7 @@ public class AnotherSample {
         lists.add(list2);
 //        lists.add(list3);
 //        设置模拟池子
-        SimuCallable simuCallable = new SimuCallable(lists);
+        SimuCallable simuCallable = new SimuCallable(lists, simuCount / 5);
 //            开启模拟线程，使用线程池的方式创建CompletableFuture
         CompletableFuture<Map<String, Integer>> work1 = CompletableFuture.supplyAsync(simuCallable::call);
         CompletableFuture<Map<String, Integer>> work2 = CompletableFuture.supplyAsync(simuCallable::call);
@@ -65,61 +81,53 @@ public class AnotherSample {
         Map<String, Integer> work3Map = work3.get();
         Map<String, Integer> work4Map = work4.get();
         Map<String, Integer> work5Map = work5.get();
+//        存放key
+        List<String> keys = Arrays.asList("s50", "s100", "s150", "s200", "s250", "s300", "s350", "s400", "s450", "s500", "other");
+//        总模拟次数
+        int totalCount = 0;
+        for (String key : keys) {
+            int value = work1Map.get(key) + work2Map.get(key) + work3Map.get(key) + work4Map.get(key) + work5Map.get(key);
+            countMap.put(key, value);
+            totalCount += value;
+        }
+        ThreadLocal<Integer>[] values = new ThreadLocal[]{s50, s100, s150, s200, s250, s300, s350, s400, s450, s500, other};
+        Arrays.asList(values).forEach(ThreadLocal::remove);
 
-        int s50, s100, s150, s200, s250, s300, s350, s400, s450, s500, other;
-
-        s50 = work1Map.get("s50") + work2Map.get("s50") + work3Map.get("s50") + work4Map.get("s50") + work5Map.get("s50");
-        s100 = work1Map.get("s100") + work2Map.get("s100") + work3Map.get("s100") + work4Map.get("s100") + work5Map.get("s100");
-        s150 = work1Map.get("s150") + work2Map.get("s150") + work3Map.get("s150") + work4Map.get("s150") + work5Map.get("s150");
-        s200 = work1Map.get("s200") + work2Map.get("s200") + work3Map.get("s200") + work4Map.get("s200") + work5Map.get("s200");
-        s250 = work1Map.get("s250") + work2Map.get("s250") + work3Map.get("s250") + work4Map.get("s250") + work5Map.get("s250");
-        s300 = work1Map.get("s300") + work2Map.get("s300") + work3Map.get("s300") + work4Map.get("s300") + work5Map.get("s300");
-        s350 = work1Map.get("s350") + work2Map.get("s350") + work3Map.get("s350") + work4Map.get("s350") + work5Map.get("s350");
-        s400 = work1Map.get("s400") + work2Map.get("s400") + work3Map.get("s400") + work4Map.get("s400") + work5Map.get("s400");
-        s450 = work1Map.get("s450") + work2Map.get("s450") + work3Map.get("s450") + work4Map.get("s450") + work5Map.get("s450");
-        s500 = work1Map.get("s500") + work2Map.get("s500") + work3Map.get("s500") + work4Map.get("s500") + work5Map.get("s500");
-        other = work1Map.get("other") + work2Map.get("other") + work3Map.get("other") + work4Map.get("other") + work5Map.get("other");
-
-        countMap.put("s50", s50);
-        countMap.put("s100", s100);
-        countMap.put("s150", s150);
-        countMap.put("s200", s200);
-        countMap.put("s250", s250);
-        countMap.put("s300", s300);
-        countMap.put("s350", s350);
-        countMap.put("s400", s400);
-        countMap.put("s450", s450);
-        countMap.put("s500", s500);
-        countMap.put("other", other);
 //         输出总结果
-        sample.printResult(countMap);
+        sample.printResult(countMap, simuCount / 100, totalCount);
 //         记录结束时间
         long end = DateTimeUtil.getCurMilli();
         System.out.println(end - start);
+
     }
 
 
     /**
      * 输出模拟结果
      */
-    private void printResult(Map<String, Integer> countMap) {
+    private void printResult(Map<String, Integer> countMap, Integer simuCount, int totalCount) {
 
         System.out.println("输出结果");
 
-        logger4j.info(String.format("50次以内：%s%%;", countMap.get("s50") * 0.0001));
-        logger4j.info(String.format("100次以内：%s%%;", countMap.get("s100") * 0.0001));
-        logger4j.info(String.format("150次以内：%s%%;", countMap.get("s150") * 0.0001));
-        logger4j.info(String.format("200次以内：%s%%;", countMap.get("s200") * 0.0001));
-        logger4j.info(String.format("250次以内：%s%%;", countMap.get("s250") * 0.0001));
-        logger4j.info(String.format("300次以内：%s%%;", countMap.get("s300") * 0.0001));
-        logger4j.info(String.format("350次以内：%s%%;", countMap.get("s350") * 0.0001));
-        logger4j.info(String.format("400次以内：%s%%;", countMap.get("s400") * 0.0001));
-        logger4j.info(String.format("450次以内：%s%%;", countMap.get("s450") * 0.0001));
-        logger4j.info(String.format("500次以内：%s%%;", countMap.get("s500") * 0.0001));
-        logger4j.info(String.format("500次以上：%s%%;", countMap.get("other") * 0.0001));
-        logger4j.info("总计模拟:" + (countMap.get("s50") + countMap.get("s100") + countMap.get("s150") + countMap.get("s200")
-                + countMap.get("s250") + countMap.get("s300") + countMap.get("s350") + countMap.get("s400") + countMap.get("s450")
-                + countMap.get("s500") + countMap.get("other")) + "次");
+        logger4j.info(String.format("50次以内：%s%%;", (double) countMap.get("s50") / simuCount));
+        logger4j.info(String.format("100次以内：%s%%;", (double) countMap.get("s100") / simuCount));
+        logger4j.info(String.format("150次以内：%s%%;", (double) countMap.get("s150") / simuCount));
+        logger4j.info(String.format("200次以内：%s%%;", (double) countMap.get("s200") / simuCount));
+        logger4j.info(String.format("250次以内：%s%%;", (double) countMap.get("s250") / simuCount));
+        logger4j.info(String.format("300次以内：%s%%;", (double) countMap.get("s300") / simuCount));
+        logger4j.info(String.format("350次以内：%s%%;", (double) countMap.get("s350") / simuCount));
+        logger4j.info(String.format("400次以内：%s%%;", (double) countMap.get("s400") / simuCount));
+        logger4j.info(String.format("450次以内：%s%%;", (double) countMap.get("s450") / simuCount));
+        logger4j.info(String.format("500次以内：%s%%;", (double) countMap.get("s500") / simuCount));
+        logger4j.info(String.format("500次以上：%s%%;", (double) countMap.get("other") / simuCount));
+
+        switch (simuCount - totalCount / 100) {
+            case 0:
+                logger4j.info(String.format("总计模拟:%d次", totalCount));
+                break;
+            default:
+                logger4j.info("出现数据丢失，请核查原因");
+        }
     }
 
 
@@ -127,11 +135,14 @@ public class AnotherSample {
      * 模拟多线程
      */
     class SimuCallable implements Callable<Map<String, Integer>> {
-
+        //        卡池集
         private List<List<Integer>> lists;
+        //        总模拟次数
+        private Integer simuCount;
 
-        public SimuCallable(List<List<Integer>> lists) {
+        public SimuCallable(List<List<Integer>> lists, Integer simuCount) {
             this.lists = lists;
+            this.simuCount = simuCount;
         }
 
         /**
@@ -140,69 +151,68 @@ public class AnotherSample {
          * @return
          */
         @Override
+        @SuppressWarnings("unchecked")
         public Map<String, Integer> call() {
-            int s50 = 0;
-            int s100 = 0;
-            int s150 = 0;
-            int s200 = 0;
-            int s250 = 0;
-            int s300 = 0;
-            int s350 = 0;
-            int s400 = 0;
-            int s450 = 0;
-            int s500 = 0;
-            int other = 0;
 //          记录本线程模拟结果集
             Map<String, Integer> countHashMap = new HashMap<>();
             try {
                 Random random = SecureRandom.getInstanceStrong();
-//                int[] ranArray = ranArray();
-                for (int j = 0; j < 200000; j++) {
+                for (int j = 0; j < simuCount; j++) {
 //                开始模拟
                     int count = simulate(random, lists);
 //                将模拟结果放入集合中
                     if (count <= 50) {
-                        s50++;
+                        Integer integer50 = s50.get();
+                        s50.set(integer50 + 1);
                     } else if (count <= 100) {
-                        s100++;
+                        Integer integer100 = s100.get();
+                        s100.set(integer100 + 1);
                     } else if (count <= 150) {
-                        s150++;
+                        Integer integer150 = s150.get();
+                        s150.set(integer150 + 1);
                     } else if (count <= 200) {
-                        s200++;
+                        Integer integer200 = s200.get();
+                        s200.set(integer200 + 1);
                     } else if (count <= 250) {
-                        s250++;
+                        Integer integer250 = s250.get();
+                        s250.set(integer250 + 1);
                     } else if (count <= 300) {
-                        s300++;
+                        Integer integer300 = s300.get();
+                        s300.set(integer300 + 1);
                     } else if (count <= 350) {
-                        s350++;
+                        Integer integer350 = s350.get();
+                        s350.set(integer350 + 1);
                     } else if (count <= 400) {
-                        s400++;
+                        Integer integer400 = s400.get();
+                        s400.set(integer400 + 1);
                     } else if (count <= 450) {
-                        s450++;
+                        Integer integer450 = s450.get();
+                        s450.set(integer450 + 1);
                     } else if (count <= 500) {
-                        s500++;
+                        Integer integer500 = s500.get();
+                        s500.set(integer500 + 1);
                     } else {
-                        other++;
+                        Integer integer0 = other.get();
+                        other.set(integer0 + 1);
                     }
+
                 }
             } catch (NoSuchAlgorithmException e) {
                 logger4j.info(e.getMessage());
             }
-            System.out.println("计算完成:" + Thread.currentThread().getName()
-                    + ":" + s50 + ":" + s100 + ":" + s150 + ":" + s200 + ":" + s250 + ":" + s300
-                    + ":" + s350 + ":" + s400 + ":" + s450 + ":" + s500 + ":" + other);
+
+//            将原先的代码改成该模式，提高页面效果
+            String[] keys = new String[]{"s50", "s100", "s150", "s200", "s250", "s300", "s350", "s400", "s450", "s500", "other"};
+            ThreadLocal<Integer>[] values = new ThreadLocal[]{s50, s100, s150, s200, s250, s300, s350, s400, s450, s500, other};
+
+            for (int i = 0; i < keys.length; i++) {
 //            将模拟结果放入集合返回
-            countHashMap.put("s50", s50);
-            countHashMap.put("s100", s100);
-            countHashMap.put("s150", s150);
-            countHashMap.put("s200", s200);
-            countHashMap.put("s250", s250);
-            countHashMap.put("s300", s300);
-            countHashMap.put("s350", s350);
-            countHashMap.put("s400", s400);
-            countHashMap.put("s450", s450);
-            countHashMap.put("s500", s500);
-            countHashMap.put("other", other);
+                countHashMap.put(keys[i], values[i].get());
+//            执行结束，移除所属的ThreadLocal变量，防止出现内存问题
+                values[i].remove();
+            }
+
+
             System.out.println("运行结束");
             return countHashMap;
         }
@@ -227,6 +237,7 @@ public class AnotherSample {
 
 
         /**
+         * 核心代码
          * 模拟抽卡，当前为单个池子，根据要求，生成数个不重复的数值集合，
          * 当结果在某个数值集合中时，从目标集合中移除其所在的集合
          * 当前使用连续生成数值的方式
