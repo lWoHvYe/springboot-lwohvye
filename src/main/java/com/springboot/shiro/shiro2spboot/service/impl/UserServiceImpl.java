@@ -27,10 +27,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageUtil<User> findUser(String username, PageUtil<User> pageUtil) {
+    public void findUser(String username, PageUtil<User> pageUtil) {
         Page<User> userPage = userDao.findUser(username, pageUtil.obtPageable());
         pageUtil.setPageEntity(userPage);
-        return pageUtil;
+//        return pageUtil;
     }
 
     @Override

@@ -41,9 +41,9 @@ public class UserController {
     public String findByUsername(String username, PageUtil<User> pageUtil) {
         JSONObject jsonObject = new JSONObject();
 //        查询列表
-        PageUtil<User> userPage = userService.findUser(username, pageUtil);
+        userService.findUser(username, pageUtil);
         jsonObject.put("result", "success");
-        jsonObject.put("list", userPage);
+        jsonObject.put("list", pageUtil);
         return jsonObject.toJSONString();
     }
 

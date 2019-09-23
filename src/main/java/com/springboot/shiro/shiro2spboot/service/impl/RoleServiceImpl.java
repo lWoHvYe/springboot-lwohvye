@@ -1,11 +1,12 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.repository.RoleDao;
 import com.springboot.shiro.shiro2spboot.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,8 +19,9 @@ public class RoleServiceImpl implements RoleService {
     private RoleDao roleDao;
 
     @Override
-    public List<Role> findRole(String role, Pageable pageable) {
-        return roleDao.findRole(role, pageable);
+    public void findRole(String roleName, PageUtil<Role> pageUtil) {
+        Page<Role> rolePage = roleDao.findRole(roleName, pageUtil.obtPageable());
+        pageUtil.setPageEntity(rolePage);
     }
 
     @Override

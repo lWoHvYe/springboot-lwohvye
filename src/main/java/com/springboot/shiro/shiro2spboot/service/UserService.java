@@ -6,7 +6,7 @@ import com.springboot.shiro.shiro2spboot.entity.User;
 public interface UserService {
     User findByUsername(String name);
 
-    PageUtil<User> findUser(String username, PageUtil<User> pageable);
+    void findUser(String username, PageUtil<User> pageable);
 
     void saveUser(User user, String roleId);
 
