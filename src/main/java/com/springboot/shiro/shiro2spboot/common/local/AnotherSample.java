@@ -13,15 +13,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- * 抽卡模拟
- * 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
+ * @PackageName: com.springboot.shiro.shiro2spboot
+ * @ClassName: AnotherSample
+ * @Description:抽卡模拟 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * 由于模拟采用了随机数的方式，所以池子可以任意配置，不影响结果
- * <p>
- * 使用多线程时，有时需关注其他线程的完成情况
+ * 由于使用了多线程，所以需关注其他线程的完成情况
  * 采用Feature的方式
  * 经过调整使用ThreadLocal修饰变量，简化线程内各函数的传值，但会一定程度上降低效率
  * 需尤其注意变量的作用范围问题
+ * @Author: Hongyan Wang
+ * @Date: 2019/9/22 8:54
  */
 //TODO 设置传入概率及池子的方法
 //TODO 优化统计中的if else
@@ -43,6 +45,13 @@ public class AnotherSample {
     private ThreadLocal<Integer> other = ThreadLocal.withInitial(() -> 0);
 
 
+    /**
+    * @Description: 方法主体，用于模拟调用，获取及输出模拟结果
+    * @Param: []
+    * @return: void
+    * @Author: Hongyan Wang
+    * @Date: 2019/9/23 9:59
+    */
     @Test
     @SuppressWarnings("unchecked")
     public void startWork() throws ExecutionException, InterruptedException {
@@ -104,9 +113,12 @@ public class AnotherSample {
 
     }
 
-
     /**
-     * 输出模拟结果
+     * @Description: 输出模拟结果
+     * @Param: [countMap, simuCount, totalCount]
+     * @return: void
+     * @Author: Hongyan Wang
+     * @Date: 2019/9/23 9:58
      */
     private void printResult(Map<String, Integer> countMap, Integer simuCount, int totalCount) {
 
@@ -133,9 +145,11 @@ public class AnotherSample {
         }
     }
 
-
     /**
-     * 模拟多线程
+     * @Description: 模拟多线程相关类
+     * @ClassName: SimuCallable
+     * @Author: Hongyan Wang
+     * @Date: 2019/9/23 9:53
      */
     class SimuCallable implements Callable<Map<String, Integer>> {
         //        卡池集
@@ -149,10 +163,12 @@ public class AnotherSample {
         }
 
         /**
-         * 不再使用同步变量，直接将各子线程结果返回，由主线程处理
+         * @Description: 不再使用同步变量，直接将各子线程结果返回，由主线程处理,
          * 池子是否乱序并不影响结果，若每次模拟都重新生成乱序池子将大幅降低效率，可以一个线程只使用一个乱序池子，但实际意义不大
-         *
-         * @return
+         * @Param: []
+         * @return: java.util.Map<java.lang.String, java.lang.Integer>
+         * @Author: Hongyan Wang
+         * @Date: 2019/9/23 9:52
          */
         @Override
         @SuppressWarnings("unchecked")
@@ -225,9 +241,13 @@ public class AnotherSample {
         }
 
         /**
-         * 生成乱序不重复数组
+         * @Description: 生成乱序不重复数组，作为模拟池
+         * @Param: []
+         * @return: int[]
+         * @Author: Hongyan Wang
+         * @Date: 2019/9/23 9:51
          */
-        public int[] ranArray() {
+        int[] ranArray() {
             int[] ranArrays = new int[1000];
             try {
                 for (int i = 0; i < 1000; i++) {
@@ -246,17 +266,15 @@ public class AnotherSample {
             return ranArrays;
         }
 
-
         /**
-         * 核心代码
+         * @Description: 核心代码
          * 模拟抽卡，当前为单个池子，根据要求，生成数个不重复的数值集合，
          * 当结果在某个数值集合中时，从目标集合中移除其所在的集合
          * 当前使用连续生成数值的方式
-         *
-         * @param random
-         * @param lists
-         * @param ranArray
-         * @return
+         * @Param: [random, lists, ranArray]
+         * @return: int
+         * @Author: Hongyan Wang
+         * @Date: 2019/9/23 9:39
          */
         private int simulateWork(Random random, List<List<Integer>> lists, int[] ranArray) {
             //        抽卡数
