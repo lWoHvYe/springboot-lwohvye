@@ -1,12 +1,13 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.repository.UserDao;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import com.springboot.shiro.shiro2spboot.service.UserService;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -26,8 +27,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findUser(String username, Pageable pageable) {
-        return userDao.findUser(username, pageable);
+    public PageUtil<User> findUser(String username, PageUtil<User> pageUtil) {
+        Page<User> userPage = userDao.findUser(username, pageUtil.obtPageable());
+        pageUtil.setPageEntity(userPage);
+        return pageUtil;
     }
 
     @Override
