@@ -1,6 +1,7 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.service.PermissionService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -13,7 +14,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Controller
@@ -25,36 +25,20 @@ public class PermissionController {
 
 
     /**
-     * 获取权限列表
-     *
-     * @param name
-     * @param curPage
-     * @param pageSize
-     * @param order
-     * @return
-     */
+    * @Description: 获取权限列表
+    * @Param: [name, pageUtil]
+    * @return: java.lang.String
+    * @Author: Hongyan Wang
+    * @Date: 2019/9/23 17:28
+    */
     @RequestMapping("/findPermission")
     @RequiresPermissions("permission:view")
     @ResponseBody
-    public String findByPermission(String name, String curPage, String pageSize, String order) {
+    public String findByPermission(String name, PageUtil<Permission> pageUtil) {
         JSONObject jsonObject = new JSONObject();
-//        设置分页默认值
-        int page = 0;
-        int size = 10;
-        if (!StringUtils.isEmpty(curPage))
-            page = Integer.parseInt(curPage);
-        if (!StringUtils.isEmpty(pageSize))
-            size = Integer.parseInt(pageSize);
-        if (StringUtils.isEmpty(order))
-//            默认排序字段，根据数据结构修改
-            order = "id";
-//        创建sort
-        Sort sort = new Sort(Sort.Direction.DESC, order);
-//        创建pageable
-        Pageable pageable = PageRequest.of(page, size, sort);
-        List<Permission> list = permissionService.findPermission(name, pageable);
+        permissionService.findPermission(name, pageUtil);
         jsonObject.put("result", "success");
-        jsonObject.put("list", list);
+        jsonObject.put("list", pageUtil);
         return jsonObject.toJSONString();
     }
 
@@ -78,14 +62,13 @@ public class PermissionController {
 
     /**
      * 删除权限
-     * @param response
      * @param permission
      * @return
      */
     @RequestMapping("/deletePermission")
     @RequiresPermissions("permission:del")
     @ResponseBody
-    public String deleteRole(HttpServletResponse response, Permission permission) {
+    public String deleteRole(Permission permission) {
         JSONObject jsonObject = new JSONObject();
         permissionService.deletePermission(permission);
         jsonObject.put("result", "success");

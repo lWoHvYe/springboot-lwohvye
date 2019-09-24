@@ -1,10 +1,11 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.repository.PermissionDao;
 import com.springboot.shiro.shiro2spboot.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +15,9 @@ public class PermissionServiceImpl implements PermissionService {
     private PermissionDao permissionDao;
 
     @Override
-    public List<Permission> findPermission(String name, Pageable pageable) {
-        return permissionDao.findPermission(name,pageable);
+    public void findPermission(String name, PageUtil<Permission> pageUtil) {
+        Page<Permission> permissionPage = permissionDao.findPermission(name,pageUtil.obtPageable());
+        pageUtil.setPageEntity(permissionPage);
     }
 
     @Override
