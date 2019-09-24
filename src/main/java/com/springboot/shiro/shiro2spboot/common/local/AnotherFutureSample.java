@@ -15,23 +15,24 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.common.local
- * @className AnotherSample
+ * @className AnotherFutureSample
  * @description 抽卡模拟 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * 由于模拟采用了随机数的方式，所以池子可以任意配置，不影响结果
  * 由于使用了多线程，所以需关注其他线程的完成情况
- * 采用Feature的方式
+ * 采用Feature的方式，使用CompletableFuture的supplyAsync()构建子线程，并获取返回结果进行处理
  * 经过调整使用ThreadLocal修饰变量，简化线程内各函数的传值，但会一定程度上降低效率
  * 需尤其注意变量的作用范围问题
  * @date 2019/9/22 8:54
  */
+//TODO 使用CompletableFuture，开启的线程数受CPU支持的线程数影响较大，通过更改线程数，发现执行时间方差较大
 //TODO 该方式并没有线程间的共享数据，所以不会出现线程安全问题，但可能有一定的局限性
 //TODO 设置传入概率及池子的方法
 //TODO 优化统计中的if else
 //@SpringBootTest
-public class AnotherSample {
+public class AnotherFutureSample {
 
-    private Logger logger4j = LoggerFactory.getLogger(AnotherSample.class);
+    private Logger logger4j = LoggerFactory.getLogger(AnotherFutureSample.class);
 
     private ThreadLocal<Integer> s50 = ThreadLocal.withInitial(() -> 0);
     private ThreadLocal<Integer> s100 = ThreadLocal.withInitial(() -> 0);
@@ -68,7 +69,7 @@ public class AnotherSample {
         Integer simCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
-        AnotherSample sample = new AnotherSample();
+        AnotherFutureSample anotherFutureSample = new AnotherFutureSample();
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -137,7 +138,7 @@ public class AnotherSample {
         Arrays.asList(values).forEach(ThreadLocal::remove);
 
 //         输出总结果
-        sample.printResult(countMap, simCount / 100, totalCount);
+        anotherFutureSample.printResult(countMap, simCount / 100, totalCount);
 //         记录结束时间
         long end = DateTimeUtil.getCurMilli();
         System.out.println(end - start);

@@ -21,9 +21,9 @@ import java.util.concurrent.CountDownLatch;
 //TODO 该方式数据进行实时的共享，容易出现线程安全问题，但应用更广泛
 //TODO 这里使用了线程安全的HashTable，用于实时的交互，虽然降低了效率，但确保了线程的安全
 //@SpringBootTest
-public class Sample {
+public class ThreadSample {
 
-    private Logger logger4j = LoggerFactory.getLogger(Sample.class);
+    private Logger logger4j = LoggerFactory.getLogger(ThreadSample.class);
     //    用来存放模拟的结果，同步变量，使用线程安全的HashTable
     private volatile Map<String, Integer> countMap = new Hashtable<>() {
         {
@@ -48,7 +48,7 @@ public class Sample {
     private Integer simuCount = 1000000;
 
 
-    public Sample() {
+    public ThreadSample() {
     }
 
     @Test
@@ -56,13 +56,13 @@ public class Sample {
         try {
 //            记录开始时间
             long start = DateTimeUtil.getCurMilli();
-            Sample sample = new Sample();
+            ThreadSample threadSample = new ThreadSample();
 //            开始模拟
-            sample.startWork();
+            threadSample.startWork();
 //            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
             latch.await();
 //            输出结果
-            sample.printResult();
+            threadSample.printResult();
 //            记录结束时间
             long end = DateTimeUtil.getCurMilli();
 //            输出模拟用时
