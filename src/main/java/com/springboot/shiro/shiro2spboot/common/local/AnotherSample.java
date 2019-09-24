@@ -46,12 +46,12 @@ public class AnotherSample {
 
 
     /**
-    * @Description: 方法主体，用于模拟调用，获取及输出模拟结果
-    * @Param: []
-    * @return: void
-    * @Author: Hongyan Wang
-    * @Date: 2019/9/23 9:59
-    */
+     * @Description: 方法主体，用于模拟调用，获取及输出模拟结果
+     * @Param: []
+     * @return: void
+     * @Author: Hongyan Wang
+     * @Date: 2019/9/23 9:59
+     */
     @Test
     @SuppressWarnings("unchecked")
     public void startWork() throws ExecutionException, InterruptedException {
@@ -250,9 +250,7 @@ public class AnotherSample {
         int[] ranArray() {
             int[] ranArrays = new int[1000];
             try {
-                for (int i = 0; i < 1000; i++) {
-                    ranArrays[i] = i + 1;
-                }
+                for (int i = 0; i < 1000; i++) ranArrays[i] = i + 1;
                 Random r = SecureRandom.getInstanceStrong();
                 for (int i = 0; i < 1000; i++) {
                     int in = r.nextInt(1000 - i) + i;
