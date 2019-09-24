@@ -63,8 +63,10 @@ public class AnotherFutureSample {
     public void startWork() throws ExecutionException, InterruptedException {
 //        存放总结果集
         Map<String, Integer> countMap = new HashMap<>();
+//        创建存放子线程返回结果的List
+        List<Map<String, Integer>> resultList = new ArrayList<>();
         //   开启模拟线程数
-        Integer threadCount = 100;
+        Integer threadCount = 10;
 //        模拟次数
         Integer simCount = 1000000;
 //        记录开始时间
@@ -92,35 +94,17 @@ public class AnotherFutureSample {
         for (int i = 0; i < threadCount; i++) {
 //            创建模拟线程
             CompletableFuture<Map<String, Integer>> future = CompletableFuture.supplyAsync(simCallable::call);
+//            获取线程的返回结果
+            resultList.add(future.get());
 //            将线程放入线程数组
             futuresArray[i] = future;
         }
-
-//        CompletableFuture<Map<String, Integer>> work1 = CompletableFuture.supplyAsync(simCallable::call);
-//        CompletableFuture<Map<String, Integer>> work2 = CompletableFuture.supplyAsync(simCallable::call);
-//        CompletableFuture<Map<String, Integer>> work3 = CompletableFuture.supplyAsync(simCallable::call);
-//        CompletableFuture<Map<String, Integer>> work4 = CompletableFuture.supplyAsync(simCallable::call);
-//        CompletableFuture<Map<String, Integer>> work5 = CompletableFuture.supplyAsync(simCallable::call);
 
 //        设置需等待的子线程
         CompletableFuture<Void> result = CompletableFuture.allOf(futuresArray);
 //        等待线程完成
         result.join();
-//        创建存放子线程返回结果的List
-        List<Map<String, Integer>> resultList = new ArrayList<>();
-//        获取各子线程模拟结果
-        for (int j = 0; j < threadCount; j++) {
-            resultList.add(futuresArray[j].get());
-        }
 
-//        Map<String, Integer> work1Map = work1.get();
-//        Map<String, Integer> work2Map = work2.get();
-//        Map<String, Integer> work3Map = work3.get();
-//        Map<String, Integer> work4Map = work4.get();
-//        Map<String, Integer> work5Map = work5.get();
-
-//        存放key
-//        List<String> keys = Arrays.asList("s50", "s100", "s150", "s200", "s250", "s300", "s350", "s400", "s450", "s500", "other");
 //        总模拟次数
         int totalCount = 0;
         for (String key : keys) {
@@ -129,12 +113,9 @@ public class AnotherFutureSample {
                 value += integerMap.get(key);
             }
 
-//            value = work1Map.get(key) + work2Map.get(key) + work3Map.get(key) + work4Map.get(key) + work5Map.get(key);
-
             countMap.put(key, value);
             totalCount += value;
         }
-//        ThreadLocal<Integer>[] values = new ThreadLocal[]{s50, s100, s150, s200, s250, s300, s350, s400, s450, s500, other};
         Arrays.asList(values).forEach(ThreadLocal::remove);
 
 //         输出总结果

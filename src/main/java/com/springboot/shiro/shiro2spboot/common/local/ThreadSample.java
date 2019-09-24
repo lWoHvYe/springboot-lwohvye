@@ -19,6 +19,7 @@ import java.util.concurrent.CountDownLatch;
  * 采用线程的方式  Thread
  */
 //TODO 该方式数据进行实时的共享，容易出现线程安全问题，但应用更广泛
+//TODO 但实际上只在最后交互了数据，无法达到预期的交互效果
 //TODO 这里使用了线程安全的HashTable，用于实时的交互，虽然降低了效率，但确保了线程的安全
 //@SpringBootTest
 public class ThreadSample {
@@ -117,13 +118,13 @@ public class ThreadSample {
     }
 
     /**
-    * @description 启动多线程
-    * @params [lists]
-    * @return void
-    * @author Hongyan Wang
-    * @date 2019/9/24 13:19
+     * @return void
+     * @description 启动多线程
+     * @params [lists]
+     * @author Hongyan Wang
+     * @date 2019/9/24 13:19
      * @
-    */
+     */
     private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
 //        开启数个线程
         for (int i = 0; i < threadCount; i++) {
@@ -184,12 +185,12 @@ public class ThreadSample {
         }
 
         /**
-        * @description 模拟核心代码
-        * @params [random, lists]
-        * @return int
-        * @author Hongyan Wang
-        * @date 2019/9/24 13:31
-        */
+         * @return int
+         * @description 模拟核心代码
+         * @params [random, lists]
+         * @author Hongyan Wang
+         * @date 2019/9/24 13:31
+         */
         private int simulate(Random random, List<List<Integer>> lists) {
             //        抽卡数
             int count = 0;
