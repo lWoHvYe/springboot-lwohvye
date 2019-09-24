@@ -15,40 +15,37 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.common.local
- * @className AnotherFutureSample
+ * @className FutureSample
  * @description 抽卡模拟 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * 由于模拟采用了随机数的方式，所以池子可以任意配置，不影响结果
  * 由于使用了多线程，所以需关注其他线程的完成情况
- * 采用Feature的方式，使用CompletableFuture的supplyAsync()构建子线程，并获取返回结果进行处理
+ * 采用Feature的方式，使用CompletableFuture的runAsync()构建没有返回的子线程，各子线程处理自身结果
  * 经过调整使用ThreadLocal修饰变量，简化线程内各函数的传值，但会一定程度上降低效率
  * 需尤其注意变量的作用范围问题
  * @date 2019/9/22 8:54
  */
-//TODO 使用CompletableFuture，开启的线程数受CPU支持的线程数影响较大，通过更改线程数，发现执行时间方差较大
-//TODO 该方式并没有线程间的共享数据，所以不会出现线程安全问题，但可能有一定的局限性
-//TODO 设置传入概率及池子的方法
-//TODO 优化统计中的if else
+//TODO 使用CompletableFuture,使用各子线程处理自身数据的方式，类似于ThreadSample的方法，尚未完成，当前存在严重的线程安全问题，待解决
 //@SpringBootTest
-public class AnotherFutureSample {
+public class FutureSample {
 
-    private Logger logger4j = LoggerFactory.getLogger(AnotherFutureSample.class);
+    private Logger logger4j = LoggerFactory.getLogger(FutureSample.class);
 
-    private ThreadLocal<Integer> s50 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> s100 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> s150 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> s200 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> s250 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> s300 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> s350 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> s400 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> s450 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> s500 = ThreadLocal.withInitial(() -> 0);
-    private ThreadLocal<Integer> other = ThreadLocal.withInitial(() -> 0);
-
-    //    Map的key和value
-    private String[] keys = new String[]{"s50", "s100", "s150", "s200", "s250", "s300", "s350", "s400", "s450", "s500", "other"};
-    private ThreadLocal[] values = new ThreadLocal[]{s50, s100, s150, s200, s250, s300, s350, s400, s450, s500, other};
+    private volatile Map<String, Integer> countMap = new Hashtable<>() {
+        {
+            put("s50", 0);
+            put("s100", 0);
+            put("s150", 0);
+            put("s200", 0);
+            put("s250", 0);
+            put("s300", 0);
+            put("s350", 0);
+            put("s400", 0);
+            put("s450", 0);
+            put("s500", 0);
+            put("other", 0);
+        }
+    };
 
 
     /**
@@ -61,15 +58,13 @@ public class AnotherFutureSample {
     @Test
     @SuppressWarnings("unchecked")
     public void startWork() throws ExecutionException, InterruptedException {
-//        存放总结果集
-        Map<String, Integer> countMap = new HashMap<>();
         //   开启模拟线程数
-        Integer threadCount = 100;
+        Integer threadCount = 10;
 //        模拟次数
-        Integer simCount = 1000000;
+        Integer simCount = 10000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
-        AnotherFutureSample anotherFutureSample = new AnotherFutureSample();
+        FutureSample futureSample = new FutureSample();
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -87,58 +82,22 @@ public class AnotherFutureSample {
 //        设置模拟池子
         SimCallable simCallable = new SimCallable(lists, simCount / threadCount);
 //        创建线程数组
-        CompletableFuture<Map<String, Integer>>[] futuresArray = new CompletableFuture[threadCount];
+        CompletableFuture<Void>[] futuresArray = new CompletableFuture[threadCount];
 //            开启模拟线程，使用线程池的方式创建CompletableFuture
         for (int i = 0; i < threadCount; i++) {
 //            创建模拟线程
-            CompletableFuture<Map<String, Integer>> future = CompletableFuture.supplyAsync(simCallable::call);
+            CompletableFuture<Void> future = CompletableFuture.runAsync(simCallable::call);
 //            将线程放入线程数组
             futuresArray[i] = future;
         }
-
-//        CompletableFuture<Map<String, Integer>> work1 = CompletableFuture.supplyAsync(simCallable::call);
-//        CompletableFuture<Map<String, Integer>> work2 = CompletableFuture.supplyAsync(simCallable::call);
-//        CompletableFuture<Map<String, Integer>> work3 = CompletableFuture.supplyAsync(simCallable::call);
-//        CompletableFuture<Map<String, Integer>> work4 = CompletableFuture.supplyAsync(simCallable::call);
-//        CompletableFuture<Map<String, Integer>> work5 = CompletableFuture.supplyAsync(simCallable::call);
 
 //        设置需等待的子线程
         CompletableFuture<Void> result = CompletableFuture.allOf(futuresArray);
 //        等待线程完成
         result.join();
-//        创建存放子线程返回结果的List
-        List<Map<String, Integer>> resultList = new ArrayList<>();
-//        获取各子线程模拟结果
-        for (int j = 0; j < threadCount; j++) {
-            resultList.add(futuresArray[j].get());
-        }
-
-//        Map<String, Integer> work1Map = work1.get();
-//        Map<String, Integer> work2Map = work2.get();
-//        Map<String, Integer> work3Map = work3.get();
-//        Map<String, Integer> work4Map = work4.get();
-//        Map<String, Integer> work5Map = work5.get();
-
-//        存放key
-//        List<String> keys = Arrays.asList("s50", "s100", "s150", "s200", "s250", "s300", "s350", "s400", "s450", "s500", "other");
-//        总模拟次数
-        int totalCount = 0;
-        for (String key : keys) {
-            int value = 0;
-            for (Map<String, Integer> integerMap : resultList) {
-                value += integerMap.get(key);
-            }
-
-//            value = work1Map.get(key) + work2Map.get(key) + work3Map.get(key) + work4Map.get(key) + work5Map.get(key);
-
-            countMap.put(key, value);
-            totalCount += value;
-        }
-//        ThreadLocal<Integer>[] values = new ThreadLocal[]{s50, s100, s150, s200, s250, s300, s350, s400, s450, s500, other};
-        Arrays.asList(values).forEach(ThreadLocal::remove);
 
 //         输出总结果
-        anotherFutureSample.printResult(countMap, simCount / 100, totalCount);
+        futureSample.printResult(countMap, simCount / 100);
 //         记录结束时间
         long end = DateTimeUtil.getCurMilli();
         System.out.println(end - start);
@@ -152,7 +111,7 @@ public class AnotherFutureSample {
      * @author Hongyan Wang
      * @date 2019/9/24 13:56
      */
-    private void printResult(Map<String, Integer> countMap, Integer simCount, Integer totalCount) {
+    private void printResult(Map<String, Integer> countMap, Integer simCount) {
 
         System.out.println("输出结果");
 
@@ -167,17 +126,9 @@ public class AnotherFutureSample {
         logger4j.info(String.format("450次以内：%s%%;", (double) countMap.get("s450") / simCount));
         logger4j.info(String.format("500次以内：%s%%;", (double) countMap.get("s500") / simCount));
         logger4j.info(String.format("500次以上：%s%%;", (double) countMap.get("other") / simCount));
-
-        switch (simCount % (totalCount / 100)) {
-            case 0:
-                logger4j.info(String.format("总计模拟:%d次", totalCount));
-                break;
-            case 1:
-                logger4j.info("出现数据丢失，请核查原因");
-                break;
-            default:
-                logger4j.info("系统出错，请重试");
-        }
+        System.out.println("总计模拟:" + (countMap.get("s50") + countMap.get("s100") + countMap.get("s150") + countMap.get("s200")
+                + countMap.get("s250") + countMap.get("s300") + countMap.get("s350") + countMap.get("s400") + countMap.get("s450")
+                + countMap.get("s500") + countMap.get("other")) + "次");
     }
 
     /**
@@ -191,6 +142,18 @@ public class AnotherFutureSample {
         private List<List<Integer>> lists;
         //        总模拟次数
         private Integer simCount;
+
+        private int s50 = 0;
+        private int s100 = 0;
+        private int s150 = 0;
+        private int s200 = 0;
+        private int s250 = 0;
+        private int s300 = 0;
+        private int s350 = 0;
+        private int s400 = 0;
+        private int s450 = 0;
+        private int s500 = 0;
+        private int other = 0;
 
         private SimCallable(List<List<Integer>> lists, Integer simCount) {
             this.lists = lists;
@@ -219,55 +182,46 @@ public class AnotherFutureSample {
                     //TODO 后续需对统计进行优化
 //                将模拟结果放入集合中
                     if (count <= 50) {
-                        Integer integer50 = s50.get();
-                        s50.set(integer50 + 1);
+                        s50++;
                     } else if (count <= 100) {
-                        Integer integer100 = s100.get();
-                        s100.set(integer100 + 1);
+                        s100++;
                     } else if (count <= 150) {
-                        Integer integer150 = s150.get();
-                        s150.set(integer150 + 1);
+                        s150++;
                     } else if (count <= 200) {
-                        Integer integer200 = s200.get();
-                        s200.set(integer200 + 1);
+                        s200++;
                     } else if (count <= 250) {
-                        Integer integer250 = s250.get();
-                        s250.set(integer250 + 1);
+                        s250++;
                     } else if (count <= 300) {
-                        Integer integer300 = s300.get();
-                        s300.set(integer300 + 1);
+                        s300++;
                     } else if (count <= 350) {
-                        Integer integer350 = s350.get();
-                        s350.set(integer350 + 1);
+                        s350++;
                     } else if (count <= 400) {
-                        Integer integer400 = s400.get();
-                        s400.set(integer400 + 1);
+                        s400++;
                     } else if (count <= 450) {
-                        Integer integer450 = s450.get();
-                        s450.set(integer450 + 1);
+                        s450++;
                     } else if (count <= 500) {
-                        Integer integer500 = s500.get();
-                        s500.set(integer500 + 1);
+                        s500++;
                     } else {
-                        Integer integer0 = other.get();
-                        other.set(integer0 + 1);
+                        other++;
                     }
-
                 }
             } catch (NoSuchAlgorithmException e) {
                 logger4j.info(e.getMessage());
             }
 
-            for (int i = 0; i < keys.length; i++) {
-//            将模拟结果放入集合返回
-                countHashMap.put(keys[i], (Integer) values[i].get());
-//            执行结束，移除所属的ThreadLocal变量，防止出现内存问题
-                values[i].remove();
-//                logger4j.info(Thread.currentThread().getName() + " : " + keys[i] + " : " + values[i].get());
-            }
+            countMap.put("s50", countMap.get("s50") + s50);
+            countMap.put("s100", countMap.get("s100") + s100);
+            countMap.put("s150", countMap.get("s150") + s150);
+            countMap.put("s200", countMap.get("s200") + s200);
+            countMap.put("s250", countMap.get("s250") + s250);
+            countMap.put("s300", countMap.get("s300") + s300);
+            countMap.put("s350", countMap.get("s350") + s350);
+            countMap.put("s400", countMap.get("s400") + s400);
+            countMap.put("s450", countMap.get("s450") + s450);
+            countMap.put("s500", countMap.get("s500") + s500);
+            countMap.put("other", countMap.get("other") + other);
 
-
-            System.out.println("运行结束");
+            System.out.println("运行结束" + Thread.currentThread().getName() + " : " + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
             return countHashMap;
         }
 
@@ -279,7 +233,7 @@ public class AnotherFutureSample {
          * @date 2019/9/23 9:51
          */
         private int[] ranArray() {
-            int[] ranArrays = new int[1000];
+            var ranArrays = new int[1000];
             try {
                 for (int i = 0; i < 1000; i++) ranArrays[i] = i + 1;
                 Random r = SecureRandom.getInstanceStrong();
