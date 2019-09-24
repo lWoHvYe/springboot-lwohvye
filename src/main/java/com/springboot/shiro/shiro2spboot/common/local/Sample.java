@@ -1,6 +1,7 @@
 package com.springboot.shiro.shiro2spboot.common.local;
 
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +18,13 @@ import java.util.concurrent.CountDownLatch;
  * 使用多线程时，有时需关注其他线程的完成情况
  * 采用线程的方式  Thread
  */
+//TODO 该方式数据进行实时的共享，容易出现线程安全问题，但应用更广泛
+//TODO 这里使用了线程安全的HashTable，用于实时的交互，虽然降低了效率，但确保了线程的安全
 //@SpringBootTest
 public class Sample {
 
     private Logger logger4j = LoggerFactory.getLogger(Sample.class);
-//    用于控制主线程等待子线程结束
-    private static final CountDownLatch latch = new CountDownLatch(6);
-//    用来存放模拟的结果，同步变量
+    //    用来存放模拟的结果，同步变量，使用线程安全的HashTable
     private volatile Map<String, Integer> countMap = new Hashtable<>() {
         {
             put("s50", 0);
@@ -39,12 +40,19 @@ public class Sample {
             put("other", 0);
         }
     };
+    //   开启模拟线程数
+    private static Integer threadCount = 10;
+    //    用于控制主线程等待子线程结束
+    private static final CountDownLatch latch = new CountDownLatch(threadCount);
+    //        模拟次数
+    private Integer simuCount = 1000000;
 
 
     public Sample() {
     }
 
-    public static void main(String[] args) {
+    @Test
+    public void simuWork() {
         try {
 //            记录开始时间
             long start = DateTimeUtil.getCurMilli();
@@ -59,18 +67,17 @@ public class Sample {
             long end = DateTimeUtil.getCurMilli();
 //            输出模拟用时
             System.out.println(end - start);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (InterruptedException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * 模拟入口
+     *
      * @throws NoSuchAlgorithmException
      */
-    public void startWork() throws NoSuchAlgorithmException {
+    private void startWork() throws NoSuchAlgorithmException {
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -93,30 +100,33 @@ public class Sample {
     private void printResult() {
         System.out.println("输出结果");
 
-        logger4j.info("50次以内：" + countMap.get("s50") * 0.0001 + "%;");
-        logger4j.info("100次以内：" + countMap.get("s100") * 0.0001 + "%;");
-        logger4j.info("150次以内：" + countMap.get("s150") * 0.0001 + "%;");
-        logger4j.info("200次以内：" + countMap.get("s200") * 0.0001 + "%;");
-        logger4j.info("250次以内：" + countMap.get("s250") * 0.0001 + "%;");
-        logger4j.info("300次以内：" + countMap.get("s300") * 0.0001 + "%;");
-        logger4j.info("350次以内：" + countMap.get("s350") * 0.0001 + "%;");
-        logger4j.info("400次以内：" + countMap.get("s400") * 0.0001 + "%;");
-        logger4j.info("450次以内：" + countMap.get("s450") * 0.0001 + "%;");
-        logger4j.info("500次以内：" + countMap.get("s500") * 0.0001 + "%;");
-        logger4j.info("500次以上：" + countMap.get("other") * 0.0001 + "%;");
+        logger4j.info("50次以内：" + (double) countMap.get("s50") * 100 / simuCount + "%;");
+        logger4j.info("100次以内：" + (double) countMap.get("s100") * 100 / simuCount + "%;");
+        logger4j.info("150次以内：" + (double) countMap.get("s150") * 100 / simuCount + "%;");
+        logger4j.info("200次以内：" + (double) countMap.get("s200") * 100 / simuCount + "%;");
+        logger4j.info("250次以内：" + (double) countMap.get("s250") * 100 / simuCount + "%;");
+        logger4j.info("300次以内：" + (double) countMap.get("s300") * 100 / simuCount + "%;");
+        logger4j.info("350次以内：" + (double) countMap.get("s350") * 100 / simuCount + "%;");
+        logger4j.info("400次以内：" + (double) countMap.get("s400") * 100 / simuCount + "%;");
+        logger4j.info("450次以内：" + (double) countMap.get("s450") * 100 / simuCount + "%;");
+        logger4j.info("500次以内：" + (double) countMap.get("s500") * 100 / simuCount + "%;");
+        logger4j.info("500次以上：" + (double) countMap.get("other") * 100 / simuCount + "%;");
         System.out.println("总计模拟:" + (countMap.get("s50") + countMap.get("s100") + countMap.get("s150") + countMap.get("s200")
                 + countMap.get("s250") + countMap.get("s300") + countMap.get("s350") + countMap.get("s400") + countMap.get("s450")
                 + countMap.get("s500") + countMap.get("other")) + "次");
     }
 
     /**
-     * 启动模拟多线程
-     *
-     * @param lists
-     */
+    * @description 启动多线程
+    * @params [lists]
+    * @return void
+    * @author Hongyan Wang
+    * @date 2019/9/24 13:19
+     * @
+    */
     private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
 //        开启数个线程
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < threadCount; i++) {
             SimuThread simuThread = new SimuThread(lists);
             Thread thread = new Thread(simuThread);
             thread.start();
@@ -143,13 +153,14 @@ public class Sample {
 
         private Random random = SecureRandom.getInstanceStrong();
 
-        public SimuThread(List<List<Integer>> lists) throws NoSuchAlgorithmException {
+        private SimuThread(List<List<Integer>> lists) throws NoSuchAlgorithmException {
             this.lists = lists;
         }
 
         @Override
         public void run() {
-            for (int j = 0; j < 180000; j++) {
+            int singleCount = simuCount / threadCount;
+            for (int j = 0; j < singleCount; j++) {
 //            开始模拟
                 int count = simulate(random, lists);
 //                将模拟结果放入集合中
@@ -172,6 +183,13 @@ public class Sample {
             latch.countDown();
         }
 
+        /**
+        * @description 模拟核心代码
+        * @params [random, lists]
+        * @return int
+        * @author Hongyan Wang
+        * @date 2019/9/24 13:31
+        */
         private int simulate(Random random, List<List<Integer>> lists) {
             //        抽卡数
             int count = 0;
@@ -193,22 +211,24 @@ public class Sample {
                     dblist.addAll(zlist);
                 }
 //            当目标值不为空时进行抽卡
-                while (!dblist.isEmpty()) {
+                if (!dblist.isEmpty()) {
+                    do {
 //            开始抽卡
-                    int result = random.nextInt(1000) + 1;
+                        var result = random.nextInt(1000) + 1;
 //                判断是否抽到目标卡
-                    if (dblist.contains(result)) {
+                        if (dblist.contains(result)) {
 //                    当抽到目标卡时，遍历目标子集合
-                        for (List<Integer> integerList : mblist) {
+                            for (List<Integer> integerList : mblist) {
 //                        判断目标是否在子集合中
-                            if (integerList.contains(result)) {
+                                if (integerList.contains(result)) {
 //                            当目标在子集合中时，从目标集合中移除对应子集合内容
-                                dblist.removeAll(integerList);
+                                    dblist.removeAll(integerList);
+                                }
                             }
                         }
-                    }
 //                抽卡次数+1
-                    count++;
+                        count++;
+                    } while (!dblist.isEmpty());
                 }
 //            抽完一池，置空子集合
                 mblist.clear();
@@ -218,9 +238,10 @@ public class Sample {
 
         /**
          * 根据单次模拟结果，确定区间
-         * @param count
+         *
+         * @params count
          */
-        public void countNumber(Integer count) {
+        private void countNumber(Integer count) {
             if (count <= 50) {
                 s50++;
             } else if (count <= 100) {
