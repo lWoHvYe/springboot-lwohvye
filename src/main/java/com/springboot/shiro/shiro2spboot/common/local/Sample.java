@@ -1,6 +1,7 @@
 package com.springboot.shiro.shiro2spboot.common.local;
 
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,24 +21,32 @@ import java.util.concurrent.CountDownLatch;
  * 使用多线程时，有时需关注其他线程的完成情况
  * 采用线程的方式  Thread
  */
+//TODO 使用volatile关键字修饰的变量不适用于使用n++，此时需使用synchronized关键字，但在修改之后，开多线程依旧存在数据丢失问题，待解决
+//TODO 经核实，数据丢失随着线程数的增加而增加，推测是代码中其他部分的问题
 //@SpringBootTest
 public class Sample {
 
     private Logger logger4j = LoggerFactory.getLogger(Sample.class);
-    private volatile int s50 = 0;
-    private volatile int s100 = 0;
-    private volatile int s150 = 0;
-    private volatile int s200 = 0;
-    private volatile int s250 = 0;
-    private volatile int s300 = 0;
-    private volatile int s350 = 0;
-    private volatile int s400 = 0;
-    private volatile int s450 = 0;
-    private volatile int s500 = 0;
-    private volatile int other = 0;
-    private static final CountDownLatch latch = new CountDownLatch(5);
+    private Integer s50 = 0;
+    private Integer s100 = 0;
+    private Integer s150 = 0;
+    private Integer s200 = 0;
+    private Integer s250 = 0;
+    private Integer s300 = 0;
+    private Integer s350 = 0;
+    private Integer s400 = 0;
+    private Integer s450 = 0;
+    private Integer s500 = 0;
+    private Integer other = 0;
+    //   开启模拟线程数
+    private Integer threadCount = 10;
+    //   模拟次数
+    private Integer simuCount = 1000000;
+    private static final CountDownLatch latch = new CountDownLatch(10);
 
-    public static void main(String[] args) {
+    @Test
+    public void simuWork() {
+
         try {
 //            记录开始时间
             long start = DateTimeUtil.getCurMilli();
@@ -81,22 +90,29 @@ public class Sample {
     private void printResult() {
         System.out.println("输出结果");
 //        Thread thread = new Thread(() -> {
-        logger4j.info("50次以内：" + s50 * 0.0001 + "%;");
-        logger4j.info("100次以内：" + s100 * 0.0001 + "%;");
-        logger4j.info("150次以内：" + s150 * 0.0001 + "%;");
-        logger4j.info("200次以内：" + s200 * 0.0001 + "%;");
-        logger4j.info("250次以内：" + s250 * 0.0001 + "%;");
-        logger4j.info("300次以内：" + s300 * 0.0001 + "%;");
-        logger4j.info("350次以内：" + s350 * 0.0001 + "%;");
-        logger4j.info("400次以内：" + s400 * 0.0001 + "%;");
-        logger4j.info("450次以内：" + s450 * 0.0001 + "%;");
-        logger4j.info("500次以内：" + s500 * 0.0001 + "%;");
-        logger4j.info("500次以上：" + other * 0.0001 + "%;");
+        logger4j.info("50次以内：" + (double) s50 / simuCount * 100 + "%;");
+        logger4j.info("100次以内：" + (double) s100 / simuCount * 100 + "%;");
+        logger4j.info("150次以内：" + (double) s150 / simuCount * 100 + "%;");
+        logger4j.info("200次以内：" + (double) s200 / simuCount * 100 + "%;");
+        logger4j.info("250次以内：" + (double) s250 / simuCount * 100 + "%;");
+        logger4j.info("300次以内：" + (double) s300 / simuCount * 100 + "%;");
+        logger4j.info("350次以内：" + (double) s350 / simuCount * 100 + "%;");
+        logger4j.info("400次以内：" + (double) s400 / simuCount * 100 + "%;");
+        logger4j.info("450次以内：" + (double) s450 / simuCount * 100 + "%;");
+        logger4j.info("500次以内：" + (double) s500 / simuCount * 100 + "%;");
+        logger4j.info("500次以上：" + (double) other / simuCount * 100 + "%;");
         System.out.println("总计模拟:" + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
     }
 
-    private synchronized void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
-        for (int i = 0; i < 5; i++) {
+    /**
+     * @Description:
+     * @Param: [lists]
+     * @return: void
+     * @Author: Hongyan Wang
+     * @Date: 2019/9/24 11:10
+     */
+    private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
+        for (int i = 0; i < threadCount; i++) {
             SimuThread simuThread = new SimuThread(lists);
             Thread thread = new Thread(simuThread);
             thread.start();
@@ -114,37 +130,55 @@ public class Sample {
             this.lists = lists;
         }
 
+        /**
+         * @Description: 进行模拟，并分析统计结果
+         * @Param: []
+         * @return: void
+         * @Author: Hongyan Wang
+         * @Date: 2019/9/24 11:11
+         */
         @Override
         public void run() {
-            for (int j = 0; j < 200000; j++) {
+            int singleSimuCount = simuCount / threadCount;
+            for (int j = 0; j < singleSimuCount; j++) {
 //            开始模拟
                 int count = simulate(random, lists);
 //            记录结果
-                if (count <= 50) {
+                if (count <= 50) synchronized (s50) {
                     s50++;
-                } else if (count <= 100) {
-                    s100++;
-                } else if (count <= 150) {
-                    s150++;
-                } else if (count <= 200) {
-                    s200++;
-                } else if (count <= 250) {
-                    s250++;
-                } else if (count <= 300) {
-                    s300++;
-                } else if (count <= 350) {
-                    s350++;
-                } else if (count <= 400) {
-                    s400++;
-                } else if (count <= 450) {
-                    s450++;
-                } else if (count <= 500) {
-                    s500++;
-                } else {
-                    other++;
                 }
+                else if (count <= 100) synchronized (s100) {
+                    s100++;
+                }
+                else if (count <= 150) synchronized (s150) {
+                    s150++;
+                }
+                else if (count <= 200) synchronized (s200) {
+                    s200++;
+                }
+                else if (count <= 250) synchronized (s250) {
+                    s250++;
+                }
+                else if (count <= 300) synchronized (s300) {
+                    s300++;
+                }
+                else if (count <= 350) synchronized (s350) {
+                    s350++;
+                }
+                else if (count <= 400) synchronized (s400) {
+                    s400++;
+                }
+                else if (count <= 450) synchronized (s450) {
+                    s450++;
+                }
+                else if (count <= 500) synchronized (s500) {
+                    s500++;
+                }
+                else synchronized (other) {
+                        other++;
+                    }
             }
-            System.out.println("运行结束");
+            System.out.printf("运行结束,总计模拟%d次%n", singleSimuCount);
             latch.countDown();
         }
 

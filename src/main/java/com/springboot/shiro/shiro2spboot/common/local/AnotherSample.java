@@ -57,7 +57,9 @@ public class AnotherSample {
     public void startWork() throws ExecutionException, InterruptedException {
 //        存放总结果集
         Map<String, Integer> countMap = new HashMap<>();
-//        单个池子的模拟次数
+        //   开启模拟线程数
+        Integer threadCount = 5;
+//        模拟次数
         Integer simuCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
@@ -77,7 +79,7 @@ public class AnotherSample {
         lists.add(list2);
 //        lists.add(list3);
 //        设置模拟池子
-        SimuCallable simuCallable = new SimuCallable(lists, simuCount / 5);
+        SimuCallable simuCallable = new SimuCallable(lists, simuCount / threadCount);
 //            开启模拟线程，使用线程池的方式创建CompletableFuture
         CompletableFuture<Map<String, Integer>> work1 = CompletableFuture.supplyAsync(simuCallable::call);
         CompletableFuture<Map<String, Integer>> work2 = CompletableFuture.supplyAsync(simuCallable::call);
@@ -247,7 +249,7 @@ public class AnotherSample {
          * @Author: Hongyan Wang
          * @Date: 2019/9/23 9:51
          */
-        int[] ranArray() {
+        private int[] ranArray() {
             int[] ranArrays = new int[1000];
             try {
                 for (int i = 0; i < 1000; i++) ranArrays[i] = i + 1;
