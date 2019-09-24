@@ -20,32 +20,27 @@ import java.util.concurrent.ExecutionException;
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * 由于模拟采用了随机数的方式，所以池子可以任意配置，不影响结果
  * 由于使用了多线程，所以需关注其他线程的完成情况
- * 采用Feature的方式，使用CompletableFuture的runAsync()构建没有返回的子线程，各子线程处理自身结果
- * 经过调整使用ThreadLocal修饰变量，简化线程内各函数的传值，但会一定程度上降低效率
+ * 采用Feature的方式，使用CompletableFuture的runAsync()构建没有返回的子线程，各子线程实时共享数据，使用synchronized同步代码块
  * 需尤其注意变量的作用范围问题
  * @date 2019/9/22 8:54
  */
-//TODO 使用CompletableFuture,使用各子线程处理自身数据的方式，类似于ThreadSample的方法，尚未完成，当前存在严重的线程安全问题，待解决
+//TODO 使用CompletableFuture,子线程实时共享数据，使用synchronized同步代码块，不能使用volatile
 //@SpringBootTest
 public class FutureSample {
 
     private Logger logger4j = LoggerFactory.getLogger(FutureSample.class);
 
-    private volatile Map<String, Integer> countMap = new Hashtable<>() {
-        {
-            put("s50", 0);
-            put("s100", 0);
-            put("s150", 0);
-            put("s200", 0);
-            put("s250", 0);
-            put("s300", 0);
-            put("s350", 0);
-            put("s400", 0);
-            put("s450", 0);
-            put("s500", 0);
-            put("other", 0);
-        }
-    };
+    private Integer s50 = 0;
+    private Integer s100 = 0;
+    private Integer s150 = 0;
+    private Integer s200 = 0;
+    private Integer s250 = 0;
+    private Integer s300 = 0;
+    private Integer s350 = 0;
+    private Integer s400 = 0;
+    private Integer s450 = 0;
+    private Integer s500 = 0;
+    private Integer other = 0;
 
 
     /**
@@ -57,11 +52,11 @@ public class FutureSample {
      */
     @Test
     @SuppressWarnings("unchecked")
-    public void startWork() throws ExecutionException, InterruptedException {
+    public void startWork() {
         //   开启模拟线程数
-        Integer threadCount = 10;
+        Integer threadCount = 100;
 //        模拟次数
-        Integer simCount = 10000;
+        Integer simCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
         FutureSample futureSample = new FutureSample();
@@ -86,7 +81,7 @@ public class FutureSample {
 //            开启模拟线程，使用线程池的方式创建CompletableFuture
         for (int i = 0; i < threadCount; i++) {
 //            创建模拟线程
-            CompletableFuture<Void> future = CompletableFuture.runAsync(simCallable::call);
+            CompletableFuture<Void> future = CompletableFuture.runAsync(simCallable);
 //            将线程放入线程数组
             futuresArray[i] = future;
         }
@@ -97,38 +92,24 @@ public class FutureSample {
         result.join();
 
 //         输出总结果
-        futureSample.printResult(countMap, simCount / 100);
+//        futureSample.printResult(countMap, simCount / 100);
 //         记录结束时间
         long end = DateTimeUtil.getCurMilli();
+//          输出结果
+        logger4j.info("50次以内：" + (double) s50 * 100 / simCount + "%;");
+        logger4j.info("100次以内：" + (double) s100 * 100 / simCount + "%;");
+        logger4j.info("150次以内：" + (double) s150 * 100 / simCount + "%;");
+        logger4j.info("200次以内：" + (double) s200 * 100 / simCount + "%;");
+        logger4j.info("250次以内：" + (double) s250 * 100 / simCount + "%;");
+        logger4j.info("300次以内：" + (double) s300 * 100 / simCount + "%;");
+        logger4j.info("350次以内：" + (double) s350 * 100 / simCount + "%;");
+        logger4j.info("400次以内：" + (double) s400 * 100 / simCount + "%;");
+        logger4j.info("450次以内：" + (double) s450 * 100 / simCount + "%;");
+        logger4j.info("500次以内：" + (double) s500 * 100 / simCount + "%;");
+        logger4j.info("500次以上：" + (double) other * 100 / simCount + "%;");
+        System.out.println("总计模拟:" + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
+
         System.out.println(end - start);
-
-    }
-
-    /**
-     * @return void
-     * @description 输出模拟结果
-     * @params [countMap, simCount, totalCount]
-     * @author Hongyan Wang
-     * @date 2019/9/24 13:56
-     */
-    private void printResult(Map<String, Integer> countMap, Integer simCount) {
-
-        System.out.println("输出结果");
-
-        logger4j.info(String.format("50次以内：%s%%;", (double) countMap.get("s50") / simCount));
-        logger4j.info(String.format("100次以内：%s%%;", (double) countMap.get("s100") / simCount));
-        logger4j.info(String.format("150次以内：%s%%;", (double) countMap.get("s150") / simCount));
-        logger4j.info(String.format("200次以内：%s%%;", (double) countMap.get("s200") / simCount));
-        logger4j.info(String.format("250次以内：%s%%;", (double) countMap.get("s250") / simCount));
-        logger4j.info(String.format("300次以内：%s%%;", (double) countMap.get("s300") / simCount));
-        logger4j.info(String.format("350次以内：%s%%;", (double) countMap.get("s350") / simCount));
-        logger4j.info(String.format("400次以内：%s%%;", (double) countMap.get("s400") / simCount));
-        logger4j.info(String.format("450次以内：%s%%;", (double) countMap.get("s450") / simCount));
-        logger4j.info(String.format("500次以内：%s%%;", (double) countMap.get("s500") / simCount));
-        logger4j.info(String.format("500次以上：%s%%;", (double) countMap.get("other") / simCount));
-        System.out.println("总计模拟:" + (countMap.get("s50") + countMap.get("s100") + countMap.get("s150") + countMap.get("s200")
-                + countMap.get("s250") + countMap.get("s300") + countMap.get("s350") + countMap.get("s400") + countMap.get("s450")
-                + countMap.get("s500") + countMap.get("other")) + "次");
     }
 
     /**
@@ -137,23 +118,11 @@ public class FutureSample {
      * @className SimCallable
      * @date 2019/9/23 9:53
      */
-    class SimCallable implements Callable<Map<String, Integer>> {
+    class SimCallable implements Runnable {
         //        卡池集
         private List<List<Integer>> lists;
         //        总模拟次数
         private Integer simCount;
-
-        private int s50 = 0;
-        private int s100 = 0;
-        private int s150 = 0;
-        private int s200 = 0;
-        private int s250 = 0;
-        private int s300 = 0;
-        private int s350 = 0;
-        private int s400 = 0;
-        private int s450 = 0;
-        private int s500 = 0;
-        private int other = 0;
 
         private SimCallable(List<List<Integer>> lists, Integer simCount) {
             this.lists = lists;
@@ -161,7 +130,7 @@ public class FutureSample {
         }
 
         /**
-         * @return java.util.Map<java.lang.String, java.lang.Integer>
+         * @return void
          * @description 不再使用同步变量，直接将各子线程结果返回，由主线程处理,
          * 池子是否乱序并不影响结果，若每次模拟都重新生成乱序池子将大幅降低效率，可以一个线程只使用一个乱序池子，但实际意义不大
          * @params []
@@ -169,9 +138,7 @@ public class FutureSample {
          * @date 2019/9/23 9:52
          */
         @Override
-        public Map<String, Integer> call() {
-//          记录本线程模拟结果集
-            Map<String, Integer> countHashMap = new HashMap<>();
+        public void run() {
             try {
                 Random random = SecureRandom.getInstanceStrong();
 //              生成乱序池子
@@ -181,48 +148,43 @@ public class FutureSample {
                     int count = simulateWork(random, lists, ranArray);
                     //TODO 后续需对统计进行优化
 //                将模拟结果放入集合中
-                    if (count <= 50) {
+                    if (count <= 50) synchronized (s50) {
                         s50++;
-                    } else if (count <= 100) {
-                        s100++;
-                    } else if (count <= 150) {
-                        s150++;
-                    } else if (count <= 200) {
-                        s200++;
-                    } else if (count <= 250) {
-                        s250++;
-                    } else if (count <= 300) {
-                        s300++;
-                    } else if (count <= 350) {
-                        s350++;
-                    } else if (count <= 400) {
-                        s400++;
-                    } else if (count <= 450) {
-                        s450++;
-                    } else if (count <= 500) {
-                        s500++;
-                    } else {
-                        other++;
                     }
+                    else if (count <= 100) synchronized (s100) {
+                        s100++;
+                    }
+                    else if (count <= 150) synchronized (s150) {
+                        s150++;
+                    }
+                    else if (count <= 200) synchronized (s200) {
+                        s200++;
+                    }
+                    else if (count <= 250) synchronized (s250) {
+                        s250++;
+                    }
+                    else if (count <= 300) synchronized (s300) {
+                        s300++;
+                    }
+                    else if (count <= 350) synchronized (s350) {
+                        s350++;
+                    }
+                    else if (count <= 400) synchronized (s400) {
+                        s400++;
+                    }
+                    else if (count <= 450) synchronized (s450) {
+                        s450++;
+                    }
+                    else if (count <= 500) synchronized (s500) {
+                        s500++;
+                    }
+                    else synchronized (other) {
+                            other++;
+                        }
                 }
             } catch (NoSuchAlgorithmException e) {
                 logger4j.info(e.getMessage());
             }
-
-            countMap.put("s50", countMap.get("s50") + s50);
-            countMap.put("s100", countMap.get("s100") + s100);
-            countMap.put("s150", countMap.get("s150") + s150);
-            countMap.put("s200", countMap.get("s200") + s200);
-            countMap.put("s250", countMap.get("s250") + s250);
-            countMap.put("s300", countMap.get("s300") + s300);
-            countMap.put("s350", countMap.get("s350") + s350);
-            countMap.put("s400", countMap.get("s400") + s400);
-            countMap.put("s450", countMap.get("s450") + s450);
-            countMap.put("s500", countMap.get("s500") + s500);
-            countMap.put("other", countMap.get("other") + other);
-
-            System.out.println("运行结束" + Thread.currentThread().getName() + " : " + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
-            return countHashMap;
         }
 
         /**
