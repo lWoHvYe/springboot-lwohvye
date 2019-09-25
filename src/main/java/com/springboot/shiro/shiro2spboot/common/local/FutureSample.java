@@ -56,7 +56,7 @@ public class FutureSample {
         //   开启模拟线程数
         Integer threadCount = 100;
 //        模拟次数
-        Integer simCount = 1000000;
+        Integer simCount = 100000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
         FutureSample futureSample = new FutureSample();
