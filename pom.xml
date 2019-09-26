@@ -65,6 +65,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-solr</artifactId>
         </dependency>
+        <!--数据库连接-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -77,30 +78,34 @@
             <systemPath>${basedir}/src/main/resources/lib/ojdbc14.jar</systemPath>
             <scope>system</scope>
         </dependency>
+        <!--alibaba druid-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.1.10</version>
         </dependency>
+        <!--alibaba fastjson-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.58</version>
         </dependency>
+        <!--lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!--Java解析Html-->
         <dependency>
             <groupId>net.sourceforge.nekohtml</groupId>
             <artifactId>nekohtml</artifactId>
             <version>1.9.22</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -111,11 +116,24 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
-        <!--验证码相关-->
+        <!--验证码相关，未使用该方式-->
         <dependency>
             <groupId>com.github.penggle</groupId>
             <artifactId>kaptcha</artifactId>
             <version>2.3.2</version>
+        </dependency>
+        <!--视频转Asc相关jar-->
+        <dependency>
+            <groupId>com.github.opencv</groupId>
+            <artifactId>opencv</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <systemPath>${basedir}/src/main/resources/lib/opencv-410.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
+        <!--调用C库函数相关jar，替换原来的com.sun.jna，暂未使用该包-->
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
         </dependency>
     </dependencies>
 
@@ -140,6 +158,10 @@
                             <includes>**/*.jar</includes>
                         </resource>
                     </webResources>
+                    <!--配置生成war包时不包含指定的文件或文件夹到war文件中-->
+                    <packagingExcludes>
+                        WEB-INF/classes/sql/**,WEB-INF/classes/dll/**
+                    </packagingExcludes>
                 </configuration>
             </plugin>
             <plugin>
