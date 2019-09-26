@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.common.local;
+package com.springboot.shiro.shiro2spboot.common.local.thread;
 
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import org.junit.Test;
@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Hongyan Wang

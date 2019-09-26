@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.common.local;
+package com.springboot.shiro.shiro2spboot.common.local.thread;
 
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import org.junit.Test;
@@ -18,8 +18,8 @@ import java.util.concurrent.CountDownLatch;
  * 使用多线程时，有时需关注其他线程的完成情况
  * 采用线程的方式  Thread
  */
-//TODO 该方式数据进行实时的共享，容易出现线程安全问题，但应用更广泛
 //TODO 但实际上只在最后交互了数据，无法达到预期的交互效果
+//TODO 虽然达成了预期的效果，但由于没有实时的交互，不如master版本或FutureSample版本的
 //TODO 这里使用了线程安全的HashTable，用于实时的交互，虽然降低了效率，但确保了线程的安全
 //@SpringBootTest
 public class ThreadSample {

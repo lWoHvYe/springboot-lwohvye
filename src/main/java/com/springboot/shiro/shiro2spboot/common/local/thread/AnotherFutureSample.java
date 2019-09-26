@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.common.local;
+package com.springboot.shiro.shiro2spboot.common.local.thread;
 
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import org.junit.Test;
@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
  * 需尤其注意变量的作用范围问题
  * @date 2019/9/22 8:54
  */
-//TODO 使用CompletableFuture，开启的线程数受CPU支持的线程数影响较大，通过更改线程数，发现执行时间方差较大
+//TODO 使用CompletableFuture，开启的线程数受CPU支持的线程数影响较大，通过更改线程数，发现执行时间方差较大，总体效果不是很理想
 //TODO 该方式并没有线程间的共享数据，所以不会出现线程安全问题，但可能有一定的局限性
 //TODO 设置传入概率及池子的方法
 //TODO 优化统计中的if else
