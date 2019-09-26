@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 抽卡模拟
@@ -21,8 +23,9 @@ import java.util.concurrent.CountDownLatch;
  * 使用多线程时，有时需关注其他线程的完成情况
  * 采用线程的方式  Thread
  */
-//TODO 使用volatile关键字修饰的变量不适用于使用n++，此时需使用synchronized关键字，但在修改之后，开多线程依旧存在数据丢失问题，待解决
+//TODO 使用volatile关键字修饰的变量不适用于使用n++，此时需使用synchronized关键字
 //TODO 经核实，数据丢失随着线程数的增加而增加，推测是代码中其他部分的问题
+//TODO 将线程创建方式改为线程池之后，数据丢失问题有所好转
 //@SpringBootTest
 public class Sample {
 
@@ -39,84 +42,62 @@ public class Sample {
     private Integer s500 = 0;
     private Integer other = 0;
     //   开启模拟线程数
-    private Integer threadCount = 10;
+    private static Integer threadCount = 50;
     //   模拟次数
     private Integer simuCount = 1000000;
-    private static final CountDownLatch latch = new CountDownLatch(10);
+    private static final CountDownLatch latch = new CountDownLatch(threadCount);
 
     @Test
-    public void simuWork() {
+    public void startWork() {
 
         try {
 //            记录开始时间
             long start = DateTimeUtil.getCurMilli();
             Sample sample = new Sample();
 //            开始模拟
-            sample.startWork();
+//        创建随机数
+//        池子集合
+            List<List<Integer>> lists = new ArrayList<>();
+//        池子1 2% 2% 2.5% 2.5% 2.5%
+            List<Integer> list1 = Arrays.asList(20, 20, 25, 25, 25);
+
+//        池子2 2% 1.8% 1.8% 2.5% 5%
+            List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
+//        将池子放入总集
+            lists.add(list1);
+            lists.add(list2);
+//            使用线程池创建线程，这里使用java8新增的newWorkStealingPool线程池，
+            ExecutorService threadPool = Executors.newWorkStealingPool();
+//        开始模拟
+            for (int i = 0; i < threadCount; i++) {
+                SimuThread simuThread = new SimuThread(lists);
+                threadPool.execute(simuThread);
+//                Thread thread = new Thread(simuThread);
+//                thread.start();
+            }
+//            等待并关闭线程池
+            threadPool.shutdown();
 //            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
             latch.await();
-            sample.printResult();
+            System.out.println("输出结果");
+            logger4j.info("50次以内：" + (double) s50 * 100 / simuCount + "%;");
+            logger4j.info("100次以内：" + (double) s100 * 100 / simuCount + "%;");
+            logger4j.info("150次以内：" + (double) s150 * 100 / simuCount + "%;");
+            logger4j.info("200次以内：" + (double) s200 * 100 / simuCount + "%;");
+            logger4j.info("250次以内：" + (double) s250 * 100 / simuCount + "%;");
+            logger4j.info("300次以内：" + (double) s300 * 100 / simuCount + "%;");
+            logger4j.info("350次以内：" + (double) s350 * 100 / simuCount + "%;");
+            logger4j.info("400次以内：" + (double) s400 * 100 / simuCount + "%;");
+            logger4j.info("450次以内：" + (double) s450 * 100 / simuCount + "%;");
+            logger4j.info("500次以内：" + (double) s500 * 100 / simuCount + "%;");
+            logger4j.info("500次以上：" + (double) other * 100 / simuCount + "%;");
+            System.out.println("总计模拟:" + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
 //            记录结束时间
             long end = DateTimeUtil.getCurMilli();
 //            输出模拟用时
             System.out.println(end - start);
         } catch (InterruptedException | NoSuchAlgorithmException e) {
             e.printStackTrace();
-        }
-    }
-
-    /**
-     * 模拟入口
-     *
-     * @throws NoSuchAlgorithmException
-     */
-    private void startWork() throws NoSuchAlgorithmException {
-//        创建随机数
-//        池子集合
-        List<List<Integer>> lists = new ArrayList<>();
-//        池子1 2% 2% 2.5% 2.5% 2.5%
-        List<Integer> list1 = Arrays.asList(20, 20, 25, 25, 25);
-
-//        池子2 2% 1.8% 1.8% 2.5% 5%
-        List<Integer> list2 = Arrays.asList(20, 18, 25, 50);
-//        将池子放入总集
-        lists.add(list1);
-        lists.add(list2);
-
-//        开始模拟
-        doWork(lists);
-    }
-
-    private void printResult() {
-        System.out.println("输出结果");
-//        Thread thread = new Thread(() -> {
-        logger4j.info("50次以内：" + (double) s50 / simuCount * 100 + "%;");
-        logger4j.info("100次以内：" + (double) s100 / simuCount * 100 + "%;");
-        logger4j.info("150次以内：" + (double) s150 / simuCount * 100 + "%;");
-        logger4j.info("200次以内：" + (double) s200 / simuCount * 100 + "%;");
-        logger4j.info("250次以内：" + (double) s250 / simuCount * 100 + "%;");
-        logger4j.info("300次以内：" + (double) s300 / simuCount * 100 + "%;");
-        logger4j.info("350次以内：" + (double) s350 / simuCount * 100 + "%;");
-        logger4j.info("400次以内：" + (double) s400 / simuCount * 100 + "%;");
-        logger4j.info("450次以内：" + (double) s450 / simuCount * 100 + "%;");
-        logger4j.info("500次以内：" + (double) s500 / simuCount * 100 + "%;");
-        logger4j.info("500次以上：" + (double) other / simuCount * 100 + "%;");
-        System.out.println("总计模拟:" + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
-    }
-
-    /**
-     * @Description:
-     * @Param: [lists]
-     * @return: void
-     * @Author: Hongyan Wang
-     * @Date: 2019/9/24 11:10
-     */
-    private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
-        for (int i = 0; i < threadCount; i++) {
-            SimuThread simuThread = new SimuThread(lists);
-            Thread thread = new Thread(simuThread);
-            thread.start();
-//            System.out.println(thread.getName());
         }
     }
 
@@ -178,7 +159,7 @@ public class Sample {
                         other++;
                     }
             }
-            System.out.printf("运行结束,总计模拟%d次%n", singleSimuCount);
+            System.out.printf("运行结束,总计模拟%d次%n", (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other));
             latch.countDown();
         }
 
