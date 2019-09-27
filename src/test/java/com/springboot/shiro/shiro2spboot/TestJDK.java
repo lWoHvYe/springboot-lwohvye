@@ -2,6 +2,17 @@ package com.springboot.shiro.shiro2spboot;
 
 import org.junit.Test;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
 /**
  * @PackageName: com.springboot.shiro.shiro2spboot
  * @ClassName: TestJDK
@@ -77,5 +88,19 @@ public class TestJDK {
 //            "msg": "成功"
 //        }
 //            """;
+    }
+
+    @Test
+    public void testStream() throws NoSuchAlgorithmException {
+        Random random = SecureRandom.getInstanceStrong();
+        Supplier<Integer> runnable = random::nextInt;
+
+        Function<String, Integer> function = Integer::parseInt;
+        Integer apply = function.apply(String.valueOf(runnable.get()));
+        System.out.println(apply);
+
+        Consumer<List<Integer>> consumer = e -> Stream.generate(runnable).limit(10).forEach(System.out::println);
+        List<Integer> integerList = Arrays.asList(1,2,3,4,5,6,7,8,9,0,11,14);
+        consumer.accept(integerList);
     }
 }

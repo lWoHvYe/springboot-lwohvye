@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
  * 由于使用了多线程，所以需关注其他线程的完成情况
  * 采用Feature的方式，使用CompletableFuture的runAsync()构建没有返回的子线程，各子线程实时共享数据，使用synchronized同步代码块
  * 需尤其注意变量的作用范围问题
+ * 已查明线程安全问题原因，当存在多个需共享的变量时，使用同步代码块，需使用synchronized(this)
  * @date 2019/9/22 8:54
  */
 //TODO 使用CompletableFuture,子线程实时共享数据，使用synchronized同步代码块，不能使用volatile
@@ -52,9 +53,9 @@ public class FutureSample {
     @SuppressWarnings("unchecked")
     public void startWork() {
         //   开启模拟线程数
-        Integer threadCount = 100;
+        Integer threadCount = 1000;
 //        模拟次数
-        Integer simCount = 100000;
+        Integer simCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
         FutureSample futureSample = new FutureSample();
@@ -145,38 +146,38 @@ public class FutureSample {
 //                开始模拟
                     int count = simulateWork(random, lists, ranArray);
                     //TODO 后续需对统计进行优化
-//                将模拟结果放入集合中
-                    if (count <= 50) synchronized (s50) {
+//                将模拟结果放入集合中，这里用的synchronized(this)，需注意，当多变量时，里面放变量名，可能出现线程安全问题
+                    if (count <= 50) synchronized (this) {
                         s50++;
                     }
-                    else if (count <= 100) synchronized (s100) {
+                    else if (count <= 100) synchronized (this) {
                         s100++;
                     }
-                    else if (count <= 150) synchronized (s150) {
+                    else if (count <= 150) synchronized (this) {
                         s150++;
                     }
-                    else if (count <= 200) synchronized (s200) {
+                    else if (count <= 200) synchronized (this) {
                         s200++;
                     }
-                    else if (count <= 250) synchronized (s250) {
+                    else if (count <= 250) synchronized (this) {
                         s250++;
                     }
-                    else if (count <= 300) synchronized (s300) {
+                    else if (count <= 300) synchronized (this) {
                         s300++;
                     }
-                    else if (count <= 350) synchronized (s350) {
+                    else if (count <= 350) synchronized (this) {
                         s350++;
                     }
-                    else if (count <= 400) synchronized (s400) {
+                    else if (count <= 400) synchronized (this) {
                         s400++;
                     }
-                    else if (count <= 450) synchronized (s450) {
+                    else if (count <= 450) synchronized (this) {
                         s450++;
                     }
-                    else if (count <= 500) synchronized (s500) {
+                    else if (count <= 500) synchronized (this) {
                         s500++;
                     }
-                    else synchronized (other) {
+                    else synchronized (this) {
                             other++;
                         }
                 }

@@ -9,6 +9,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 抽卡模拟
@@ -20,13 +22,13 @@ import java.util.concurrent.CountDownLatch;
  */
 //TODO 但实际上只在最后交互了数据，无法达到预期的交互效果
 //TODO 虽然达成了预期的效果，但由于没有实时的交互，不如master版本或FutureSample版本的
-//TODO 这里使用了线程安全的HashTable，用于实时的交互，虽然降低了效率，但确保了线程的安全
+//TODO 经测试，初步认为，synchronized修饰单代码块时，不会出现线程安全问题，当多变量多synchronized代码块时，才会出现
 //@SpringBootTest
 public class ThreadSample {
 
     private Logger logger4j = LoggerFactory.getLogger(ThreadSample.class);
     //    用来存放模拟的结果，同步变量，使用线程安全的HashTable
-    private volatile Map<String, Integer> countMap = new Hashtable<>() {
+    private Map<String, Integer> countMap = new HashMap<>() {
         {
             put("s50", 0);
             put("s100", 0);
@@ -126,12 +128,14 @@ public class ThreadSample {
      * @
      */
     private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
+        ExecutorService threadPool = Executors.newWorkStealingPool();
 //        开启数个线程
         for (int i = 0; i < threadCount; i++) {
             SimuThread simuThread = new SimuThread(lists);
-            Thread thread = new Thread(simuThread);
-            thread.start();
+            threadPool.execute(simuThread);
         }
+//        关闭线程池
+        threadPool.shutdown();
     }
 
     /**
@@ -167,18 +171,21 @@ public class ThreadSample {
 //                将模拟结果放入集合中
                 countNumber(count);
             }
+//            改用同步代码块，修饰代码块时，应用synchronized(this)，其中应填this，因为包含对变量的操作，是一段代码
+            synchronized (this) {
 //              将模拟结果放入共享集合
-            countMap.put("s50", countMap.get("s50") + s50);
-            countMap.put("s100", countMap.get("s100") + s100);
-            countMap.put("s150", countMap.get("s150") + s150);
-            countMap.put("s200", countMap.get("s200") + s200);
-            countMap.put("s250", countMap.get("s250") + s250);
-            countMap.put("s300", countMap.get("s300") + s300);
-            countMap.put("s350", countMap.get("s350") + s350);
-            countMap.put("s400", countMap.get("s400") + s400);
-            countMap.put("s450", countMap.get("s450") + s450);
-            countMap.put("s500", countMap.get("s500") + s500);
-            countMap.put("other", countMap.get("other") + other);
+                countMap.put("s50", countMap.get("s50") + s50);
+                countMap.put("s100", countMap.get("s100") + s100);
+                countMap.put("s150", countMap.get("s150") + s150);
+                countMap.put("s200", countMap.get("s200") + s200);
+                countMap.put("s250", countMap.get("s250") + s250);
+                countMap.put("s300", countMap.get("s300") + s300);
+                countMap.put("s350", countMap.get("s350") + s350);
+                countMap.put("s400", countMap.get("s400") + s400);
+                countMap.put("s450", countMap.get("s450") + s450);
+                countMap.put("s500", countMap.get("s500") + s500);
+                countMap.put("other", countMap.get("other") + other);
+            }
             System.out.println("运行结束");
 //            线程执行结束，latch值减1
             latch.countDown();
