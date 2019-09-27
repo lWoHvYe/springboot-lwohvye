@@ -25,7 +25,8 @@ import java.util.concurrent.ExecutionException;
  * 需尤其注意变量的作用范围问题
  * @date 2019/9/22 8:54
  */
-//TODO 使用CompletableFuture，开启的线程数受CPU支持的线程数影响较大，通过更改线程数，发现执行时间方差较大，总体效果不是很理想
+//TODO 使用CompletableFuture，开启的线程数受CPU支持的线程数影响较大，通过更改线程数，发现执行时间方差较大，总体效果不是很理想，
+// 故除非需要获取子线程执行结果的情况，不建议使用该方法
 //TODO 该方式并没有线程间的共享数据，所以不会出现线程安全问题，但可能有一定的局限性
 //TODO 设置传入概率及池子的方法
 //TODO 优化统计中的if else
@@ -62,24 +63,24 @@ public class AnotherFutureSample {
     @SuppressWarnings("unchecked")
     public void startWork() throws ExecutionException, InterruptedException {
 //        存放总结果集
-        Map<String, Integer> countMap = new HashMap<>();
+        var countMap = new HashMap<String, Integer>();
 //        创建存放子线程返回结果的List
-        List<Map<String, Integer>> resultList = new ArrayList<>();
+        var resultList = new ArrayList<Map<String, Integer>>();
         //   开启模拟线程数
-        Integer threadCount = 10;
+        var threadCount = 100;
 //        模拟次数
-        Integer simCount = 1000000;
+        var simCount = 1000000;
 //        记录开始时间
-        long start = DateTimeUtil.getCurMilli();
-        AnotherFutureSample anotherFutureSample = new AnotherFutureSample();
+        var start = DateTimeUtil.getCurMilli();
+        var anotherFutureSample = new AnotherFutureSample();
 //        创建随机数
 //        池子集合
-        List<List<Integer>> lists = new ArrayList<>();
+        var lists = new ArrayList<List<Integer>>();
 //        池子1 2% 2% 2.5% 2.5% 2.5%
-        List<Integer> list1 = Arrays.asList(20, 20, 25, 25, 25);
+        var list1 = Arrays.asList(20, 20, 25, 25, 25);
 
 //        池子2 2% 1.8% 1.8% 2.5% 5%
-        List<Integer> list2 = Arrays.asList(20, 18, 18, 25, 50);
+        var list2 = Arrays.asList(20, 18, 18, 25, 50);
 //        池子3 2% 2% 2.5% 5%
 //        List<Integer> list3 = Arrays.asList(20, 20, 25, 50);
 //        可以根据需求调整池子，将概率乘以1000即为预放入集合中的值，之后需要把池子放入总集
@@ -87,13 +88,13 @@ public class AnotherFutureSample {
         lists.add(list2);
 //        lists.add(list3);
 //        设置模拟池子
-        SimCallable simCallable = new SimCallable(lists, simCount / threadCount);
+        var simCallable = new SimCallable(lists, simCount / threadCount);
 //        创建线程数组
         CompletableFuture<Map<String, Integer>>[] futuresArray = new CompletableFuture[threadCount];
 //            开启模拟线程，使用线程池的方式创建CompletableFuture
         for (int i = 0; i < threadCount; i++) {
 //            创建模拟线程
-            CompletableFuture<Map<String, Integer>> future = CompletableFuture.supplyAsync(simCallable::call);
+            var future = CompletableFuture.supplyAsync(simCallable::call);
 //            获取线程的返回结果
             resultList.add(future.get());
 //            将线程放入线程数组
@@ -101,15 +102,15 @@ public class AnotherFutureSample {
         }
 
 //        设置需等待的子线程
-        CompletableFuture<Void> result = CompletableFuture.allOf(futuresArray);
+        var result = CompletableFuture.allOf(futuresArray);
 //        等待线程完成
         result.join();
 
 //        总模拟次数
-        int totalCount = 0;
+        var totalCount = 0;
         for (String key : keys) {
-            int value = 0;
-            for (Map<String, Integer> integerMap : resultList) {
+            var value = 0;
+            for (var integerMap : resultList) {
                 value += integerMap.get(key);
             }
 
@@ -121,7 +122,7 @@ public class AnotherFutureSample {
 //         输出总结果
         anotherFutureSample.printResult(countMap, simCount / 100, totalCount);
 //         记录结束时间
-        long end = DateTimeUtil.getCurMilli();
+        var end = DateTimeUtil.getCurMilli();
         System.out.println(end - start);
 
     }
@@ -189,48 +190,48 @@ public class AnotherFutureSample {
         @Override
         public Map<String, Integer> call() {
 //          记录本线程模拟结果集
-            Map<String, Integer> countHashMap = new HashMap<>();
+            var countHashMap = new HashMap<String, Integer>();
             try {
-                Random random = SecureRandom.getInstanceStrong();
+                var random = SecureRandom.getInstanceStrong();
 //              生成乱序池子
-                int[] ranArray = ranArray();
+                var ranArray = ranArray();
                 for (int j = 0; j < simCount; j++) {
 //                开始模拟
-                    int count = simulateWork(random, lists, ranArray);
+                    var count = simulateWork(random, lists, ranArray);
                     //TODO 后续需对统计进行优化
 //                将模拟结果放入集合中
                     if (count <= 50) {
-                        Integer integer50 = s50.get();
+                        var integer50 = s50.get();
                         s50.set(integer50 + 1);
                     } else if (count <= 100) {
-                        Integer integer100 = s100.get();
+                        var integer100 = s100.get();
                         s100.set(integer100 + 1);
                     } else if (count <= 150) {
-                        Integer integer150 = s150.get();
+                        var integer150 = s150.get();
                         s150.set(integer150 + 1);
                     } else if (count <= 200) {
-                        Integer integer200 = s200.get();
+                        var integer200 = s200.get();
                         s200.set(integer200 + 1);
                     } else if (count <= 250) {
-                        Integer integer250 = s250.get();
+                        var integer250 = s250.get();
                         s250.set(integer250 + 1);
                     } else if (count <= 300) {
-                        Integer integer300 = s300.get();
+                        var integer300 = s300.get();
                         s300.set(integer300 + 1);
                     } else if (count <= 350) {
-                        Integer integer350 = s350.get();
+                        var integer350 = s350.get();
                         s350.set(integer350 + 1);
                     } else if (count <= 400) {
-                        Integer integer400 = s400.get();
+                        var integer400 = s400.get();
                         s400.set(integer400 + 1);
                     } else if (count <= 450) {
-                        Integer integer450 = s450.get();
+                        var integer450 = s450.get();
                         s450.set(integer450 + 1);
                     } else if (count <= 500) {
-                        Integer integer500 = s500.get();
+                        var integer500 = s500.get();
                         s500.set(integer500 + 1);
                     } else {
-                        Integer integer0 = other.get();
+                        var integer0 = other.get();
                         other.set(integer0 + 1);
                     }
 
@@ -259,19 +260,15 @@ public class AnotherFutureSample {
          * @author Hongyan Wang
          * @date 2019/9/23 9:51
          */
-        private int[] ranArray() {
-            int[] ranArrays = new int[1000];
-            try {
-                for (int i = 0; i < 1000; i++) ranArrays[i] = i + 1;
-                Random r = SecureRandom.getInstanceStrong();
-                for (int i = 0; i < 1000; i++) {
-                    int in = r.nextInt(1000 - i) + i;
-                    int t = ranArrays[in];
-                    ranArrays[in] = ranArrays[i];
-                    ranArrays[i] = t;
-                }
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+        private int[] ranArray() throws NoSuchAlgorithmException {
+            var ranArrays = new int[1000];
+            for (int i = 0; i < 1000; i++) ranArrays[i] = i + 1;
+            var r = SecureRandom.getInstanceStrong();
+            for (int i = 0; i < 1000; i++) {
+                var in = r.nextInt(1000 - i) + i;
+                var t = ranArrays[in];
+                ranArrays[in] = ranArrays[i];
+                ranArrays[i] = t;
             }
             return ranArrays;
         }
@@ -288,18 +285,18 @@ public class AnotherFutureSample {
          */
         private int simulateWork(Random random, List<List<Integer>> lists, int[] ranArray) {
             //        抽卡数
-            int count = 0;
+            var count = 0;
 //                存放单个池子目标集合，内部数个子集合
-            List<List<Integer>> multiList = new ArrayList<>();
+            var multiList = new ArrayList<List<Integer>>();
 //                存放单个池子目标值的集合，主要为了避免每次模拟都要对multiList进行两次遍历
-            List<Integer> numList = new ArrayList<>();
+            var numList = new ArrayList<Integer>();
 //            对池子进行模拟，抽完一个之后，再抽下一个
-            for (List<Integer> list : lists) {
+            for (var list : lists) {
 //                  生成目标数值的开始值
-                int index = 1;
-                for (Integer integer : list) {
+                var index = 1;
+                for (var integer : list) {
 //                      单个子集合
-                    List<Integer> singleList = new ArrayList<>();
+                    var singleList = new ArrayList<Integer>();
                     for (int i = 0; i < integer; i++) {
                         singleList.add(ranArray[index]);
                         index++;
@@ -315,7 +312,7 @@ public class AnotherFutureSample {
 //                判断是否抽到目标卡
                     if (numList.contains(result))
 //                    当抽到目标卡时，遍历目标子集合
-                        for (List<Integer> integerList : multiList)
+                        for (var integerList : multiList)
 //                        判断目标是否在子集合中
                             if (integerList.contains(result))
 //                            当目标在子集合中时，从目标集合中移除对应子集合内容

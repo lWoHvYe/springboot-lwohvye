@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.common.local;
+package com.springboot.shiro.shiro2spboot.common.local.thread;
 
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import org.junit.Test;
@@ -27,9 +27,9 @@ import java.util.concurrent.Executors;
 //TODO 经核实，数据丢失随着线程数的增加而增加，推测是代码中其他部分的问题
 //TODO 将线程创建方式改为线程池之后，数据丢失问题有所好转(只有极少量数据丢失)，该方法使用synchronized(变量名)较synchronized(this)修饰同步代码块，效果更好
 //@SpringBootTest
-public class Sample {
+public class ThreadSample {
 
-    private Logger logger4j = LoggerFactory.getLogger(Sample.class);
+    private Logger logger4j = LoggerFactory.getLogger(ThreadSample.class);
     private Integer s50 = 0;
     private Integer s100 = 0;
     private Integer s150 = 0;
@@ -106,7 +106,7 @@ public class Sample {
 
         private Random random = SecureRandom.getInstanceStrong();
 
-        public SimuThread(List<List<Integer>> lists) throws NoSuchAlgorithmException {
+        SimuThread(List<List<Integer>> lists) throws NoSuchAlgorithmException {
             this.lists = lists;
         }
 
