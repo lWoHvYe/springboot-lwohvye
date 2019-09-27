@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
  */
 //TODO 使用volatile关键字修饰的变量不适用于使用n++，此时需使用synchronized关键字
 //TODO 经核实，数据丢失随着线程数的增加而增加，推测是代码中其他部分的问题
-//TODO 将线程创建方式改为线程池之后，数据丢失问题有所好转
+//TODO 将线程创建方式改为线程池之后，数据丢失问题有所好转(只有极少量数据丢失)，该方法使用synchronized(变量名)较synchronized(this)修饰同步代码块，效果更好
 //@SpringBootTest
 public class Sample {
 
@@ -42,7 +42,7 @@ public class Sample {
     private Integer s500 = 0;
     private Integer other = 0;
     //   开启模拟线程数
-    private static Integer threadCount = 50;
+    private static Integer threadCount = 100;
     //   模拟次数
     private Integer simuCount = 1000000;
     private static final CountDownLatch latch = new CountDownLatch(threadCount);
@@ -53,7 +53,6 @@ public class Sample {
         try {
 //            记录开始时间
             long start = DateTimeUtil.getCurMilli();
-            Sample sample = new Sample();
 //            开始模拟
 //        创建随机数
 //        池子集合
@@ -159,7 +158,9 @@ public class Sample {
                         other++;
                     }
             }
-            System.out.printf("运行结束,总计模拟%d次%n", (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other));
+            synchronized (this) {
+                System.out.printf("运行结束,总计模拟%d次%n", (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other));
+            }
             latch.countDown();
         }
 
