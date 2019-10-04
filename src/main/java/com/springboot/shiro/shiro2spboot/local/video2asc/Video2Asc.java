@@ -74,6 +74,8 @@ public class Video2Asc {
                         int index = Math.round(gray * (ascii.length() + 1) / 255);
 //                        对于灰度过高的统一用指定字符表示
                         result.append(index >= ascii.length() ? "." : (ascii.charAt(index)));
+//                        额外添加一个字符，双倍行宽，适用于idea窗口输出
+                        result.append(index >= ascii.length() ? "." : (ascii.charAt(index)));
                     }
 //                    一行结束，换行
                     result.append("\n");
