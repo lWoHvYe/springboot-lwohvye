@@ -25,17 +25,17 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate(
             RedisConnectionFactory redisConnectionFactory) {
 //        使用FastJsonRedisSerializer来序列化和反序列化redis的value值
-        FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
+        var fastJsonRedisSerializer = new FastJsonRedisSerializer<Object>(Object.class);
 //        使用StringRedisSerializer来序列化和反序列化redis的key值
-        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        var stringRedisSerializer = new StringRedisSerializer();
 //        亦可使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值
-//        Jackson2JsonRedisSerializer<Object> fastJsonRedisSerializer = new Jackson2JsonRedisSerializer<Object>(Object.class);
-//        ObjectMapper om = new ObjectMapper();
+//        var fastJsonRedisSerializer = new Jackson2JsonRedisSerializer<Object>(Object.class);
+//        var om = new ObjectMapper();
 //        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
 //        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
 //        fastJsonRedisSerializer.setObjectMapper(om);
 
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        var template = new RedisTemplate<String, Object>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(stringRedisSerializer);
         template.setValueSerializer(fastJsonRedisSerializer);
@@ -49,7 +49,7 @@ public class RedisConfig {
     @ConditionalOnMissingBean(StringRedisTemplate.class)
     public StringRedisTemplate stringRedisTemplate(
             RedisConnectionFactory redisConnectionFactory) {
-        StringRedisTemplate template = new StringRedisTemplate();
+        var template = new StringRedisTemplate();
         template.setConnectionFactory(redisConnectionFactory);
         return template;
     }
