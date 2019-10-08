@@ -5,26 +5,32 @@ import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
+@Api(value = "用户登陆相关API")
 @Controller
 public class LoginController {
 
 
-    @RequestMapping({"/", "/index"})
+    @RequestMapping(value = {"/", "/index"}, method = {RequestMethod.GET, RequestMethod.POST})
     public String index() {
         return "/index";
     }
 
-    @RequestMapping("/login")
+    @ApiIgnore
+    @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
     public String login(HttpServletRequest request, Map<String, Object> map) {
         String exception = (String) request.getAttribute("shiroLoginFailure");
 
@@ -52,7 +58,8 @@ public class LoginController {
      *
      * @param request
      */
-    @RequestMapping(value = "/verify")
+    @ApiOperation(value = "验证码生成API", notes = "用于生成随机验证码")
+    @RequestMapping(value = "/verify", method = {RequestMethod.GET, RequestMethod.POST})
     public void verifyCode(HttpServletRequest request, HttpServletResponse response) {
         try {
             response.setHeader("Pragma", "No-cache");
@@ -77,12 +84,12 @@ public class LoginController {
         }
     }
 
-    @RequestMapping("/403")
+    @RequestMapping(value = "/403", method = {RequestMethod.GET, RequestMethod.POST})
     public String unauthorizedRole() {
         return "/403";
     }
 
-    @RequestMapping("/jsonTestPage")
+    @RequestMapping(value = "/jsonTestPage", method = {RequestMethod.GET, RequestMethod.POST})
     public String jsonTestPage() {
         return "/jsonTest";
     }

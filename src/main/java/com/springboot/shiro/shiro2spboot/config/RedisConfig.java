@@ -25,7 +25,7 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate(
             RedisConnectionFactory redisConnectionFactory) {
 //        使用FastJsonRedisSerializer来序列化和反序列化redis的value值
-        var fastJsonRedisSerializer = new FastJsonRedisSerializer<Object>(Object.class);
+        var fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
 //        使用StringRedisSerializer来序列化和反序列化redis的key值
         var stringRedisSerializer = new StringRedisSerializer();
 //        亦可使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值

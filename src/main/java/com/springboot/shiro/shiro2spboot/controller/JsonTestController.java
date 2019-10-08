@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.entity.JsonTestEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,14 +12,14 @@ import java.util.List;
 /**
  * 主要说明字符串与json转换的一些方法
  */
-@Controller
+@RestController
 @RequestMapping("/jsonTest")
 public class JsonTestController {
 
     //    设置部分参数
     @PostMapping(value = "/test", produces = "application/json")
 //    设置ResponseBody用于返回json串
-    @ResponseBody
+//    @ResponseBody
 //    设置RequestBody用于接收json串
     public String jsonTest(@RequestBody String jsonStr) {
 

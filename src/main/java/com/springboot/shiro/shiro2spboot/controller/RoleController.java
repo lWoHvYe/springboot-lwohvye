@@ -6,17 +6,11 @@ import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.service.RoleService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-@Controller
+@RestController
 @RequestMapping("/role")
 public class RoleController {
 
@@ -25,15 +19,15 @@ public class RoleController {
 
 
     /**
-    * @Description: 获取角色列表
-    * @Param: [role, pageUtil]
-    * @return: java.lang.String
-    * @Author: Hongyan Wang
-    * @Date: 2019/9/23 17:05
-    */
-    @RequestMapping("/findRole")
+     * @Description: 获取角色列表
+     * @Param: [role, pageUtil]
+     * @return: java.lang.String
+     * @Author: Hongyan Wang
+     * @Date: 2019/9/23 17:05
+     */
+    @RequestMapping(value = "/findRole", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("role:view")
-    @ResponseBody
+//    @ResponseBody
     public String findByRole(String roleName, PageUtil<Role> pageUtil) {
         JSONObject jsonObject = new JSONObject();
         roleService.findRole(roleName, pageUtil);
@@ -43,19 +37,19 @@ public class RoleController {
     }
 
 
-
     /**
      * 添加或修改角色
+     *
      * @param role
      * @param permissionId 权限id，多个id使用逗号分开
      * @return
      */
-    @RequestMapping("/saveRole")
+    @RequestMapping(value = "/saveRole", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("role:add")
-    @ResponseBody
+//    @ResponseBody
     public String saveRole(Role role, String permissionId) {
         JSONObject jsonObject = new JSONObject();
-        roleService.saveRole(role,permissionId);
+        roleService.saveRole(role, permissionId);
         jsonObject.put("result", "success");
         return jsonObject.toJSONString();
     }
@@ -63,12 +57,13 @@ public class RoleController {
 
     /**
      * 删除角色
+     *
      * @param role
      * @return
      */
-    @RequestMapping("/deleteRole")
+    @RequestMapping(value = "/deleteRole", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("role:del")
-    @ResponseBody
+//    @ResponseBody
     public String deleteRole(Role role) {
         JSONObject jsonObject = new JSONObject();
         roleService.deleteRole(role);

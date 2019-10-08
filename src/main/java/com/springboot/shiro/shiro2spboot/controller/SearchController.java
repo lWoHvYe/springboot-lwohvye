@@ -8,10 +8,10 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Controller
+@RestController
 @RequestMapping("/search")
 @Scope("prototype")
 public class SearchController {
@@ -36,8 +36,8 @@ public class SearchController {
      * @param pages
      * @return
      */
-    @RequestMapping("/solrSearch")
-    @ResponseBody
+    @GetMapping("/solrSearch")
+//    @ResponseBody
 //    solr搜索
     @SuppressWarnings("unchecked")
     public String solrSearch(String searchKey, String pages, String limits) {

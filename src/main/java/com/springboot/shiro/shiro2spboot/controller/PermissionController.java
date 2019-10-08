@@ -6,17 +6,11 @@ import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.service.PermissionService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-@Controller
+@RestController
 @RequestMapping("/permission")
 public class PermissionController {
 
@@ -25,15 +19,15 @@ public class PermissionController {
 
 
     /**
-    * @Description: 获取权限列表
-    * @Param: [name, pageUtil]
-    * @return: java.lang.String
-    * @Author: Hongyan Wang
-    * @Date: 2019/9/23 17:28
-    */
-    @RequestMapping("/findPermission")
+     * @Description: 获取权限列表
+     * @Param: [name, pageUtil]
+     * @return: java.lang.String
+     * @Author: Hongyan Wang
+     * @Date: 2019/9/23 17:28
+     */
+    @RequestMapping(value = "/findPermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:view")
-    @ResponseBody
+//    @ResponseBody
     public String findByPermission(String name, PageUtil<Permission> pageUtil) {
         JSONObject jsonObject = new JSONObject();
         permissionService.findPermission(name, pageUtil);
@@ -43,15 +37,15 @@ public class PermissionController {
     }
 
 
-
     /**
      * 添加或修改权限
+     *
      * @param permission
      * @return
      */
-    @RequestMapping("/savePermission")
+    @RequestMapping(value = "/savePermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:add")
-    @ResponseBody
+//    @ResponseBody
     public String savePermission(Permission permission) {
         JSONObject jsonObject = new JSONObject();
         permissionService.savePermission(permission);
@@ -62,12 +56,13 @@ public class PermissionController {
 
     /**
      * 删除权限
+     *
      * @param permission
      * @return
      */
-    @RequestMapping("/deletePermission")
+    @RequestMapping(value = "/deletePermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:del")
-    @ResponseBody
+//    @ResponseBody
     public String deleteRole(Permission permission) {
         JSONObject jsonObject = new JSONObject();
         permissionService.deletePermission(permission);

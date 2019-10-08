@@ -32,6 +32,13 @@ public class ShiroConfig {
         filterMap.put("/static/**", "anon");
 //        配置获取验证码不拦截
         filterMap.put("/verify", "anon");
+//        配置swagger-ui相关不拦截
+        filterMap.put("/swagger-resources","anon");
+        filterMap.put("/v2/api-docs","anon");
+        filterMap.put("/v2/api-docs-ext","anon");
+        filterMap.put("/doc.html","anon");
+        filterMap.put("/webjars/**","anon");
+
 //        配置登出 具体登出已有shiro内部完成
         filterMap.put("/logout", "logout");
 //        过滤器链，从上到下顺序执行，所以需要把/**放在最下面
