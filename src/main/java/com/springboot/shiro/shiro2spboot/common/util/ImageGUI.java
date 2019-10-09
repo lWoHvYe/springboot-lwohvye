@@ -14,7 +14,7 @@ public class ImageGUI extends JComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
+        var g2d = (Graphics2D) g;
         if (image == null) {
             g2d.setPaint(Color.BLACK);
             g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -25,7 +25,7 @@ public class ImageGUI extends JComponent {
     }
 
     public void createWin(String title) {
-        JDialog ui = new JDialog();
+        var ui = new JDialog();
         ui.setTitle(title);
         ui.getContentPane().setLayout(new BorderLayout());
         ui.getContentPane().add(this, BorderLayout.CENTER);
@@ -34,7 +34,7 @@ public class ImageGUI extends JComponent {
     }
 
     public void createWin(String title, Dimension size) {
-        JDialog ui = new JDialog();
+        var ui = new JDialog();
         ui.setTitle(title);
         ui.getContentPane().setLayout(new BorderLayout());
         ui.getContentPane().add(this, BorderLayout.CENTER);

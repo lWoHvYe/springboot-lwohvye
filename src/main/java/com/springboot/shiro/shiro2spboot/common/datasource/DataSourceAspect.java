@@ -35,17 +35,17 @@ public class DataSourceAspect {
 	@Before("declareJointPointExpression()")
 	public void setDataSourceKey(JoinPoint point) {
 //		springboot 2.x版本默认aop代理方式为cglib代理，故可以该方式获取接口实现类上的注解，这点与spring不同
-		MethodSignature signature = (MethodSignature) point.getSignature();
-		Method method = signature.getMethod();
+		var signature = (MethodSignature) point.getSignature();
+		var method = signature.getMethod();
 //		获取注解
-		dataSource annotation = method.getAnnotation(dataSource.class);
+		var annotation = method.getAnnotation(dataSource.class);
 //		方法上无注解时去类上获取
 		if (annotation==null){
 			annotation=point.getTarget().getClass().getAnnotation(dataSource.class);
 			if (annotation==null)
 				return;
 		}
-		DatabaseType dataSourceName = annotation.value();
+		var dataSourceName = annotation.value();
 			DynamicDataSource.setDatabaseType(dataSourceName);
 
 	}

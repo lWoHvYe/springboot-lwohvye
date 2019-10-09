@@ -25,9 +25,9 @@ public class ShiroConfig {
     //    Filter工厂，设置对应的过滤条件和跳转条件
     @Bean
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
-        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+        var shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        Map<String, String> filterMap = new LinkedHashMap<>();
+        var filterMap = new LinkedHashMap<String, String>();
 //        配置不会被拦截的链接 顺序判断
         filterMap.put("/static/**", "anon");
 //        配置获取验证码不拦截
@@ -53,7 +53,7 @@ public class ShiroConfig {
 //        set filter role
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
 
-        Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
+        var filters = shiroFilterFactoryBean.getFilters();
         filters.put("authc", new CaptchaFormAuthenticationFilter());
 
         return shiroFilterFactoryBean;
@@ -67,7 +67,7 @@ public class ShiroConfig {
      */
     @Bean
     public HashedCredentialsMatcher hashedCredentialsMatcher() {
-        HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
+        var credentialsMatcher = new HashedCredentialsMatcher();
         credentialsMatcher.setHashAlgorithmName("md5");//散列算法，这里使用md5算法
         credentialsMatcher.setHashIterations(2);//散列次数
         return credentialsMatcher;
@@ -76,7 +76,7 @@ public class ShiroConfig {
     //    加入自定义Realm
     @Bean
     public MyShiroRealm myShiroRealm() {
-        MyShiroRealm shiroRealm = new MyShiroRealm();
+        var shiroRealm = new MyShiroRealm();
         shiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
         return shiroRealm;
     }
@@ -84,7 +84,7 @@ public class ShiroConfig {
     //    配置Realm管理认证,返回类型建议设置为SessionsSecurityManager，需注意
     @Bean
     public SessionsSecurityManager securityManager() {
-        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        var securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(myShiroRealm());
         return securityManager;
     }
@@ -97,7 +97,7 @@ public class ShiroConfig {
      */
     @Bean
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
-        AuthorizationAttributeSourceAdvisor attributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        var attributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
         attributeSourceAdvisor.setSecurityManager(securityManager);
         return attributeSourceAdvisor;
     }
@@ -109,8 +109,8 @@ public class ShiroConfig {
      */
     @Bean
     public SimpleMappingExceptionResolver simpleMappingExceptionResolver() {
-        SimpleMappingExceptionResolver mappingExceptionResolver = new SimpleMappingExceptionResolver();
-        Properties mappings = new Properties();
+        var mappingExceptionResolver = new SimpleMappingExceptionResolver();
+        var mappings = new Properties();
         mappings.setProperty("DatabaseException", "databaseError");//数据库异常处理
         mappings.setProperty("UnauthorizedException", "403");
         mappingExceptionResolver.setExceptionMappings(mappings);
@@ -121,7 +121,7 @@ public class ShiroConfig {
 
     @Bean
     public static DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator() {
-        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+        var defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
         /**
          * setUsePrefix(true)用于解决一个奇怪的bug。在引入spring aop的情况下。
          * 在@Controller注解的类的方法中加入@RequiresRole等shiro注解，会导致该方法无法映射请求，导致返回404。

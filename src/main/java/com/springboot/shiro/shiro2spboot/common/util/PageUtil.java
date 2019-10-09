@@ -121,7 +121,7 @@ public class PageUtil<T> {
             pageable = PageRequest.of(currentPage-1, pageSize);
         } else {
 //        创建sort,使用静态方法创建
-            Sort sort = Sort.by(Sort.Direction.DESC, order);
+            var sort = Sort.by(Sort.Direction.DESC, order);
 //        Sort.Order.by(order);
 //        创建pageable,传入页码、每页记录数和排序字段
             pageable = PageRequest.of(currentPage-1, pageSize, sort);

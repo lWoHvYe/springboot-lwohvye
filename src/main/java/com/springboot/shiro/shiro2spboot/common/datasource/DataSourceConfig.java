@@ -17,6 +17,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 
@@ -42,7 +43,7 @@ public class DataSourceConfig {
     @Bean
     @Primary
     public DataSource mysqlDataSource() throws Exception {
-        Properties props = new Properties();
+        var props = new Properties();
         props.put("driverClassName", env.getProperty("spring.datasource.druid.mysql.driver-class-name"));
         props.put("url", env.getProperty("spring.datasource.druid.mysql.url"));
         props.put("username", env.getProperty("spring.datasource.druid.mysql.username"));
@@ -52,7 +53,7 @@ public class DataSourceConfig {
 
     @Bean
     public DataSource oracleDataSource() throws Exception {
-        Properties props = new Properties();
+        var props = new Properties();
         props.put("driverClassName", env.getProperty("spring.datasource.druid.oracle.driver-class-name"));
         props.put("url", env.getProperty("spring.datasource.druid.oracle.url"));
         props.put("username", env.getProperty("spring.datasource.druid.oracle.username"));
@@ -68,11 +69,11 @@ public class DataSourceConfig {
     public DynamicDataSource dataSource(
             @Qualifier("mysqlDataSource") DataSource mysqlDataSource,
             @Qualifier("oracleDataSource") DataSource oracleDataSource) {
-        Map<Object, Object> targetDataSources = new HashMap<>();
+        var targetDataSources = new HashMap<>();
         targetDataSources.put(DatabaseType.MYSQL, mysqlDataSource);
         targetDataSources.put(DatabaseType.ORACLE, oracleDataSource);
 
-        DynamicDataSource dataSource = new DynamicDataSource();
+        var dataSource = new DynamicDataSource();
         dataSource.setTargetDataSources(targetDataSources);// 该方法是AbstractRoutingDataSource的方法
         dataSource.setDefaultTargetDataSource(mysqlDataSource);// 默认的DataSource设置为oracleDataSource
 
@@ -102,22 +103,22 @@ public class DataSourceConfig {
     public SqlSessionFactory sqlSessionFactory(
             @Qualifier("mysqlDataSource") DataSource mysqlDataSource,
             @Qualifier("oracleDataSource") DataSource oracleDataSource) throws Exception {
-        SqlSessionFactoryBean fb = new SqlSessionFactoryBean();
+        var factoryBean = new SqlSessionFactoryBean();
 //		fb.setDataSource(ds);// 指定数据源(这个必须有，否则报错)
-        fb.setDataSource(this.dataSource(
+        factoryBean.setDataSource(this.dataSource(
                 mysqlDataSource,
                 oracleDataSource));//解决上面配置产生的数据源循环依赖的问题
         // 下边两句仅仅用于*.xml文件，如果整个持久层操作不需要使用到xml文件的话（只用注解就可以搞定），则不加
-        fb.setTypeAliasesPackage(env.getProperty("mybatis.type-aliases-package"));// 指定基包
+        factoryBean.setTypeAliasesPackage(env.getProperty("mybatis.type-aliases-package"));// 指定基包
         //配置mybatis返回Map是值为空时显示key
         org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
         configuration.setCallSettersOnNulls(true);
-        fb.setConfiguration(configuration);
-        fb.setMapperLocations(
-                new PathMatchingResourcePatternResolver().getResources(env.getProperty("mybatis.mapper-locations")));
+        factoryBean.setConfiguration(configuration);
+        factoryBean.setMapperLocations(
+                new PathMatchingResourcePatternResolver().getResources(Objects.requireNonNull(env.getProperty("mybatis.mapper-locations"))));
 //        配置数据库下划线转驼峰命名
-        fb.getObject().getConfiguration().setMapUnderscoreToCamelCase(true);
-        return fb.getObject();
+        Objects.requireNonNull(factoryBean.getObject()).getConfiguration().setMapUnderscoreToCamelCase(true);
+        return factoryBean.getObject();
     }
 
     /**

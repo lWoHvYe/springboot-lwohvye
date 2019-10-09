@@ -94,8 +94,6 @@ public class AnotherFutureSample {
         for (int i = 0; i < threadCount; i++) {
 //            创建模拟线程
             CompletableFuture<Map<String, Integer>> future = CompletableFuture.supplyAsync(simCallable::call);
-//            获取线程的返回结果
-            resultList.add(future.get());
 //            将线程放入线程数组
             futuresArray[i] = future;
         }
@@ -104,6 +102,11 @@ public class AnotherFutureSample {
         CompletableFuture<Void> result = CompletableFuture.allOf(futuresArray);
 //        等待线程完成
         result.join();
+
+//        获取各子线程模拟结果
+        for (int j = 0; j < threadCount; j++) {
+            resultList.add(futuresArray[j].get());
+        }
 
 //        总模拟次数
         int totalCount = 0;

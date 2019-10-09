@@ -21,10 +21,10 @@ public class DateTimeUtil {
      */
     public static String getCurFormatTime() {
 //      获取本时区当前时间
-        ZonedDateTime now = Instant.now().atZone(ZoneId.of(AREA_NAME));
+        var now = Instant.now().atZone(ZoneId.of(AREA_NAME));
 //      获取格式化时间
-        LocalDateTime localDateTime = now.toLocalDateTime();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        var localDateTime = now.toLocalDateTime();
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return localDateTime.format(formatter);
     }
 
@@ -35,10 +35,10 @@ public class DateTimeUtil {
      */
     public static String getCurFormatDate() {
 //      获取本时区当前时间
-        ZonedDateTime now = Instant.now().atZone(ZoneId.of(AREA_NAME));
+        var now = Instant.now().atZone(ZoneId.of(AREA_NAME));
 //      获取格式化时间
-        LocalDateTime localDateTime = now.toLocalDateTime();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        var localDateTime = now.toLocalDateTime();
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return localDateTime.format(formatter);
     }
 
@@ -98,10 +98,10 @@ public class DateTimeUtil {
      * @return
      */
     public static String formatMillis(long milli) {
-        Instant instant = Instant.ofEpochMilli(milli);
-        ZoneId zoneId = ZoneId.of(AREA_NAME);
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zoneId);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        var instant = Instant.ofEpochMilli(milli);
+        var zoneId = ZoneId.of(AREA_NAME);
+        var localDateTime = LocalDateTime.ofInstant(instant, zoneId);
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return localDateTime.format(formatter);
     }
 }

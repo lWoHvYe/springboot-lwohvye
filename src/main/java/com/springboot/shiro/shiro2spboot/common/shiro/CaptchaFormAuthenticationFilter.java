@@ -17,11 +17,11 @@ public class CaptchaFormAuthenticationFilter extends FormAuthenticationFilter {
     @Override
     protected AuthenticationToken createToken(String username, String password, ServletRequest request, ServletResponse response) {
         // 获取登录请求中用户输入的验证码
-        String captchaCode = request.getParameter("captchaCode");
+        var captchaCode = request.getParameter("captchaCode");
         // 从父类获取是否设置remeberMe
-        boolean rememberMe = super.isRememberMe(request);
+        var rememberMe = super.isRememberMe(request);
         // 从父类获取host
-        String host = super.getHost(request);
+        var host = super.getHost(request);
         // 返回带验证码的Token,Token会被传入Realm, 在Realm中可以取得验证码
         return new CaptchaToken(username, password, captchaCode,rememberMe,host);
     }
