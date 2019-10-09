@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+
 @Api(value = "用户相关操作API")
 @RestController
 @RequestMapping("/user")
@@ -87,7 +89,7 @@ public class UserController {
     @RequestMapping(value = "/saveUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:add")
 //    @ResponseBody
-    public String saveUser(User user, String roleId) {
+    public String saveUser(@Valid User user, String roleId) {
         JSONObject jsonObject = new JSONObject();
         userService.saveUser(user, roleId);
         jsonObject.put("result", "success");

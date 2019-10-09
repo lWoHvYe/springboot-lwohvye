@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 @Getter
@@ -19,10 +20,13 @@ public class User implements Serializable {
     @GeneratedValue
     private Long uid;
     @Column(unique = true)
+//    限制字段不可为空
+    @NotBlank(message = "用户名不可为空")
     private String username;
     private String name;//昵称
     //    从json串中移除密码和盐
     @JSONField(serialize = false)
+    @NotBlank(message = "密码不可为空")
     private String password;
     @JSONField(serialize = false)
     private String salt;//加密密码的盐

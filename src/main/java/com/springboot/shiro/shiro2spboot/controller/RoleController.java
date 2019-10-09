@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/role")
 public class RoleController {
@@ -47,7 +49,7 @@ public class RoleController {
     @RequestMapping(value = "/saveRole", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("role:add")
 //    @ResponseBody
-    public String saveRole(Role role, String permissionId) {
+    public String saveRole(@Valid Role role, String permissionId) {
         JSONObject jsonObject = new JSONObject();
         roleService.saveRole(role, permissionId);
         jsonObject.put("result", "success");

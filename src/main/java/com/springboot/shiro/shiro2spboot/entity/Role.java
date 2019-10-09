@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,6 +20,8 @@ public class Role implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
+    @Column(unique = true)
+    @NotBlank(message = "角色名不可为空")
     private String roleName;
     private String description;//角色描述
     private Boolean available = Boolean.FALSE;//是否可用

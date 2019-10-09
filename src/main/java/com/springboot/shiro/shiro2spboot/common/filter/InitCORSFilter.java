@@ -1,5 +1,6 @@
 package com.springboot.shiro.shiro2spboot.common.filter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,10 +17,12 @@ import java.io.IOException;
  *
  */
 @Component
+//使用lombok的该注解代替变量的生成
+@Slf4j
 public class InitCORSFilter extends OncePerRequestFilter {
-  private Logger logger4j = LoggerFactory.getLogger(InitCORSFilter.class);
+//  private Logger log = LoggerFactory.getLogger(InitCORSFilter.class);
   public InitCORSFilter() {
-    logger4j.info("==== 初始化系统允许跨域请求 ====");
+    log.info("==== 初始化系统允许跨域请求 ====");
   }
   /**
    * 解决跨域：Access-Control-Allow-Origin，值为*表示服务器端允许任意Domain访问请求

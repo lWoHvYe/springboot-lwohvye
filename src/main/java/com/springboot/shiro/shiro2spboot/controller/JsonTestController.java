@@ -5,8 +5,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.entity.JsonTestEntity;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import lombok.NonNull;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -21,6 +25,8 @@ public class JsonTestController {
 //    设置ResponseBody用于返回json串
 //    @ResponseBody
 //    设置RequestBody用于接收json串
+    @ApiOperation(value = "接收json串，并进行解析", notes = "需要前台传入json串，后台进行解析后返回")
+    @ApiImplicitParam(name = "jsonStr", value = "待解析json串", required = true, dataType = "String")
     public String jsonTest(@RequestBody String jsonStr) {
 
         String result = jsonStr

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/permission")
 public class PermissionController {
@@ -46,7 +48,7 @@ public class PermissionController {
     @RequestMapping(value = "/savePermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:add")
 //    @ResponseBody
-    public String savePermission(Permission permission) {
+    public String savePermission(@Valid Permission permission) {
         JSONObject jsonObject = new JSONObject();
         permissionService.savePermission(permission);
         jsonObject.put("result", "success");
