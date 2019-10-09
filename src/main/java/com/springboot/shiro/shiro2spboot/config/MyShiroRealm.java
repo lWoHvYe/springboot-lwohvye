@@ -22,6 +22,8 @@ import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 //实现AuthorizingRealm接口用户认证
 public class MyShiroRealm extends AuthorizingRealm {
 
@@ -37,17 +39,17 @@ public class MyShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 //        获取用户信息
-        User user = (User) principalCollection.getPrimaryPrincipal();
+        var user = (User) principalCollection.getPrimaryPrincipal();
 //        添加角色和权限
-        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        for (Role role : user.getRoles()) {
+        var authorizationInfo = new SimpleAuthorizationInfo();
+        var role = user.getRoles();
 //            添加角色
-            authorizationInfo.addRole(role.getRoleName());
-            for (Permission permission : role.getPermissions()) {
+        authorizationInfo.addRole(role.getRoleName());
+        for (var permission : role.getPermissions()) {
 //                添加权限
-                authorizationInfo.addStringPermission(permission.getPermissionStr());
-            }
+            authorizationInfo.addStringPermission(permission.getPermissionStr());
         }
+
         return authorizationInfo;
     }
 
@@ -63,25 +65,25 @@ public class MyShiroRealm extends AuthorizingRealm {
 //        Post请求先进行认证，再到请求
         if (authenticationToken.getPrincipal() != null) {
 //            转为CaptchaToken
-            CaptchaToken captchaToken = (CaptchaToken) authenticationToken;
+            var captchaToken = (CaptchaToken) authenticationToken;
 //            获取页面输入的验证码
-            String captchaCode = captchaToken.getCaptchaCode();
+            var captchaCode = captchaToken.getCaptchaCode();
 //            验证码为空，抛出相应异常
             if (StringUtils.isEmpty(captchaCode))
                 throw new CaptchaEmptyException();
 
             // 从session获取正确的验证码
-            Session session = SecurityUtils.getSubject().getSession();
-            String sessionCaptchaCode = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
+            var session = SecurityUtils.getSubject().getSession();
+            var sessionCaptchaCode = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
 
 //            验证码错误，抛出相应异常
             if (!captchaCode.equalsIgnoreCase(sessionCaptchaCode))
                 throw new CaptchaErrorException();
 
 //          获取用户名
-            String username = (String) authenticationToken.getPrincipal();
+            var username = (String) authenticationToken.getPrincipal();
 //            根据用户名获取用户信息
-            User user = userService.findByUsername(username);
+            var user = userService.findByUsername(username);
             if (user != null) {
 //                验证authenticationToken和authenticationInfo信息
                 return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()), getName());

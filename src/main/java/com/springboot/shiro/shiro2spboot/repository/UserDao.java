@@ -16,7 +16,7 @@ public interface UserDao extends CrudRepository<User, Long> {
     //     使用sql语句查询时，需要设置nativeQuery=true
     //     IF(条件，真执行，假执行)
     @Query(nativeQuery = true,
-            value = "SELECT uid,name,password,salt,state,username FROM user " +
+            value = "SELECT uid,name,password,salt,state,username,role_id FROM user " +
                     "where IF(:username is not null,username LIKE CONCAT('%',:username,'%'),1=1 ) ",
             countQuery = "select count(1) from user " +
                     " where IF(:username is not null,username LIKE CONCAT('%',:username,'%'),1 = 1 ) ")

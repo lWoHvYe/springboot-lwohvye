@@ -33,6 +33,12 @@ public class UserServiceImpl implements UserService {
 //        return pageUtil;
     }
 
+    /**
+     * 授权
+     *
+     * @param user
+     * @param roleId
+     */
     @Override
     public void saveUser(User user, String roleId) {
 //        页面传密码时，放进行密码相关操作
@@ -50,7 +56,9 @@ public class UserServiceImpl implements UserService {
         }
 //        页面传的角色Id不为空时进行保存
         if (!StringUtils.isEmpty(roleId)) {
-            saveRoleId(user, roleId);
+            Role role = new Role();
+            role.setId(Long.parseLong(roleId));
+            user.setRoles(role);
         }
         userDao.save(user);
     }
@@ -58,29 +66,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(User user) {
         userDao.delete(user);
-    }
-
-    /**
-     * 授权,为user添加对应的roles集合后，框架会自动先将user_role表中uid为相关的全删除，
-     * 再将集合中的role_id插入表中
-     *
-     * @param user
-     * @param roleId
-     */
-    private void saveRoleId(User user, String roleId) {
-        List<Role> roles = new ArrayList<>();
-        if (roleId.contains(",")) {
-            String[] roleIdArray = roleId.split(",");
-            for (String id : roleIdArray) {
-                Role role = new Role();
-                role.setId(Long.parseLong(id));
-                roles.add(role);
-            }
-        } else {
-            Role role = new Role();
-            role.setId(Long.parseLong(roleId));
-            roles.add(role);
-        }
-        user.setRoles(roles);
     }
 }

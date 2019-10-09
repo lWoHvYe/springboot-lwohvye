@@ -44,7 +44,7 @@ public class UserController {
      */
     @ApiOperation(value = "获取用户列表", notes = "获取用户列表，可以通过用户名模糊查询，包含PageUtil分页")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "username", value = "用户名称", dataType = "String", paramType = "path"),
+            @ApiImplicitParam(name = "username", value = "用户名称", dataType = "String"),
             @ApiImplicitParam(name = "pageUtil", value = "分页相关实体类", dataType = "PageUtil")
     })
     @RequestMapping(value = "/findUser", method = {RequestMethod.GET, RequestMethod.POST})
