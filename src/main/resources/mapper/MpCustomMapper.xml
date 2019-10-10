@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springboot.shiro.shiro2spboot.dao.MpCustomMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="customId" keyColumn="custom_id" parameterType="com.springboot.shiro.shiro2spboot.entity.MpCustomEntity">
+        insert into mp_custom(
+        custom_name,
+        <if test="fullName != null and fullName != ''">
+            full_name,
+        </if>
+        <if test="address != null and address != ''">
+            address,
+        </if>
+        <if test="email != null and email != ''">
+            email,
+        </if>
+        owner_name,
+        <if test="ownerTel != null and ownerTel != ''">
+            owner_tel,
+        </if>
+        status,
+        <if test="note != null and note != ''">
+            note
+        </if>
+        ) value (
+        #{customName},
+        <if test="fullName != null and fullName != ''">
+            #{fullName},
+        </if>
+        <if test="address != null and address != ''">
+            #{address},
+        </if>
+        <if test="email != null and email != ''">
+            #{email},
+        </if>
+        #{ownerName},
+        <if test="ownerTel != null and ownerTel != ''">
+            #{ownerTel},
+        </if>
+        #{status},
+        <if test="note != null and note != ''">
+            #{note}
+        </if>
+        )
+    </insert>
+    <update id="update" parameterType="com.springboot.shiro.shiro2spboot.entity.MpCustomEntity">
+        update mp_custom
+        <set>
+            <if test="customName != null and customName != ''">
+                custom_name = #{customName},
+            </if>
+            <if test="fullName != null and fullName != ''">
+                full_name = #{fullName},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="ownerName != null and ownerName != ''">
+                owner_name = #{ownerName},
+            </if>
+            <if test="ownerTel != null and ownerTel != ''">
+                ownerTel = #{ownerTel},
+            </if>
+            status = #{status},
+            <if test="note != null and note != ''">
+                note = #{note},
+            </if>
+        </set>
+        where custom_id = #{customId}
+    </update>
+    <delete id="delete" parameterType="int">
+        delete from mp_custom where custom_id = #{customId}
+    </delete>
+    <select id="list" resultType="com.springboot.shiro.shiro2spboot.entity.MpCustomEntity">
+        select * from mp_custom
+    </select>
+    <select id="searchById" resultType="com.springboot.shiro.shiro2spboot.entity.MpCustomEntity"
+            parameterType="int">
+        select * from mp_custom where custom_id = #{customId}
+    </select>
+</mapper>
