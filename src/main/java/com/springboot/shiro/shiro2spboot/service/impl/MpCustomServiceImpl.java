@@ -46,7 +46,6 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 17:10
      */
-    //TODO 暂时未找到在添加数据时，将其放入缓存的方式（需要包含id参数）
     @Caching(evict = {@CacheEvict(key = "'mpCustomList'", beforeInvocation = true)},
             put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId")}
     )
@@ -76,11 +75,12 @@ public class MpCustomServiceImpl implements MpCustomService {
     /**
      * @return com.springboot.shiro.shiro2spboot.entity.MpCustomEntity
      * @description 根据id查询客户信息，使用缓存，key为默认生成策略生成 完整类名 + 方法名 + 参数值
+     * 因为空数据不应放入缓存，故使用unless属性进行排除，当判断为true时，不缓存
      * @params [customId]
      * @author Hongyan Wang
      * @date 2019/10/10 16:31
      */
-    @Cacheable
+    @Cacheable(unless = "#result == null")
     @Override
     public MpCustomEntity searchById(int customId) {
         return mpCustomMapper.searchById(customId);
