@@ -3,13 +3,18 @@ package com.springboot.shiro.shiro2spboot.controller;
 import com.google.code.kaptcha.Constants;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
+import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaToken;
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import springfox.documentation.annotations.ApiIgnore;
@@ -31,10 +36,18 @@ public class LoginController {
 
     @ApiIgnore
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
-    public String login(HttpServletRequest request, Map<String, Object> map) {
-        String exception = (String) request.getAttribute("shiroLoginFailure");
+    public String login(String username, String password, String captchaCode, Map<String, Object> map) {
+        String exception = null;
 
-        String msg = "";
+        try {
+            var usernamePasswordToken = new CaptchaToken(username, password, captchaCode, false, "localhost");
+            var subject = SecurityUtils.getSubject();
+            subject.login(usernamePasswordToken);
+        } catch (AuthenticationException e) {
+            exception = e.getClass().getName();
+        }
+
+        String msg = "登陆成功";
         if (exception != null) {
             if (UnknownAccountException.class.getName().equals(exception)) {
                 msg = "UnknownAccountException --> 账号不存在";
@@ -47,10 +60,11 @@ public class LoginController {
             } else {
                 msg = "else --> " + exception;
             }
-
+            map.put("msg", msg);
+            return "/login";
         }
         map.put("msg", msg);
-        return "/login";
+        return "/index";
     }
 
     /**
@@ -88,6 +102,12 @@ public class LoginController {
     public String unauthorizedRole() {
         return "/403";
     }
+
+    @RequestMapping(value = "/kickout", method = {RequestMethod.GET, RequestMethod.POST})
+    public String kickout() {
+        return "/kickout";
+    }
+
 
     @RequestMapping(value = "/jsonTestPage", method = {RequestMethod.GET, RequestMethod.POST})
     public String jsonTestPage() {

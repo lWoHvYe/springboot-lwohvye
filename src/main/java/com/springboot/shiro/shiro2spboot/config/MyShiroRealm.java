@@ -4,10 +4,9 @@ import com.google.code.kaptcha.Constants;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaToken;
-import com.springboot.shiro.shiro2spboot.entity.Permission;
-import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import com.springboot.shiro.shiro2spboot.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -16,49 +15,50 @@ import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-
 //实现AuthorizingRealm接口用户认证
+@Slf4j
 public class MyShiroRealm extends AuthorizingRealm {
 
     @Autowired
     private UserService userService;
 
     /**
-     * 角色权限和对应权限添加
-     *
-     * @param principalCollection
-     * @return
+     * @return org.apache.shiro.authz.AuthorizationInfo
+     * @description 用户授权
+     * @params [principalCollection]
+     * @author Hongyan Wang
+     * @date 2019/10/12 16:26
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 //        获取用户信息
-        var user = (User) principalCollection.getPrimaryPrincipal();
+        var primaryPrincipal = principalCollection.getPrimaryPrincipal();
 //        添加角色和权限
         var authorizationInfo = new SimpleAuthorizationInfo();
-        var role = user.getRoles();
+        if (primaryPrincipal instanceof User) {
+            var user = (User) primaryPrincipal;
+            var role = user.getRoles();
 //            添加角色
-        authorizationInfo.addRole(role.getRoleName());
-        for (var permission : role.getPermissions()) {
+            authorizationInfo.addRole(role.getRoleName());
+            for (var permission : role.getPermissions()) {
 //                添加权限
-            authorizationInfo.addStringPermission(permission.getPermissionStr());
+                authorizationInfo.addStringPermission(permission.getPermissionStr());
+            }
         }
-
+        log.info("授权 ：Shiro认证成功");
         return authorizationInfo;
     }
 
     /**
-     * 用户认证
-     *
      * @param authenticationToken
      * @return
      * @throws AuthenticationException
+     * @description 身份认证
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) {
@@ -85,10 +85,10 @@ public class MyShiroRealm extends AuthorizingRealm {
 //            根据用户名获取用户信息
             var user = userService.findByUsername(username);
             if (user != null) {
+                log.info("认证 ：Shiro认证成功");
 //                验证authenticationToken和authenticationInfo信息
                 return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()), getName());
             }
-
         }
         return null;
     }

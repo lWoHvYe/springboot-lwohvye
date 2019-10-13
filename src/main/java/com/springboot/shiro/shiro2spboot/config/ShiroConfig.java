@@ -1,12 +1,18 @@
 package com.springboot.shiro.shiro2spboot.config;
 
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaFormAuthenticationFilter;
+import com.springboot.shiro.shiro2spboot.common.shiro.KickoutSessionControlFilter;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SessionsSecurityManager;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,86 +20,229 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
- * shiro过滤配置
+ * @author Hongyan Wang
+ * @packageName com.springboot.shiro.shiro2spboot.config
+ * @className ShiroConfig
+ * @description Shiro相关配置类，替代原xml配置方式
+ * @date 2019/05/12 12:21
  */
 @Configuration
 public class ShiroConfig {
-    //    Filter工厂，设置对应的过滤条件和跳转条件
+
+    /**
+     * @return org.apache.shiro.spring.web.ShiroFilterFactoryBean
+     * @description Filter工厂，配置对应的过滤及跳转条件
+     * @params [securityManager]
+     * @author Hongyan Wang
+     * @date 2019/10/12 14:55
+     */
     @Bean
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
         var shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-        shiroFilterFactoryBean.setSecurityManager(securityManager);
-        var filterMap = new LinkedHashMap<String, String>();
-//        配置不会被拦截的链接 顺序判断
-        filterMap.put("/static/**", "anon");
-//        配置获取验证码不拦截
-        filterMap.put("/verify", "anon");
-//        配置swagger-ui相关不拦截
-        filterMap.put("/swagger-resources","anon");
-        filterMap.put("/v2/api-docs","anon");
-        filterMap.put("/v2/api-docs-ext","anon");
-        filterMap.put("/doc.html","anon");
-        filterMap.put("/webjars/**","anon");
 
-//        配置登出 具体登出已有shiro内部完成
-        filterMap.put("/logout", "logout");
-//        过滤器链，从上到下顺序执行，所以需要把/**放在最下面
-//        authc:所有url都必须认证通过才可访问,anon所有url都可以匿名访问
-        filterMap.put("/**", "authc");
+        shiroFilterFactoryBean.setSecurityManager(securityManager);
+
 //        登陆页
         shiroFilterFactoryBean.setLoginUrl("/login");
 //        首页
         shiroFilterFactoryBean.setSuccessUrl("/index");
 //        错误页面
-        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
-//        set filter role
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
+//        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 
-        var filters = shiroFilterFactoryBean.getFilters();
-        filters.put("authc", new CaptchaFormAuthenticationFilter());
+//        自定义过滤器集，注意设置的顺序
+        var filtersMap = new LinkedHashMap<String, Filter>();
+//        配置验证码过滤
+        filtersMap.put("authc", new CaptchaFormAuthenticationFilter());
+//        配置并发登陆过滤器
+        filtersMap.put("kickout", kickoutSessionControlFilter());
+        shiroFilterFactoryBean.setFilters(filtersMap);
+
+//        权限控制map
+        var filterChainDefinitionMap = new LinkedHashMap<String, String>();
+//        配置不会被拦截的链接 顺序判断
+        filterChainDefinitionMap.put("/static/**", "anon");
+//        配置获取验证码不拦截
+        filterChainDefinitionMap.put("/verify", "anon");
+//        配置swagger-ui相关不拦截
+        filterChainDefinitionMap.put("/swagger-resources", "anon");
+        filterChainDefinitionMap.put("/v2/api-docs", "anon");
+        filterChainDefinitionMap.put("/v2/api-docs-ext", "anon");
+        filterChainDefinitionMap.put("/doc.html", "anon");
+        filterChainDefinitionMap.put("/webjars/**", "anon");
+//        配置登出 具体登出已有shiro内部完成
+        filterChainDefinitionMap.put("/logout", "logout");
+        filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/kickout", "anon");
+//        过滤器链，从上到下顺序执行，所以需要把/**放在最下面
+//        authc:所有url都必须认证通过才可访问,anon所有url都可以匿名访问,kickout为自定义单点登陆
+        filterChainDefinitionMap.put("/**", "authc,kickout");
+//        配置过滤器链
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
         return shiroFilterFactoryBean;
 
     }
 
     /**
-     * 凭证匹配器
-     *
-     * @return
+     * @return org.apache.shiro.mgt.SessionsSecurityManager
+     * @description 配置Realm管理认证, 返回类型建议设置为SessionsSecurityManager，需注意
+     * @params []
+     * @author Hongyan Wang
+     * @date 2019/10/12 14:54
      */
-    @Bean
-    public HashedCredentialsMatcher hashedCredentialsMatcher() {
-        var credentialsMatcher = new HashedCredentialsMatcher();
-        credentialsMatcher.setHashAlgorithmName("md5");//散列算法，这里使用md5算法
-        credentialsMatcher.setHashIterations(2);//散列次数
-        return credentialsMatcher;
-    }
-
-    //    加入自定义Realm
-    @Bean
-    public MyShiroRealm myShiroRealm() {
-        var shiroRealm = new MyShiroRealm();
-        shiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
-        return shiroRealm;
-    }
-
-    //    配置Realm管理认证,返回类型建议设置为SessionsSecurityManager，需注意
     @Bean
     public SessionsSecurityManager securityManager() {
         var securityManager = new DefaultWebSecurityManager();
+//        配置自定义身份认证realm
         securityManager.setRealm(myShiroRealm());
+//        配置自定义缓存实现cacheManager，使用redis
+        securityManager.setCacheManager(cacheManagers());
+//        配置自定义session管理
+        securityManager.setSessionManager(sessionManager());
+
         return securityManager;
     }
 
     /**
-     * 开启shiro aop注解支持
-     *
-     * @param securityManager
-     * @return
+     * @return com.springboot.shiro.shiro2spboot.config.MyShiroRealm
+     * @description 身份认证realm
+     * @params []
+     * @author Hongyan Wang
+     * @date 2019/10/12 14:53
+     */
+    @Bean
+    public MyShiroRealm myShiroRealm() {
+        var shiroRealm = new MyShiroRealm();
+//        配置凭证匹配器
+        shiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+
+        return shiroRealm;
+    }
+
+    /**
+     * @description 自定义凭证匹配器
+     * @params []
+     * @return org.apache.shiro.authc.credential.HashedCredentialsMatcher
+     * @author Hongyan Wang
+     * @date 2019/10/12 15:06
+     */
+    @Bean
+    public HashedCredentialsMatcher hashedCredentialsMatcher() {
+        var credentialsMatcher = new HashedCredentialsMatcher();
+//        散列算法，这里使用md5算法
+        credentialsMatcher.setHashAlgorithmName("md5");
+//        散列次数
+        credentialsMatcher.setHashIterations(2);
+
+        return credentialsMatcher;
+    }
+
+    /**
+     * @return org.crazycake.shiro.RedisCacheManager
+     * @description 自定义缓存管理器
+     * @params []
+     * @author Hongyan Wang
+     * @date 2019/10/12 15:02
+     */
+    @Bean
+    public RedisCacheManager cacheManagers() {
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+//        配置redis管理器
+        redisCacheManager.setRedisManager(redisManager());
+//        配置缓存过期时间，只是认证相关的缓存
+        redisCacheManager.setExpire(1200);
+//        设置缓存字段的唯一标识，一般是主键
+        redisCacheManager.setPrincipalIdFieldName("uid");
+
+        return redisCacheManager;
+    }
+
+    /**
+     * @description 自定义redis配置类
+     * @params []
+     * @return org.crazycake.shiro.RedisManager
+     * @author Hongyan Wang
+     * @date 2019/10/12 15:28
+     */
+    @Bean
+    public RedisManager redisManager(){
+        var redisManager = new RedisManager();
+//        配置redis主机地址 ip:port
+        redisManager.setHost("192.168.0.145:6379");
+//        配置redis连接密码
+        redisManager.setPassword("redis");
+//        配置连接超时
+        redisManager.setTimeout(1200);
+
+        return redisManager;
+    }
+
+    /**
+     * @return org.apache.shiro.web.session.mgt.DefaultWebSessionManager
+     * @description 自定义session管理器
+     * @params []
+     * @author Hongyan Wang
+     * @date 2019/10/12 15:05
+     */
+    @Bean
+    public DefaultWebSessionManager sessionManager() {
+        var webSessionManager = new DefaultWebSessionManager();
+//        设置session数据层实现，这里使用redis的
+        webSessionManager.setSessionDAO(redisSessionDAO());
+
+        return webSessionManager;
+    }
+
+    /**
+     * @description RedisSessionDAO是对redis-session Dao层的相关实现，可以设置相关属性
+     * @params []
+     * @return org.crazycake.shiro.RedisSessionDAO
+     * @author Hongyan Wang
+     * @date 2019/10/12 15:36
+     */
+    @Bean
+    public RedisSessionDAO redisSessionDAO(){
+        var sessionDAO = new RedisSessionDAO();
+//        设置redis属性
+        sessionDAO.setRedisManager(redisManager());
+//        设置缓存过期时间
+        sessionDAO.setExpire(2000);
+
+        return sessionDAO;
+    }
+
+    /**
+     * @return com.springboot.shiro.shiro2spboot.common.shiro.KickoutSessionControlFilter
+     * @description 并发登陆控制
+     * @params []
+     * @author Hongyan Wang
+     * @date 2019/10/12 14:37
+     */
+    @Bean
+    public KickoutSessionControlFilter kickoutSessionControlFilter() {
+        var kickoutSessionControlFilter = new KickoutSessionControlFilter();
+//        设置相关属性
+        kickoutSessionControlFilter.setCacheManager(cacheManagers());
+        kickoutSessionControlFilter.setSessionManager(sessionManager());
+//        false表示踢出前面登陆的用户
+        kickoutSessionControlFilter.setKickoutAfter(false);
+//        设置并发登陆数
+        kickoutSessionControlFilter.setMaxSession(1);
+//        设置踢出提示页
+        kickoutSessionControlFilter.setKickoutUrl("/kickout");
+
+        return kickoutSessionControlFilter;
+    }
+
+    /**
+     * @description 开启spring aop支持
+     * @params [securityManager]
+     * @return org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor
+     * @author Hongyan Wang
+     * @date 2019/10/12 15:51
      */
     @Bean
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
@@ -103,9 +252,11 @@ public class ShiroConfig {
     }
 
     /**
-     * 异常处理
-     *
-     * @return
+     * @description 权限相关异常处理类
+     * @params []
+     * @return org.springframework.web.servlet.handler.SimpleMappingExceptionResolver
+     * @author Hongyan Wang
+     * @date 2019/10/12 15:52
      */
     @Bean
     public SimpleMappingExceptionResolver simpleMappingExceptionResolver() {
@@ -119,6 +270,13 @@ public class ShiroConfig {
         return mappingExceptionResolver;
     }
 
+    /**
+     * @description 授权用配置
+     * @params []
+     * @return org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator
+     * @author Hongyan Wang
+     * @date 2019/10/12 15:52
+     */
     @Bean
     public static DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator() {
         var defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
@@ -128,7 +286,20 @@ public class ShiroConfig {
          * 加入这项配置能解决这个bug
          */
         defaultAdvisorAutoProxyCreator.setUsePrefix(true);
+
         return defaultAdvisorAutoProxyCreator;
+    }
+
+    /**
+     * @description shiro生命周期处理器
+     * @params []
+     * @return org.apache.shiro.spring.LifecycleBeanPostProcessor
+     * @author Hongyan Wang
+     * @date 2019/10/12 15:54
+     */
+    @Bean
+    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor(){
+        return new LifecycleBeanPostProcessor();
     }
 
 }
