@@ -40,8 +40,8 @@ public class LoginController {
         String exception = null;
 
         try {
-            var usernamePasswordToken = new CaptchaToken(username, password, captchaCode, false, "localhost");
             var subject = SecurityUtils.getSubject();
+            var usernamePasswordToken = new CaptchaToken(username, password, captchaCode, false, subject.getSession().getHost());
             subject.login(usernamePasswordToken);
         } catch (AuthenticationException e) {
             exception = e.getClass().getName();

@@ -29,6 +29,7 @@ import java.util.Properties;
  * @description Shiro相关配置类，替代原xml配置方式
  * @date 2019/05/12 12:21
  */
+//TODO 配置指定条件下清除缓存
 @Configuration
 public class ShiroConfig {
 
