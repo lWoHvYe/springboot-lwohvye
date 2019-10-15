@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 使用kaptcha验证码工具，配置类
+ * 当前未使用
  */
 @Component
 public class KaptchaConfig {

@@ -1,9 +1,9 @@
 package com.springboot.shiro.shiro2spboot.config;
 
-import com.google.code.kaptcha.Constants;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaToken;
+import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import com.springboot.shiro.shiro2spboot.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +74,8 @@ public class MyShiroRealm extends AuthorizingRealm {
 
             // 从session获取正确的验证码
             var session = SecurityUtils.getSubject().getSession();
-            var sessionCaptchaCode = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
+            var sessionCaptchaCode = (String) session.getAttribute(VerifyCodeUtils.VERIFY_CODE_SESSION_KEY);
+//            var sessionCaptchaCode = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
 
 //            验证码错误，抛出相应异常
             if (!captchaCode.equalsIgnoreCase(sessionCaptchaCode))

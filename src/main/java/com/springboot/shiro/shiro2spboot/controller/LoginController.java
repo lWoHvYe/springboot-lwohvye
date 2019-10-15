@@ -1,6 +1,5 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
-import com.google.code.kaptcha.Constants;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaToken;
@@ -12,9 +11,8 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import springfox.documentation.annotations.ApiIgnore;
@@ -34,14 +32,21 @@ public class LoginController {
         return "/index";
     }
 
+    /**
+     * @return java.lang.String
+     * @description 登陆方法
+     * @params [username, password, captchaCode, request, map]
+     * @author Hongyan Wang
+     * @date 2019/10/14 16:13
+     */
     @ApiIgnore
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
-    public String login(String username, String password, String captchaCode, Map<String, Object> map) {
+    public String login(String username, String password, String captchaCode, HttpServletRequest request, Map<String, Object> map) {
         String exception = null;
 
         try {
             var subject = SecurityUtils.getSubject();
-            var usernamePasswordToken = new CaptchaToken(username, password, captchaCode, false, subject.getSession().getHost());
+            var usernamePasswordToken = new CaptchaToken(username, password, captchaCode, WebUtils.isTrue(request, "rememberMe"), subject.getSession().getHost());
             subject.login(usernamePasswordToken);
         } catch (AuthenticationException e) {
             exception = e.getClass().getName();
@@ -87,7 +92,7 @@ public class LoginController {
             String nowTime = DateTimeUtil.getCurFormatTime();
             //存入会话session
             HttpSession session = request.getSession();
-            session.setAttribute(Constants.KAPTCHA_SESSION_KEY, verifyCode);
+            session.setAttribute(VerifyCodeUtils.VERIFY_CODE_SESSION_KEY, verifyCode);
             session.setAttribute("verify_date", nowTime);
             //生成图片
             int w = 150;
