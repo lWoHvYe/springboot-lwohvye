@@ -87,17 +87,17 @@ public class LoginController {
             response.setContentType("image/jpeg");
 
             //生成随机字串
-            String verifyCode = VerifyCodeUtils.generateVerifyCode(4);
+            var verifyMap = VerifyCodeUtils.generateVerifyCode(4);
             //当前时间
             String nowTime = DateTimeUtil.getCurFormatTime();
             //存入会话session
             HttpSession session = request.getSession();
-            session.setAttribute(VerifyCodeUtils.VERIFY_CODE_SESSION_KEY, verifyCode);
+            session.setAttribute(VerifyCodeUtils.VERIFY_CODE_SESSION_KEY, verifyMap.get("result"));
             session.setAttribute("verify_date", nowTime);
             //生成图片
             int w = 150;
             int h = 50;
-            VerifyCodeUtils.outputImage(w, h, response.getOutputStream(), verifyCode);
+            VerifyCodeUtils.outputImage(w, h, response.getOutputStream(), verifyMap.get("verifyCodeStr"));
         } catch (Exception e) {
             e.printStackTrace();
         }
