@@ -1,10 +1,20 @@
 package com.springboot.shiro.shiro2spboot.config;
 
+import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
+import com.springboot.shiro.shiro2spboot.local.redis.RedisCacheWriterCustomer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 
 /**
  * @author Hongyan Wang
@@ -15,6 +25,37 @@ import java.lang.reflect.Method;
  */
 @Configuration
 public class RedisCachingConfigurer extends CachingConfigurerSupport {
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    /**
+     * @description 重新cacheManager方法，配置相关属性
+     * @params []
+     * @return org.springframework.cache.CacheManager
+     * @author Hongyan Wang
+     * @date 2019/10/15 16:13
+     */
+    @Bean
+    @Override
+    public CacheManager cacheManager() {
+        var connectionFactory = redisTemplate.getConnectionFactory();
+        var cacheWriterCustomer = new RedisCacheWriterCustomer(connectionFactory);
+        var cacheManager = new RedisCacheManager(cacheWriterCustomer,redisCacheConfiguration());
+        return cacheManager;
+    }
+
+    @Bean
+    public RedisCacheConfiguration redisCacheConfiguration(){
+        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
+
+        configuration = configuration.serializeValuesWith
+                (RedisSerializationContext.SerializationPair.fromSerializer(new FastJsonRedisSerializer<>(Object.class)))
+//                设置默认过期时间，600s
+                .entryTtl(Duration.ofSeconds(600));
+
+        return configuration;
+    }
 
     /**
      * @return org.springframework.cache.interceptor.KeyGenerator
