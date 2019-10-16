@@ -103,7 +103,7 @@ public class MpCustomController {
         var json = new JSONObject();
         mpCustomService.delete(customId);
         json.put("flag", true);
-        json.put("msg", "添加成功");
+        json.put("msg", "删除成功");
         return json.toJSONString();
     }
 

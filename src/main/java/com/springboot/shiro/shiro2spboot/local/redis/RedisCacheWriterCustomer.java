@@ -144,7 +144,7 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
             /*
             在获取数据之前，先重新设置其过期时间，
             有两种方案，一种是重新设定其为固定值，另一种为在现有过期时间上加上固定值，还可以设置在指定的时间失效expireAt()
-            这里采用首次十分钟，第二次半小时，第三次两小时，第四次六小时，两小时以上不做更改
+            这里采用首次十分钟，第二次加半小时，第三次加两小时，第四次加四小时，两小时以上不做更改
              */
             var index = name.lastIndexOf(REDIS_EXPIRE_TIME_KEY);
             if (index > 0) {
@@ -153,6 +153,7 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
                 var expireTime = Long.parseLong(expireString);
                 connection.expire(key, expireTime);
             } else {
+                var needExpire = true;
                 var existTime = connection.pTtl(key, TimeUnit.MINUTES);
 //                拿到过期时间，且key存在，方设置过期时间
                 if (existTime != null && existTime > 0) {
@@ -164,10 +165,14 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
                         existTime += 60 * 2;
 //                  剩余时间两小时之内，将其加上六小时，作为过期时间
                     } else if (existTime < 120) {
-                        existTime += 60 * 6;
+                        existTime += 60 * 4;
+                    } else {
+//                  剩余时间两小时以上，不更新过期时间
+                        needExpire = false;
                     }
 //                  设置新的过期时间，单位秒
-                    connection.expire(key, existTime * 60);
+                    if (needExpire)
+                        connection.expire(key, existTime * 60);
                 }
             }
             return connection.get(key);

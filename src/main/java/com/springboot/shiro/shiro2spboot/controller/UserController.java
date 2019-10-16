@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -127,11 +128,11 @@ public class UserController {
     }
 
     @ApiIgnore
-    @RequestMapping("/test")
-    @RequiresPermissions("user:*")
-    public String test() {
-        System.out.println("test");
-        return "jsonTest";
+    @RequestMapping("/testRole")
+//    限定只有admin角色可以访问
+    @RequiresRoles("admin")
+    public String testRole() {
+        return "success";
     }
 
 }

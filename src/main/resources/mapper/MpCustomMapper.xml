@@ -61,7 +61,7 @@
                 owner_name = #{ownerName},
             </if>
             <if test="ownerTel != null and ownerTel != ''">
-                ownerTel = #{ownerTel},
+                owner_tel = #{ownerTel},
             </if>
             status = #{status},
             <if test="note != null and note != ''">
