@@ -12,6 +12,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
@@ -20,14 +21,14 @@ import java.time.Duration;
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.config
  * @className RedisCachingConfigurer
- * @description 缓存配置类，改类用于配置部分缓存的属性CachingConfigurer
+ * @description 缓存配置类，改类用于配置部分缓存的属性CachingConfigurer，这里使用注解的方式使用缓存
  * @date 2019/10/10 14:44
  */
 @Configuration
 public class RedisCachingConfigurer extends CachingConfigurerSupport {
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String,Object> redisTemplate;
 
     /**
      * @description 重新cacheManager方法，配置相关属性
@@ -50,6 +51,7 @@ public class RedisCachingConfigurer extends CachingConfigurerSupport {
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
 
         configuration = configuration.serializeValuesWith
+//                使用FastJson的相关方法来序列化redis，需注意拿到的是JsonObject对象，所以添加注解的方法，返回值应为Object类型
                 (RedisSerializationContext.SerializationPair.fromSerializer(new FastJsonRedisSerializer<>(Object.class)))
 //                设置默认过期时间，600s
                 .entryTtl(Duration.ofSeconds(600));

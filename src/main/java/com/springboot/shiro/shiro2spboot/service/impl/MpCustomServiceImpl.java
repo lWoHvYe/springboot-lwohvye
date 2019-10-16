@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.service.impl
@@ -35,7 +33,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      */
     @Cacheable(key = "'mpCustomList'")
     @Override
-    public List<MpCustomEntity> list() {
+    public Object list() {
         return mpCustomMapper.list();
     }
 
@@ -50,7 +48,7 @@ public class MpCustomServiceImpl implements MpCustomService {
             put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId")}
     )
     @Override
-    public MpCustomEntity save(MpCustomEntity mpCustomEntity) {
+    public Object save(MpCustomEntity mpCustomEntity) {
         mpCustomMapper.save(mpCustomEntity);
         return mpCustomEntity;
     }
@@ -82,7 +80,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      */
     @Cacheable(unless = "#result == null")
     @Override
-    public MpCustomEntity searchById(int customId) {
+    public Object searchById(int customId) {
         return mpCustomMapper.searchById(customId);
     }
 
@@ -100,7 +98,7 @@ public class MpCustomServiceImpl implements MpCustomService {
             put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId")}
     )
     @Override
-    public MpCustomEntity update(MpCustomEntity mpCustomEntity) {
+    public Object update(MpCustomEntity mpCustomEntity) {
         mpCustomMapper.update(mpCustomEntity);
         return mpCustomMapper.searchById(mpCustomEntity.getCustomId());
     }

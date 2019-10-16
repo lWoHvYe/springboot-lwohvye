@@ -2,8 +2,6 @@ package com.springboot.shiro.shiro2spboot.service;
 
 import com.springboot.shiro.shiro2spboot.entity.MpCustomEntity;
 
-import java.util.List;
-
 /**
  *  Service接口
  *
@@ -12,13 +10,13 @@ import java.util.List;
  */
 public interface MpCustomService{
 
-    List<MpCustomEntity> list();
+    Object list();
 
-    MpCustomEntity save(MpCustomEntity mpCustomEntity);
+    Object save(MpCustomEntity mpCustomEntity);
 
     void delete(int customId);
 
-    MpCustomEntity searchById(int customId);
+    Object searchById(int customId);
 
-    MpCustomEntity update(MpCustomEntity mpCustomEntity);
+    Object update(MpCustomEntity mpCustomEntity);
 }

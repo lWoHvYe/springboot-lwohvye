@@ -1,37 +1,63 @@
+/*
+ * Copyright 2017-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.springboot.shiro.shiro2spboot.local.redis;
-
-import org.apache.shiro.util.Assert;
-import org.springframework.dao.PessimisticLockingFailureException;
-import org.springframework.data.redis.cache.RedisCacheWriter;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStringCommands;
-import org.springframework.data.redis.core.types.Expiration;
-import org.springframework.lang.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.local.redis
- * @className RedisCacheWriterCustomer
- * @description
- * @date 2019/10/15 13:36
- * @see org.springframework.data.redis.cache.DefaultRedisCacheWriter
- */
+import org.springframework.dao.PessimisticLockingFailureException;
+import org.springframework.data.redis.cache.RedisCacheWriter;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStringCommands.SetOption;
+import org.springframework.data.redis.core.types.Expiration;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
+/**
+ * {@link RedisCacheWriter} implementation capable of reading/writing binary data from/to Redis in {@literal standalone}
+ * and {@literal cluster} environments. Works upon a given {@link RedisConnectionFactory} to obtain the actual
+ * {@link RedisConnection}. <br />
+ * {@link DefaultRedisCacheWriter} can be used in
+ * {@link RedisCacheWriter#lockingRedisCacheWriter(RedisConnectionFactory) locking} or
+ * {@link RedisCacheWriter#nonLockingRedisCacheWriter(RedisConnectionFactory) non-locking} mode. While
+ * {@literal non-locking} aims for maximum performance it may result in overlapping, non atomic, command execution for
+ * operations spanning multiple Redis interactions like {@code putIfAbsent}. The {@literal locking} counterpart prevents
+ * command overlap by setting an explicit lock key and checking against presence of this key which leads to additional
+ * requests and potential command wait times.
+ *
+ * @author Christoph Strobl
+ * @author Mark Paluch
+ * @author Hongyan Wang
+ * @description 在DefaultRedisCacheWriter的基础上，重写了put和get方法，实现来过期时间的设置和过期时间的访问刷新，
+ * 其他功能宜通过重写相关方法来实现
+ * @className RedisCacheWriterCustomer
+ * @date 2019/10/15 12:21
+ * @since 2.0
+ */
+// TODO 未考虑线程安全问题，后续需进行优化
 public class RedisCacheWriterCustomer implements RedisCacheWriter {
 
 
     private final RedisConnectionFactory connectionFactory;
-
     private final Duration sleepTime;
 
     private final static String REDIS_EXPIRE_TIME_KEY = "#key_expire_time";
@@ -60,10 +86,14 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
 
     /**
      * @return void
-     * @description 重写了put方法，用于设置过期时间
+     * @description 重写了put方法，用于设置缓存的过期时间
      * @params [name, key, value, ttl]
      * @author Hongyan Wang
-     * @date 2019/10/15 16:06
+     * @date 2019/10/16 9:08
+     */
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.cache.RedisCacheWriter#put(java.lang.String, byte[], byte[], java.time.Duration)
      */
     @Override
     public void put(String name, byte[] key, byte[] value, @Nullable Duration ttl) {
@@ -72,129 +102,181 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
         Assert.notNull(key, "Key must not be null!");
         Assert.notNull(value, "Value must not be null!");
 
-        execute(name, (connection) -> {
-
+        execute(name, connection -> {
             //当设置了过期时间，则修改取出
             //@Cacheable(value="user-key#key_expire=1200",key = "#id",condition = "#id != 2")
             //name 对应 value
             //key 对应 value :: key
 
             //判断name里面是否设置了过期时间，如果设置了则对key进行缓存，并设置过期时间
-            int index = name.lastIndexOf(REDIS_EXPIRE_TIME_KEY);
+            var index = name.lastIndexOf(REDIS_EXPIRE_TIME_KEY);
             if (index > 0) {
                 //取出对应的时间 1200 index + 1是还有一个=号
-                String expireString = name.substring(index + 1 + REDIS_EXPIRE_TIME_KEY.length());
-                long expireTime = Long.parseLong(expireString);
-                connection.set(key, value, Expiration.from(expireTime, TimeUnit.SECONDS), RedisStringCommands.SetOption.upsert());
+                var expireString = name.substring(index + 1 + REDIS_EXPIRE_TIME_KEY.length());
+                var expireTime = Long.parseLong(expireString);
+                connection.set(key, value, Expiration.from(expireTime, TimeUnit.SECONDS), SetOption.upsert());
             } else if (shouldExpireWithin(ttl)) {
-                connection.set(key, value, Expiration.from(ttl.toMillis(), TimeUnit.MILLISECONDS), RedisStringCommands.SetOption.upsert());
+                connection.set(key, value, Expiration.from(ttl.toMillis(), TimeUnit.MILLISECONDS), SetOption.upsert());
             } else {
                 connection.set(key, value);
             }
+
             return "OK";
         });
     }
 
     /**
-     * @description 重新get方法，实现访问刷新过期时间，这里默认设置刷新为600s
-     * @params [name, key]
      * @return byte[]
+     * @description 重写了get方法，用于实现访问刷新过期时间的功能
+     * @params [name, key]
      * @author Hongyan Wang
-     * @date 2019/10/15 17:41
+     * @date 2019/10/16 9:10
      */
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.cache.RedisCacheWriter#get(java.lang.String, byte[])
+     */
+    @Override
     public byte[] get(String name, byte[] key) {
-        org.springframework.util.Assert.notNull(name, "Name must not be null!");
-        org.springframework.util.Assert.notNull(key, "Key must not be null!");
+        Assert.notNull(name, "Name must not be null!");
+        Assert.notNull(key, "Key must not be null!");
         return execute(name, (connection) -> {
-
-            int index = name.lastIndexOf(REDIS_EXPIRE_TIME_KEY);
+            /*
+            在获取数据之前，先重新设置其过期时间，
+            有两种方案，一种是重新设定其为固定值，另一种为在现有过期时间上加上固定值，还可以设置在指定的时间失效expireAt()
+            这里采用首次十分钟，第二次半小时，第三次两小时，第四次六小时，两小时以上不做更改
+             */
+            var index = name.lastIndexOf(REDIS_EXPIRE_TIME_KEY);
             if (index > 0) {
                 //取出对应的时间 1200 index + 1是还有一个=号
-                String expireString = name.substring(index + 1 + REDIS_EXPIRE_TIME_KEY.length());
-                long expireTime = Long.parseLong(expireString);
+                var expireString = name.substring(index + 1 + REDIS_EXPIRE_TIME_KEY.length());
+                var expireTime = Long.parseLong(expireString);
                 connection.expire(key, expireTime);
             } else {
-                connection.expire(key, 600);
+                var existTime = connection.pTtl(key, TimeUnit.MINUTES);
+//                拿到过期时间，且key存在，方设置过期时间
+                if (existTime != null && existTime > 0) {
+//                  剩余时间在十分钟之内，将其加上半小时，作为过期时间
+                    if (existTime < 10) {
+                        existTime += 30;
+//                  剩余时间一小时之内，将其加上两小时，作为过期时间
+                    } else if (existTime < 60) {
+                        existTime += 60 * 2;
+//                  剩余时间两小时之内，将其加上六小时，作为过期时间
+                    } else if (existTime < 120) {
+                        existTime += 60 * 6;
+                    }
+//                  设置新的过期时间，单位秒
+                    connection.expire(key, existTime * 60);
+                }
             }
             return connection.get(key);
         });
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.cache.RedisCacheWriter#putIfAbsent(java.lang.String, byte[], byte[], java.time.Duration)
+     */
+    @Override
     public byte[] putIfAbsent(String name, byte[] key, byte[] value, @Nullable Duration ttl) {
-        org.springframework.util.Assert.notNull(name, "Name must not be null!");
-        org.springframework.util.Assert.notNull(key, "Key must not be null!");
-        org.springframework.util.Assert.notNull(value, "Value must not be null!");
-        return this.execute(name, (connection) -> {
-            if (this.isLockingCacheWriter()) {
-                this.doLock(name, connection);
+
+        Assert.notNull(name, "Name must not be null!");
+        Assert.notNull(key, "Key must not be null!");
+        Assert.notNull(value, "Value must not be null!");
+
+        return execute(name, connection -> {
+
+            if (isLockingCacheWriter()) {
+                doLock(name, connection);
             }
 
-            byte[] var6;
             try {
                 if (connection.setNX(key, value)) {
+
                     if (shouldExpireWithin(ttl)) {
                         connection.pExpire(key, ttl.toMillis());
                     }
-
-                    Object var10 = null;
-                    return (byte[]) var10;
+                    return null;
                 }
 
-                var6 = connection.get(key);
+                return connection.get(key);
             } finally {
-                if (this.isLockingCacheWriter()) {
-                    this.doUnlock(name, connection);
+
+                if (isLockingCacheWriter()) {
+                    doUnlock(name, connection);
                 }
-
             }
-
-            return var6;
         });
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.cache.RedisCacheWriter#remove(java.lang.String, byte[])
+     */
+    @Override
     public void remove(String name, byte[] key) {
-        org.springframework.util.Assert.notNull(name, "Name must not be null!");
-        org.springframework.util.Assert.notNull(key, "Key must not be null!");
-        this.execute(name, (connection) -> connection.del(new byte[][]{key}));
+
+        Assert.notNull(name, "Name must not be null!");
+        Assert.notNull(key, "Key must not be null!");
+
+        execute(name, connection -> connection.del(key));
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.cache.RedisCacheWriter#clean(java.lang.String, byte[])
+     */
+    @Override
     public void clean(String name, byte[] pattern) {
-        org.springframework.util.Assert.notNull(name, "Name must not be null!");
-        org.springframework.util.Assert.notNull(pattern, "Pattern must not be null!");
-        this.execute(name, (connection) -> {
-            boolean wasLocked = false;
+
+        Assert.notNull(name, "Name must not be null!");
+        Assert.notNull(pattern, "Pattern must not be null!");
+
+        execute(name, connection -> {
+
+            var wasLocked = false;
 
             try {
-                if (this.isLockingCacheWriter()) {
-                    this.doLock(name, connection);
+
+                if (isLockingCacheWriter()) {
+                    doLock(name, connection);
                     wasLocked = true;
                 }
 
-                byte[][] keys = (byte[][]) ((Set) Optional.ofNullable(connection.keys(pattern)).orElse(Collections.emptySet())).toArray(new byte[0][]);
+                var keys = Optional.ofNullable(connection.keys(pattern)).orElse(Collections.emptySet())
+                        .toArray(new byte[0][]);
+
                 if (keys.length > 0) {
                     connection.del(keys);
                 }
             } finally {
-                if (wasLocked && this.isLockingCacheWriter()) {
-                    this.doUnlock(name, connection);
-                }
 
+                if (wasLocked && isLockingCacheWriter()) {
+                    doUnlock(name, connection);
+                }
             }
 
             return "OK";
         });
     }
 
+    /**
+     * Explicitly set a write lock on a cache.
+     *
+     * @param name the name of the cache to lock.
+     */
     void lock(String name) {
-        this.execute(name, (connection) -> {
-            return this.doLock(name, connection);
-        });
+        execute(name, connection -> doLock(name, connection));
     }
 
+    /**
+     * Explicitly remove a write lock from a cache.
+     *
+     * @param name the name of the cache to unlock.
+     */
     void unlock(String name) {
-        this.executeLockFree((connection) -> {
-            this.doUnlock(name, connection);
-        });
+        executeLockFree(connection -> doUnlock(name, connection));
     }
 
     private Boolean doLock(String name, RedisConnection connection) {
@@ -202,53 +284,61 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
     }
 
     private Long doUnlock(String name, RedisConnection connection) {
-        return connection.del(new byte[][]{createCacheLockKey(name)});
+        return connection.del(createCacheLockKey(name));
     }
 
     boolean doCheckLock(String name, RedisConnection connection) {
         return connection.exists(createCacheLockKey(name));
     }
 
+    /**
+     * @return {@literal true} if {@link RedisCacheWriter} uses locks.
+     */
     private boolean isLockingCacheWriter() {
-        return !this.sleepTime.isZero() && !this.sleepTime.isNegative();
+        return !sleepTime.isZero() && !sleepTime.isNegative();
     }
 
     private <T> T execute(String name, Function<RedisConnection, T> callback) {
-        RedisConnection connection = this.connectionFactory.getConnection();
 
-        T var4;
+        RedisConnection connection = connectionFactory.getConnection();
         try {
-            this.checkAndPotentiallyWaitUntilUnlocked(name, connection);
-            var4 = callback.apply(connection);
+
+            checkAndPotentiallyWaitUntilUnlocked(name, connection);
+            return callback.apply(connection);
         } finally {
             connection.close();
         }
-
-        return var4;
     }
 
     private void executeLockFree(Consumer<RedisConnection> callback) {
-        RedisConnection connection = this.connectionFactory.getConnection();
+
+        RedisConnection connection = connectionFactory.getConnection();
 
         try {
             callback.accept(connection);
         } finally {
             connection.close();
         }
-
     }
 
     private void checkAndPotentiallyWaitUntilUnlocked(String name, RedisConnection connection) {
-        if (this.isLockingCacheWriter()) {
-            try {
-                while (this.doCheckLock(name, connection)) {
-                    Thread.sleep(this.sleepTime.toMillis());
-                }
 
-            } catch (InterruptedException var4) {
-                Thread.currentThread().interrupt();
-                throw new PessimisticLockingFailureException(String.format("Interrupted while waiting to unlock cache %s", name), var4);
+        if (!isLockingCacheWriter()) {
+            return;
+        }
+
+        try {
+
+            while (doCheckLock(name, connection)) {
+                Thread.sleep(sleepTime.toMillis());
             }
+        } catch (InterruptedException ex) {
+
+            // Re-interrupt current thread, to allow other participants to react.
+            Thread.currentThread().interrupt();
+
+            throw new PessimisticLockingFailureException(String.format("Interrupted while waiting to unlock cache %s", name),
+                    ex);
         }
     }
 
@@ -259,5 +349,4 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
     private static byte[] createCacheLockKey(String name) {
         return (name + "~lock").getBytes(StandardCharsets.UTF_8);
     }
-
 }
