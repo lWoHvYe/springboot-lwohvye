@@ -15,14 +15,8 @@
  */
 package com.springboot.shiro.shiro2spboot.local.redis;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -31,6 +25,14 @@ import org.springframework.data.redis.connection.RedisStringCommands.SetOption;
 import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * {@link RedisCacheWriter} implementation capable of reading/writing binary data from/to Redis in {@literal standalone}
@@ -49,6 +51,7 @@ import org.springframework.util.Assert;
  * @author Hongyan Wang
  * @description 在DefaultRedisCacheWriter的基础上，重写了put和get方法，实现来过期时间的设置和过期时间的访问刷新，
  * 其他功能宜通过重写相关方法来实现
+ * 可以通过重写其他的方法，来实现对应的功能
  * @className RedisCacheWriterCustomer
  * @date 2019/10/15 12:21
  * @since 2.0
@@ -59,8 +62,6 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
 
     private final RedisConnectionFactory connectionFactory;
     private final Duration sleepTime;
-
-    private final static String REDIS_EXPIRE_TIME_KEY = "#key_expire_time";
 
 
     /**
@@ -96,7 +97,7 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
      * @see org.springframework.data.redis.cache.RedisCacheWriter#put(java.lang.String, byte[], byte[], java.time.Duration)
      */
     @Override
-    public void put(String name, byte[] key, byte[] value, @Nullable Duration ttl) {
+    public void put(@NotNull String name, @NotNull byte[] key, @NotNull byte[] value, @Nullable Duration ttl) {
 
         Assert.notNull(name, "Name must not be null!");
         Assert.notNull(key, "Key must not be null!");
@@ -109,10 +110,10 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
             //key 对应 value :: key
 
             //判断name里面是否设置了过期时间，如果设置了则对key进行缓存，并设置过期时间
-            var index = name.lastIndexOf(REDIS_EXPIRE_TIME_KEY);
+            var index = name.lastIndexOf(RedisKeys.REDIS_EXPIRE_TIME_KEY);
             if (index > 0) {
                 //取出对应的时间 1200 index + 1是还有一个=号
-                var expireString = name.substring(index + 1 + REDIS_EXPIRE_TIME_KEY.length());
+                var expireString = name.substring(index + 1 + RedisKeys.REDIS_EXPIRE_TIME_KEY.length());
                 var expireTime = Long.parseLong(expireString);
                 connection.set(key, value, Expiration.from(expireTime, TimeUnit.SECONDS), SetOption.upsert());
             } else if (shouldExpireWithin(ttl)) {
@@ -137,23 +138,24 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
      * @see org.springframework.data.redis.cache.RedisCacheWriter#get(java.lang.String, byte[])
      */
     @Override
-    public byte[] get(String name, byte[] key) {
+    public byte[] get(@NotNull String name, @NotNull byte[] key) {
         Assert.notNull(name, "Name must not be null!");
         Assert.notNull(key, "Key must not be null!");
         return execute(name, (connection) -> {
             /*
             在获取数据之前，先重新设置其过期时间，
             有两种方案，一种是重新设定其为固定值，另一种为在现有过期时间上加上固定值，还可以设置在指定的时间失效expireAt()
-            这里采用首次十分钟，第二次加半小时，第三次加两小时，第四次加四小时，两小时以上不做更改
+            这里采用首次十分钟，第二次加半小时，第三次加两小时，两小时以上不做更改
              */
-            var index = name.lastIndexOf(REDIS_EXPIRE_TIME_KEY);
+            var index = name.lastIndexOf(RedisKeys.REDIS_EXPIRE_TIME_KEY);
             if (index > 0) {
                 //取出对应的时间 1200 index + 1是还有一个=号
-                var expireString = name.substring(index + 1 + REDIS_EXPIRE_TIME_KEY.length());
+                var expireString = name.substring(index + 1 + RedisKeys.REDIS_EXPIRE_TIME_KEY.length());
                 var expireTime = Long.parseLong(expireString);
                 connection.expire(key, expireTime);
             } else {
                 var needExpire = true;
+//                获取缓存剩余过期时间
                 var existTime = connection.pTtl(key, TimeUnit.MINUTES);
 //                拿到过期时间，且key存在，方设置过期时间
                 if (existTime != null && existTime > 0) {
@@ -163,9 +165,6 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
 //                  剩余时间一小时之内，将其加上两小时，作为过期时间
                     } else if (existTime < 60) {
                         existTime += 60 * 2;
-//                  剩余时间两小时之内，将其加上六小时，作为过期时间
-                    } else if (existTime < 120) {
-                        existTime += 60 * 4;
                     } else {
 //                  剩余时间两小时以上，不更新过期时间
                         needExpire = false;
@@ -184,7 +183,7 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
      * @see org.springframework.data.redis.cache.RedisCacheWriter#putIfAbsent(java.lang.String, byte[], byte[], java.time.Duration)
      */
     @Override
-    public byte[] putIfAbsent(String name, byte[] key, byte[] value, @Nullable Duration ttl) {
+    public byte[] putIfAbsent(@NotNull String name, @NotNull byte[] key, @NotNull byte[] value, @Nullable Duration ttl) {
 
         Assert.notNull(name, "Name must not be null!");
         Assert.notNull(key, "Key must not be null!");
@@ -220,7 +219,7 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
      * @see org.springframework.data.redis.cache.RedisCacheWriter#remove(java.lang.String, byte[])
      */
     @Override
-    public void remove(String name, byte[] key) {
+    public void remove(@NotNull String name, @NotNull byte[] key) {
 
         Assert.notNull(name, "Name must not be null!");
         Assert.notNull(key, "Key must not be null!");
@@ -233,7 +232,7 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
      * @see org.springframework.data.redis.cache.RedisCacheWriter#clean(java.lang.String, byte[])
      */
     @Override
-    public void clean(String name, byte[] pattern) {
+    public void clean(@NotNull String name, @NotNull byte[] pattern) {
 
         Assert.notNull(name, "Name must not be null!");
         Assert.notNull(pattern, "Pattern must not be null!");
@@ -284,15 +283,15 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
         executeLockFree(connection -> doUnlock(name, connection));
     }
 
-    private Boolean doLock(String name, RedisConnection connection) {
+    private Boolean doLock(String name, @NotNull RedisConnection connection) {
         return connection.setNX(createCacheLockKey(name), new byte[0]);
     }
 
-    private Long doUnlock(String name, RedisConnection connection) {
+    private Long doUnlock(String name, @NotNull RedisConnection connection) {
         return connection.del(createCacheLockKey(name));
     }
 
-    boolean doCheckLock(String name, RedisConnection connection) {
+    boolean doCheckLock(String name, @NotNull RedisConnection connection) {
         return connection.exists(createCacheLockKey(name));
     }
 
@@ -303,7 +302,7 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
         return !sleepTime.isZero() && !sleepTime.isNegative();
     }
 
-    private <T> T execute(String name, Function<RedisConnection, T> callback) {
+    private <T> T execute(String name, @NotNull Function<RedisConnection, T> callback) {
 
         RedisConnection connection = connectionFactory.getConnection();
         try {
@@ -315,7 +314,7 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
         }
     }
 
-    private void executeLockFree(Consumer<RedisConnection> callback) {
+    private void executeLockFree(@NotNull Consumer<RedisConnection> callback) {
 
         RedisConnection connection = connectionFactory.getConnection();
 
@@ -347,11 +346,15 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
         }
     }
 
+    @Contract("null -> false")
     private static boolean shouldExpireWithin(@Nullable Duration ttl) {
         return ttl != null && !ttl.isZero() && !ttl.isNegative();
     }
 
+    @NotNull
+    @Contract(pure = true)
     private static byte[] createCacheLockKey(String name) {
         return (name + "~lock").getBytes(StandardCharsets.UTF_8);
     }
 }
+

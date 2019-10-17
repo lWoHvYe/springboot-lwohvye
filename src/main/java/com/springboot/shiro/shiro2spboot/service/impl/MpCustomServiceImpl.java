@@ -2,6 +2,7 @@ package com.springboot.shiro.shiro2spboot.service.impl;
 
 import com.springboot.shiro.shiro2spboot.dao.MpCustomMapper;
 import com.springboot.shiro.shiro2spboot.entity.MpCustomEntity;
+import com.springboot.shiro.shiro2spboot.local.redis.RedisKeys;
 import com.springboot.shiro.shiro2spboot.service.MpCustomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.*;
@@ -45,7 +46,8 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @date 2019/10/10 17:10
      */
     @Caching(evict = {@CacheEvict(key = "'mpCustomList'", beforeInvocation = true)},
-            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId")}
+            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
+                    cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
     )
     @Override
     public Object save(MpCustomEntity mpCustomEntity) {
@@ -63,7 +65,8 @@ public class MpCustomServiceImpl implements MpCustomService {
      */
     @Caching(evict = {
             @CacheEvict(key = "'mpCustomList'", beforeInvocation = true),
-            @CacheEvict(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#customId", beforeInvocation = true)
+            @CacheEvict(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#customId",
+                    cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600", beforeInvocation = true)
     })
     @Override
     public void delete(int customId) {
@@ -78,7 +81,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 16:31
      */
-    @Cacheable(unless = "#result == null")
+    @Cacheable(unless = "#result == null", cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")
     @Override
     public Object searchById(int customId) {
         return mpCustomMapper.searchById(customId);
@@ -94,8 +97,10 @@ public class MpCustomServiceImpl implements MpCustomService {
      */
     @Caching(evict = {
             @CacheEvict(key = "'mpCustomList'", beforeInvocation = true),
-            @CacheEvict(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId", beforeInvocation = true)},
-            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId")}
+            @CacheEvict(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
+                    beforeInvocation = true, cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")},
+            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
+                    cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
     )
     @Override
     public Object update(MpCustomEntity mpCustomEntity) {
