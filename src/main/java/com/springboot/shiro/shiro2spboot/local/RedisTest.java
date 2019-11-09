@@ -6,6 +6,8 @@ import com.springboot.shiro.shiro2spboot.common.util.RedisUtil;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import com.springboot.shiro.shiro2spboot.service.MpCustomService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,8 +92,11 @@ public class RedisTest {
     }
 
     @GetMapping("/getKeys")
+//    需要用户至少有其中一个权限
+    @RequiresPermissions(value = {"user:view", "role:view", "permission:view"}, logical = Logical.OR)
     public String getKeys() {
 //        mpCustomService.searchById(8);
+        var keys = redisTemplate.keys("*");
         Objects.requireNonNull(redisTemplate.keys("*")).forEach(e -> log.warn(MessageFormat.format("{0} | {1}", DateTimeUtil.getCurFormatTime(), e)));
 //        mpCustomService.delete(8);
         return "success";

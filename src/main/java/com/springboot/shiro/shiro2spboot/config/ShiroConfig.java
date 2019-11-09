@@ -172,7 +172,7 @@ public class ShiroConfig {
     public RedisManager redisManager(){
         var redisManager = new RedisManager();
 //        配置redis主机地址 ip:port
-        redisManager.setHost("192.168.0.145:6379");
+        redisManager.setHost("192.168.120.145:6379");
 //        配置redis连接密码
         redisManager.setPassword("redis");
 //        配置连接超时
