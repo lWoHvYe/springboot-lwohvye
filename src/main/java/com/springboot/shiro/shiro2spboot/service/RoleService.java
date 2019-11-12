@@ -9,4 +9,17 @@ public interface RoleService {
     void saveRole(Role role, String permissionId);
 
     void deleteRole(Role role);
+
+    int deleteByPrimaryKey(Long id);
+
+    int insert(Role record);
+
+    int insertSelective(Role record);
+
+    Role selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(Role record);
+
+    int updateByPrimaryKey(Role record);
 }
+

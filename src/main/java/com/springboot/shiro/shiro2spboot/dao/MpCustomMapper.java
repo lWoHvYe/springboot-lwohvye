@@ -1,17 +1,24 @@
 package com.springboot.shiro.shiro2spboot.dao;
 
 import com.springboot.shiro.shiro2spboot.entity.MpCustomEntity;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-/**
- * Mapper 接口
- *
- * @author author
- * @since 2019-10-08
- */
+@Mapper
 public interface MpCustomMapper {
+    int deleteByPrimaryKey(Integer customId);
+
+    int insert(MpCustomEntity record);
+
+    int insertSelective(MpCustomEntity record);
+
+    MpCustomEntity selectByPrimaryKey(Integer customId);
+
+    int updateByPrimaryKeySelective(MpCustomEntity record);
+
+    int updateByPrimaryKey(MpCustomEntity record);
 
     List<MpCustomEntity> list();
 

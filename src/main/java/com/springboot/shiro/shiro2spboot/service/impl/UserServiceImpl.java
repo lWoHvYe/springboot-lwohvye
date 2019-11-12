@@ -1,6 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
+import com.springboot.shiro.shiro2spboot.dao.UserMapper;
 import com.springboot.shiro.shiro2spboot.repository.UserDao;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.entity.User;
@@ -20,6 +21,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public User findByUsername(String name) {
@@ -67,4 +70,35 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(User user) {
         userDao.delete(user);
     }
+
+    @Override
+    public int deleteByPrimaryKey(Long uid) {
+        return userMapper.deleteByPrimaryKey(uid);
+    }
+
+    @Override
+    public int insert(User record) {
+        return userMapper.insert(record);
+    }
+
+    @Override
+    public int insertSelective(User record) {
+        return userMapper.insertSelective(record);
+    }
+
+    @Override
+    public User selectByPrimaryKey(Long uid) {
+        return userMapper.selectByPrimaryKey(uid);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(User record) {
+        return userMapper.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
+    public int updateByPrimaryKey(User record) {
+        return userMapper.updateByPrimaryKey(record);
+    }
 }
+

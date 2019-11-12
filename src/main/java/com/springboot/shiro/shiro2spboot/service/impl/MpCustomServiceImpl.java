@@ -107,4 +107,35 @@ public class MpCustomServiceImpl implements MpCustomService {
         mpCustomMapper.update(mpCustomEntity);
         return mpCustomMapper.searchById(mpCustomEntity.getCustomId());
     }
+
+    @Override
+    public int deleteByPrimaryKey(Integer customId) {
+        return mpCustomMapper.deleteByPrimaryKey(customId);
+    }
+
+    @Override
+    public int insert(MpCustomEntity record) {
+        return mpCustomMapper.insert(record);
+    }
+
+    @Override
+    public int insertSelective(MpCustomEntity record) {
+        return mpCustomMapper.insertSelective(record);
+    }
+
+    @Override
+    public MpCustomEntity selectByPrimaryKey(Integer customId) {
+        return mpCustomMapper.selectByPrimaryKey(customId);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(MpCustomEntity record) {
+        return mpCustomMapper.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
+    public int updateByPrimaryKey(MpCustomEntity record) {
+        return mpCustomMapper.updateByPrimaryKey(record);
+    }
 }
+

@@ -1,6 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
+import com.springboot.shiro.shiro2spboot.dao.RoleMapper;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.repository.RoleDao;
@@ -17,6 +18,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Autowired
     private RoleDao roleDao;
+    @Autowired
+    private RoleMapper roleMapper;
 
     @Override
     public void findRole(String roleName, PageUtil<Role> pageUtil) {
@@ -38,6 +41,7 @@ public class RoleServiceImpl implements RoleService {
 
     /**
      * 设置权限，对于修改操作，jpa默认方法为相关表中先删再添加
+     *
      * @param role
      * @param permissionId
      */
@@ -57,4 +61,35 @@ public class RoleServiceImpl implements RoleService {
         }
         role.setPermissions(permissions);
     }
+
+    @Override
+    public int deleteByPrimaryKey(Long id) {
+        return roleMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public int insert(Role record) {
+        return roleMapper.insert(record);
+    }
+
+    @Override
+    public int insertSelective(Role record) {
+        return roleMapper.insertSelective(record);
+    }
+
+    @Override
+    public Role selectByPrimaryKey(Long id) {
+        return roleMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(Role record) {
+        return roleMapper.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
+    public int updateByPrimaryKey(Role record) {
+        return roleMapper.updateByPrimaryKey(record);
+    }
 }
+

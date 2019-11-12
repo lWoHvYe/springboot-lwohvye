@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.MessageFormat;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -100,5 +102,36 @@ public class RedisTest {
         Objects.requireNonNull(redisTemplate.keys("*")).forEach(e -> log.warn(MessageFormat.format("{0} | {1}", DateTimeUtil.getCurFormatTime(), e)));
 //        mpCustomService.delete(8);
         return "success";
+    }
+
+}
+
+/**
+ * @author Hongyan Wang
+ * @description 简单的LRU算法
+ * @params
+ * @return
+ * @date 2019/11/9 11:47
+ */
+class LRUCache<K, V> extends LinkedHashMap<K, V> {
+    private final int CACHE_SIZE;
+
+    /**
+     * @return
+     * @description 设置最大缓存大小
+     * @params [cacheSize]
+     * @author Hongyan Wang
+     * @date 2019/11/9 11:51
+     */
+    public LRUCache(int cacheSize) {
+        //true表示让linkedHashMap按照访问顺序进行排序，最近访问的放在头部，最老访问的放在尾部
+        super((int) (Math.ceil(cacheSize / 0.75) + 1), 0.75f, true);
+        CACHE_SIZE = cacheSize;
+    }
+
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        //当数据量达到限制时，自动删除最老的数据
+        return size() > CACHE_SIZE;
     }
 }
