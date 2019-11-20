@@ -9,6 +9,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 抽卡模拟
@@ -126,12 +128,13 @@ public class ThreadSample {
      * @
      */
     private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
+        var executor = Executors.newFixedThreadPool(6);
 //        开启数个线程
         for (int i = 0; i < threadCount; i++) {
             SimuThread simuThread = new SimuThread(lists);
-            Thread thread = new Thread(simuThread);
-            thread.start();
+            executor.execute(simuThread);
         }
+        executor.shutdown();
     }
 
     /**
@@ -180,6 +183,7 @@ public class ThreadSample {
             countMap.put("s500", countMap.get("s500") + s500);
             countMap.put("other", countMap.get("other") + other);
             System.out.println("运行结束");
+            System.out.println(Thread.currentThread().getName());
 //            线程执行结束，latch值减1
             latch.countDown();
         }

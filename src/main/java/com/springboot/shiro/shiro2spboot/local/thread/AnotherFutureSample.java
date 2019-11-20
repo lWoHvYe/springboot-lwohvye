@@ -252,6 +252,7 @@ public class AnotherFutureSample {
 
 
             System.out.println("运行结束");
+            System.out.println(Thread.currentThread().getName());
             return countHashMap;
         }
 

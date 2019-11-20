@@ -52,9 +52,9 @@ public class FutureSample {
     @SuppressWarnings("unchecked")
     public void startWork() {
         //   开启模拟线程数
-        Integer threadCount = 100;
+        Integer threadCount = 10;
 //        模拟次数
-        Integer simCount = 100000;
+        Integer simCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
         FutureSample futureSample = new FutureSample();
@@ -180,6 +180,7 @@ public class FutureSample {
                             other++;
                         }
                 }
+                System.out.println(Thread.currentThread().getName());
             } catch (NoSuchAlgorithmException e) {
                 logger4j.info(e.getMessage());
             }
