@@ -5,6 +5,7 @@ import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaToken;
 import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
 import com.springboot.shiro.shiro2spboot.entity.User;
+import com.springboot.shiro.shiro2spboot.service.RoleService;
 import com.springboot.shiro.shiro2spboot.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -84,12 +85,10 @@ public class MyShiroRealm extends AuthorizingRealm {
 //          获取用户名
             var username = (String) authenticationToken.getPrincipal();
 //            根据用户名获取用户信息
-            var user = userService.findByUsername(username);
-            if (user != null) {
-                log.info("认证 ：Shiro认证成功");
+            var user = userService.findLoginUser(username);
+            log.info("认证 ：Shiro认证成功");
 //                验证authenticationToken和authenticationInfo信息
-                return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()), getName());
-            }
+            return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()), getName());
         }
         return null;
     }

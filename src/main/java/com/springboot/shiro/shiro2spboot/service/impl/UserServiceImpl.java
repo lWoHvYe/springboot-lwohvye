@@ -1,6 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
+import com.springboot.shiro.shiro2spboot.dao.RoleMapper;
 import com.springboot.shiro.shiro2spboot.dao.UserMapper;
 import com.springboot.shiro.shiro2spboot.repository.UserDao;
 import com.springboot.shiro.shiro2spboot.entity.Role;
@@ -23,6 +24,8 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RoleMapper roleMapper;
 
     @Override
     public User findByUsername(String name) {
@@ -99,6 +102,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public int updateByPrimaryKey(User record) {
         return userMapper.updateByPrimaryKey(record);
+    }
+
+    @Override
+    public User findLoginUser(String username) {
+        var user = userDao.findByUsername(username);
+        if (user != null && user.getRoleId() != null) {
+//            获取用户角色信息
+            var roles = roleMapper.selectByPrimaryKey(user.getRoleId());
+            if (roles != null) {
+//                获取角色对应的权限
+                var permissions = roleMapper.selectPermissionByRoleId(roles.getId());
+//                设置角色权限
+                roles.setPermissions(permissions);
+            }
+//            设置用户角色
+            user.setRoles(roles);
+        }
+//        返回结果
+        return user;
     }
 }
 
