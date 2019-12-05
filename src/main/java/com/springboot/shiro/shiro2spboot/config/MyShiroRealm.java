@@ -5,7 +5,6 @@ import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaToken;
 import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
 import com.springboot.shiro.shiro2spboot.entity.User;
-import com.springboot.shiro.shiro2spboot.service.RoleService;
 import com.springboot.shiro.shiro2spboot.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
