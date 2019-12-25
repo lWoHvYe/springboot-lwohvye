@@ -1,9 +1,9 @@
 package com.springboot.shiro.shiro2spboot.dao;
-import org.apache.ibatis.annotations.Param;
-import java.util.List;
 
 import com.springboot.shiro.shiro2spboot.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -20,6 +20,5 @@ public interface UserMapper {
     int updateByPrimaryKey(User record);
 
     List<User> selectByAll(User user);
-
 
 }

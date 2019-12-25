@@ -28,7 +28,7 @@ public class Role implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)//单向立即加载
     // 设置关联表、关联字段(主键)及副表的关联字段(主键)
-    @JoinTable(name = "RolePermission", joinColumns = {@JoinColumn(name = "roleId")}, inverseJoinColumns = {@JoinColumn(name = "permissionId")})
+    @JoinTable(name = "role_permission", joinColumns = {@JoinColumn(name = "role_id")}, inverseJoinColumns = {@JoinColumn(name = "permission_id")})
     private List<Permission> permissions;
 
     @JSONField(serialize = false)//不序列化该属性

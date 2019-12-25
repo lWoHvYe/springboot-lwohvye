@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
  * @description 使用redis缓存，分别缓存客户列表及单个客户两种数据，
  * 执行添加操作时，清除客户列表缓存
  * 执行修改、删除操作时，清除客户列表和对应客户缓存
+ * 将缓存放在Service层，方便使用shiro进行权限控制
  * @date 2019/10/10 13:37
  */
 @Service

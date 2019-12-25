@@ -2,12 +2,14 @@ package com.springboot.shiro.shiro2spboot.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.springboot.shiro.shiro2spboot.common.annotation.LogAnno;
 import com.springboot.shiro.shiro2spboot.entity.MpCustomEntity;
 import com.springboot.shiro.shiro2spboot.service.MpCustomService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +42,7 @@ public class MpCustomController {
      */
     @ApiOperation(value = "获取客户列表", notes = "获取客户列表，暂不提供分页及搜索")
     @GetMapping("/list")
+    @RequiresPermissions("custom:view")
     public String list() {
         var json = new JSONObject();
         var list = mpCustomService.list();
@@ -55,6 +58,7 @@ public class MpCustomController {
      * @author Hongyan Wang
      * @date 2019/10/9 16:14
      */
+    @LogAnno(operateType = "添加客户信息")
     @ApiOperation(value = "添加客户信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "customName", value = "企业名称", required = true, dataType = "String"),
@@ -63,6 +67,7 @@ public class MpCustomController {
             @ApiImplicitParam(name = "status", value = "企业状态", dataType = "Integer", defaultValue = "1")
     })
     @PostMapping("/save")
+    @RequiresPermissions("custom:add")
     public String save(MpCustomEntity mpCustomEntity) {
         var json = new JSONObject();
         mpCustomService.save(mpCustomEntity);
@@ -78,6 +83,7 @@ public class MpCustomController {
      * @author Hongyan Wang
      * @date 2019/10/10 16:20
      */
+    @LogAnno(operateType = "获取客户信息")
     @ApiOperation(value = "获取客户信息", notes = "根据id获取客户信息")
     @ApiImplicitParam(name = "customId", value = "客户编号", required = true, dataType = "Integer")
     @GetMapping("/searchById")
@@ -96,9 +102,11 @@ public class MpCustomController {
      * @author Hongyan Wang
      * @date 2019/10/9 16:22
      */
+    @LogAnno(operateType = "删除客户信息")
     @ApiOperation(value = "删除客户信息", notes = "根据客户id，删除客户信息")
     @ApiImplicitParam(name = "customId", value = "客户编号", required = true, dataType = "Integer")
     @GetMapping("/delete")
+    @RequiresPermissions("custom:del")
     public String delete(@NonNull int customId) {
         var json = new JSONObject();
         mpCustomService.delete(customId);
@@ -114,6 +122,7 @@ public class MpCustomController {
      * @author Hongyan Wang
      * @date 2019/10/10 17:20
      */
+    @LogAnno(operateType = "修改客户信息")
     @ApiOperation(value = "修改客户信息", notes = "根据客户id，修改客户信息")
     @ApiImplicitParam(name = "customId", value = "客户编号", required = true, dataType = "Integer")
     @PostMapping("/update")

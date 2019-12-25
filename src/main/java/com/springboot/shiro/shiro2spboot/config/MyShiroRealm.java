@@ -3,15 +3,15 @@ package com.springboot.shiro.shiro2spboot.config;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaToken;
+import com.springboot.shiro.shiro2spboot.common.util.HttpContextUtil;
 import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
 import com.springboot.shiro.shiro2spboot.entity.User;
+import com.springboot.shiro.shiro2spboot.entity.UserLog;
+import com.springboot.shiro.shiro2spboot.service.UserLogService;
 import com.springboot.shiro.shiro2spboot.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -20,12 +20,16 @@ import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpSession;
+
 //实现AuthorizingRealm接口用户认证
 @Slf4j
 public class MyShiroRealm extends AuthorizingRealm {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserLogService userLogService;
 
     /**
      * @return org.apache.shiro.authz.AuthorizationInfo
@@ -85,7 +89,21 @@ public class MyShiroRealm extends AuthorizingRealm {
             var username = (String) authenticationToken.getPrincipal();
 //            根据用户名获取用户信息
             var user = userService.findLoginUser(username);
+//            用户不存在，抛出相应异常
+            if (user == null)
+                throw new UnknownAccountException();
             log.info("认证 ：Shiro认证成功");
+
+//            将用户信息放入session中
+            session.setAttribute("curUser", user);
+//            加入日志中
+            UserLog log = new UserLog();
+            log.setActType("登陆系统");// 操作说明
+            log.setUsername(user.getUsername());
+            String ip = HttpContextUtil.getIpAddress();
+            log.setIpAddr(ip);
+            userLogService.insertSelective(log);// 添加日志记录
+
 //                验证authenticationToken和authenticationInfo信息
             return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()), getName());
         }

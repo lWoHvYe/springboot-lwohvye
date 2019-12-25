@@ -1,6 +1,7 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.springboot.shiro.shiro2spboot.common.annotation.LogAnno;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import com.springboot.shiro.shiro2spboot.service.UserService;
@@ -31,6 +32,7 @@ public class UserController {
      *
      * @return
      */
+    @LogAnno(operateType = "查询用户")
     @ApiIgnore
     @RequestMapping("/getUser")
     @RequiresPermissions("user:view")//权限管理;
@@ -82,6 +84,7 @@ public class UserController {
      * @Author: Hongyan Wang
      * @Date: 2019/9/23 13:27
      */
+    @LogAnno(operateType = "添加用户")
     @ApiOperation(value = "添加新用户", notes = "添加新用户，包含用户的授权")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "user", value = "用户实体类", required = true, dataType = "User"),
@@ -115,6 +118,7 @@ public class UserController {
      * @param user
      * @return
      */
+    @LogAnno(operateType = "删除用户")
     @ApiOperation(value = "删除指定用户", notes = "根据用户的id删除对应的用户与权限")
     @ApiImplicitParam(name = "uid", value = "用户ID", required = true, dataType = "Long")
     @RequestMapping(value = "/deleteUser", method = {RequestMethod.GET, RequestMethod.POST})

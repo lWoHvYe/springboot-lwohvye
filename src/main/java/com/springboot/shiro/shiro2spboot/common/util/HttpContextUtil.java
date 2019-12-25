@@ -4,10 +4,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HttpContextUtil {
     public static HttpServletRequest getRequest() {
-        return  ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
     }
 
@@ -34,6 +36,19 @@ public class HttpContextUtil {
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
+
+        if (ip != null && ip.contains(",")) {
+            ip = ip.substring(0, ip.indexOf(",")).trim();
+        }
+        ip = ("0:0:0:0:0:0:0:1").equals(ip) ? "127.0.0.1" : ip;
+        String outIp = request.getHeader("ipHeader");
+
+        List<String> ips = new ArrayList<>();
+        ips.add("192.168.1.1");
+        if (outIp != null && !"".equals(outIp) && ips.contains(ip)) {
+            ip = outIp;
+        }
+
         return ip;
     }
 }

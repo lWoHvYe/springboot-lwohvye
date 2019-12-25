@@ -33,6 +33,6 @@ public class Permission implements Serializable {
 
     @JSONField(serialize = false)//不序列化该属性
     @ManyToMany(fetch = FetchType.LAZY)//配置反向延迟加载
-    @JoinTable(name = "RolePermission", joinColumns = {@JoinColumn(name = "permissionId")}, inverseJoinColumns = {@JoinColumn(name = "roleId")})
+    @JoinTable(name = "role_permission", joinColumns = {@JoinColumn(name = "permission_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private List<Role> roles;
 }
