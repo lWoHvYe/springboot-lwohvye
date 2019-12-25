@@ -237,8 +237,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <!--编译jdk版本-->
-                    <source>12</source>
-                    <target>12</target>
+                    <source>13</source>
+                    <target>13</target>
                 </configuration>
             </plugin>
         </plugins>
