@@ -2,6 +2,7 @@ package com.springboot.shiro.shiro2spboot.config;
 
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaFormAuthenticationFilter;
 import com.springboot.shiro.shiro2spboot.common.shiro.KickoutSessionControlFilter;
+import com.springboot.shiro.shiro2spboot.common.shiro.MyShiroRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SessionsSecurityManager;
@@ -108,7 +109,7 @@ public class ShiroConfig {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.config.MyShiroRealm
+     * @return com.springboot.shiro.shiro2spboot.common.shiro.MyShiroRealm
      * @description 身份认证realm
      * @params []
      * @author Hongyan Wang

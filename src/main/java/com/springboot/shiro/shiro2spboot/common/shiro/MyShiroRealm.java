@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.config;
+package com.springboot.shiro.shiro2spboot.common.shiro;
 
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 
 //实现AuthorizingRealm接口用户认证
 @Slf4j
@@ -86,7 +87,8 @@ public class MyShiroRealm extends AuthorizingRealm {
                 throw new CaptchaErrorException();
 
 //          获取用户名
-            var username = (String) authenticationToken.getPrincipal();
+            var username = ((CaptchaToken) authenticationToken).getUsername();
+            var password = ((CaptchaToken) authenticationToken).getPassword();
 //            根据用户名获取用户信息
             var user = userService.findLoginUser(username);
 //            用户不存在，抛出相应异常
@@ -98,8 +100,11 @@ public class MyShiroRealm extends AuthorizingRealm {
             session.setAttribute("curUser", user);
 //            加入日志中
             UserLog log = new UserLog();
-            log.setActType("登陆系统");// 操作说明
+            log.setActType("com.springboot.shiro.shiro2spboot.controller.LoginController.login : 登陆系统");// 操作说明
             log.setUsername(user.getUsername());
+//            获取并设置参数
+            String actParams = " 用户名 : " + username + " : 密码 : " + Arrays.toString(password);
+            log.setActParams(actParams);
             String ip = HttpContextUtil.getIpAddress();
             log.setIpAddr(ip);
             userLogService.insertSelective(log);// 添加日志记录
