@@ -15,6 +15,7 @@ import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
@@ -33,6 +34,14 @@ import java.util.Properties;
 //TODO 配置指定条件下清除缓存
 @Configuration
 public class ShiroConfig {
+
+    //    加载配置文件信息
+    @Value("${spring.redis.host}")
+    public String redisHost;
+    @Value("${spring.redis.port}")
+    public String redisPort;
+    @Value("${spring.redis.password}")
+    public String redisPassword;
 
     /**
      * @return org.apache.shiro.spring.web.ShiroFilterFactoryBean
@@ -125,9 +134,9 @@ public class ShiroConfig {
     }
 
     /**
+     * @return org.apache.shiro.authc.credential.HashedCredentialsMatcher
      * @description 自定义凭证匹配器
      * @params []
-     * @return org.apache.shiro.authc.credential.HashedCredentialsMatcher
      * @author Hongyan Wang
      * @date 2019/10/12 15:06
      */
@@ -163,19 +172,19 @@ public class ShiroConfig {
     }
 
     /**
+     * @return org.crazycake.shiro.RedisManager
      * @description 自定义redis配置类
      * @params []
-     * @return org.crazycake.shiro.RedisManager
      * @author Hongyan Wang
      * @date 2019/10/12 15:28
      */
     @Bean
-    public RedisManager redisManager(){
+    public RedisManager redisManager() {
         var redisManager = new RedisManager();
 //        配置redis主机地址 ip:port
-        redisManager.setHost("192.168.120.145:6379");
+        redisManager.setHost(redisHost + ":" + redisPort);
 //        配置redis连接密码
-        redisManager.setPassword("redis");
+        redisManager.setPassword(redisPassword);
 //        配置连接超时
         redisManager.setTimeout(1200);
 
@@ -199,14 +208,14 @@ public class ShiroConfig {
     }
 
     /**
+     * @return org.crazycake.shiro.RedisSessionDAO
      * @description RedisSessionDAO是对redis-session Dao层的相关实现，可以设置相关属性
      * @params []
-     * @return org.crazycake.shiro.RedisSessionDAO
      * @author Hongyan Wang
      * @date 2019/10/12 15:36
      */
     @Bean
-    public RedisSessionDAO redisSessionDAO(){
+    public RedisSessionDAO redisSessionDAO() {
         var sessionDAO = new RedisSessionDAO();
 //        设置redis属性
         sessionDAO.setRedisManager(redisManager());
@@ -240,9 +249,9 @@ public class ShiroConfig {
     }
 
     /**
+     * @return org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor
      * @description 开启spring aop支持
      * @params [securityManager]
-     * @return org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor
      * @author Hongyan Wang
      * @date 2019/10/12 15:51
      */
@@ -254,9 +263,9 @@ public class ShiroConfig {
     }
 
     /**
+     * @return org.springframework.web.servlet.handler.SimpleMappingExceptionResolver
      * @description 权限相关异常处理类
      * @params []
-     * @return org.springframework.web.servlet.handler.SimpleMappingExceptionResolver
      * @author Hongyan Wang
      * @date 2019/10/12 15:52
      */
@@ -273,9 +282,9 @@ public class ShiroConfig {
     }
 
     /**
+     * @return org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator
      * @description 授权用配置
      * @params []
-     * @return org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator
      * @author Hongyan Wang
      * @date 2019/10/12 15:52
      */
@@ -293,14 +302,15 @@ public class ShiroConfig {
     }
 
     /**
+     * @return org.apache.shiro.spring.LifecycleBeanPostProcessor
      * @description shiro生命周期处理器
      * @params []
-     * @return org.apache.shiro.spring.LifecycleBeanPostProcessor
      * @author Hongyan Wang
      * @date 2019/10/12 15:54
      */
+    //TODO 在配置类中使用@Value注入配置文件的值时，可能由于加载顺序的原因无法成功注入，需要将Lifecycle相关方法设置为静态方法static
     @Bean
-    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor(){
+    public static LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
     }
 
