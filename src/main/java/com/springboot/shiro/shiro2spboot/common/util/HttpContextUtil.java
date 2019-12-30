@@ -19,8 +19,8 @@ public class HttpContextUtil {
      * @return
      */
     public static String getIpAddress() {
-        HttpServletRequest request = getRequest();
-        String ip = request.getHeader("x-forwarded-for");
+        var request = getRequest();
+        var ip = request.getHeader("x-forwarded-for");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
         }
@@ -41,9 +41,9 @@ public class HttpContextUtil {
             ip = ip.substring(0, ip.indexOf(",")).trim();
         }
         ip = ("0:0:0:0:0:0:0:1").equals(ip) ? "127.0.0.1" : ip;
-        String outIp = request.getHeader("ipHeader");
+        var outIp = request.getHeader("ipHeader");
 
-        List<String> ips = new ArrayList<>();
+        var ips = new ArrayList<String>();
         ips.add("192.168.1.1");
         if (outIp != null && !"".equals(outIp) && ips.contains(ip)) {
             ip = outIp;
