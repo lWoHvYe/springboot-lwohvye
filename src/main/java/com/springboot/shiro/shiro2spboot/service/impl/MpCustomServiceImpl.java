@@ -1,5 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.springboot.shiro.shiro2spboot.common.datasource.DatabaseType;
+import com.springboot.shiro.shiro2spboot.common.datasource.dataSource;
 import com.springboot.shiro.shiro2spboot.dao.MpCustomMapper;
 import com.springboot.shiro.shiro2spboot.entity.MpCustomEntity;
 import com.springboot.shiro.shiro2spboot.local.redis.RedisKeys;
@@ -33,6 +35,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 16:09
      */
+    @dataSource(DatabaseType.SLAVE)
     @Cacheable(key = "'mpCustomList'")
     @Override
     public Object list() {
@@ -82,6 +85,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 16:31
      */
+    @dataSource(DatabaseType.SLAVE)
     @Cacheable(unless = "#result == null", cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")
     @Override
     public Object searchById(int customId) {

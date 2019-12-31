@@ -83,7 +83,6 @@ public class MpCustomController {
      * @author Hongyan Wang
      * @date 2019/10/10 16:20
      */
-    @LogAnno(operateType = "获取客户信息")
     @ApiOperation(value = "获取客户信息", notes = "根据id获取客户信息")
     @ApiImplicitParam(name = "customId", value = "客户编号", required = true, dataType = "Integer")
     @GetMapping("/searchById")

@@ -32,7 +32,6 @@ public class UserController {
      *
      * @return
      */
-    @LogAnno(operateType = "查询用户")
     @ApiIgnore
     @RequestMapping("/getUser")
     @RequiresPermissions("user:view")//权限管理;

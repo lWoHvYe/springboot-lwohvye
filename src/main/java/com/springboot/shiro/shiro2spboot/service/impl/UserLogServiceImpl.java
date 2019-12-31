@@ -1,5 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.springboot.shiro.shiro2spboot.common.datasource.DatabaseType;
+import com.springboot.shiro.shiro2spboot.common.datasource.dataSource;
 import com.springboot.shiro.shiro2spboot.dao.UserLogMapper;
 import com.springboot.shiro.shiro2spboot.entity.UserLog;
 import com.springboot.shiro.shiro2spboot.service.UserLogService;
@@ -45,11 +47,13 @@ public class UserLogServiceImpl implements UserLogService {
         return userLogMapper.updateByPrimaryKey(record);
     }
 
+    @dataSource(DatabaseType.SLAVE)
     @Override
     public List<UserLog> list(String username, String startDate, String endDate, int pages, int limits) {
         return userLogMapper.list(username, startDate, endDate, new RowBounds((pages - 1) * limits, limits));
     }
 
+    @dataSource(DatabaseType.SLAVE)
     @Override
     public int selectCount(String username, String startDate, String endDate) {
         return userLogMapper.selectCount(username, startDate, endDate);
