@@ -7,6 +7,5 @@ package com.springboot.shiro.shiro2spboot.common.datasource;
  * 2）DatabaseType中的变量名称就是数据库的名称
  */
 public enum DatabaseType {
-	ORACLE
-	, MYSQL
+    MASTER, SLAVE
 }

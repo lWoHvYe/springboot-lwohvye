@@ -16,7 +16,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -42,22 +41,22 @@ public class DataSourceConfig {
      */
     @Bean
     @Primary
-    public DataSource mysqlDataSource() throws Exception {
+    public DataSource masterDataSource() throws Exception {
         var props = new Properties();
-        props.put("driverClassName", env.getProperty("spring.datasource.druid.mysql.driver-class-name"));
-        props.put("url", env.getProperty("spring.datasource.druid.mysql.url"));
-        props.put("username", env.getProperty("spring.datasource.druid.mysql.username"));
-        props.put("password", env.getProperty("spring.datasource.druid.mysql.password"));
+        props.put("driverClassName", env.getProperty("spring.datasource.druid.master.driver-class-name"));
+        props.put("url", env.getProperty("spring.datasource.druid.master.url"));
+        props.put("username", env.getProperty("spring.datasource.druid.master.username"));
+        props.put("password", env.getProperty("spring.datasource.druid.master.password"));
         return DruidDataSourceFactory.createDataSource(props);
     }
 
     @Bean
-    public DataSource oracleDataSource() throws Exception {
+    public DataSource slaveDataSource() throws Exception {
         var props = new Properties();
-        props.put("driverClassName", env.getProperty("spring.datasource.druid.oracle.driver-class-name"));
-        props.put("url", env.getProperty("spring.datasource.druid.oracle.url"));
-        props.put("username", env.getProperty("spring.datasource.druid.oracle.username"));
-        props.put("password", env.getProperty("spring.datasource.druid.oracle.password"));
+        props.put("driverClassName", env.getProperty("spring.datasource.druid.slave.driver-class-name"));
+        props.put("url", env.getProperty("spring.datasource.druid.slave.url"));
+        props.put("username", env.getProperty("spring.datasource.druid.slave.username"));
+        props.put("password", env.getProperty("spring.datasource.druid.slave.password"));
         return DruidDataSourceFactory.createDataSource(props);
     }
 
@@ -67,15 +66,16 @@ public class DataSourceConfig {
      */
     @Bean
     public DynamicDataSource dataSource(
-            @Qualifier("mysqlDataSource") DataSource mysqlDataSource,
-            @Qualifier("oracleDataSource") DataSource oracleDataSource) {
+            @Qualifier("masterDataSource") DataSource masterDataSource,
+            @Qualifier("slaveDataSource") DataSource slaveDataSource) {
         var targetDataSources = new HashMap<>();
-        targetDataSources.put(DatabaseType.MYSQL, mysqlDataSource);
-        targetDataSources.put(DatabaseType.ORACLE, oracleDataSource);
+        targetDataSources.put(DatabaseType.MASTER, masterDataSource);
+        targetDataSources.put(DatabaseType.SLAVE, slaveDataSource);
 
         var dataSource = new DynamicDataSource();
         dataSource.setTargetDataSources(targetDataSources);// 该方法是AbstractRoutingDataSource的方法
-        dataSource.setDefaultTargetDataSource(mysqlDataSource);// 默认的DataSource设置为oracleDataSource
+//        TODO 主从库配置，项目拆分成读和写两个项目，读项目默认数据源为从库
+        dataSource.setDefaultTargetDataSource(masterDataSource);// 默认的DataSource设置为masterDataSource
 
         return dataSource;
     }
@@ -83,17 +83,17 @@ public class DataSourceConfig {
     /**
      * jdbc模板
      *
-     * @param mysqlDataSource
-     * @param oracleDataSource
+     * @param masterDataSource
+     * @param slaveDataSource
      * @return
      */
     @Bean
     public JdbcTemplate jdbcTemplate(
-            @Qualifier("mysqlDataSource") DataSource mysqlDataSource,
-            @Qualifier("oracleDataSource") DataSource oracleDataSource) {
+            @Qualifier("masterDataSource") DataSource masterDataSource,
+            @Qualifier("slaveDataSource") DataSource slaveDataSource) {
         return new JdbcTemplate(this.dataSource(
-                mysqlDataSource,
-                oracleDataSource));
+                masterDataSource,
+                slaveDataSource));
     }
 
     /**
@@ -101,13 +101,13 @@ public class DataSourceConfig {
      */
     @Bean
     public SqlSessionFactory sqlSessionFactory(
-            @Qualifier("mysqlDataSource") DataSource mysqlDataSource,
-            @Qualifier("oracleDataSource") DataSource oracleDataSource) throws Exception {
+            @Qualifier("masterDataSource") DataSource masterDataSource,
+            @Qualifier("slaveDataSource") DataSource slaveDataSource) throws Exception {
         var factoryBean = new SqlSessionFactoryBean();
 //		fb.setDataSource(ds);// 指定数据源(这个必须有，否则报错)
         factoryBean.setDataSource(this.dataSource(
-                mysqlDataSource,
-                oracleDataSource));//解决上面配置产生的数据源循环依赖的问题
+                masterDataSource,
+                slaveDataSource));//解决上面配置产生的数据源循环依赖的问题
         // 下边两句仅仅用于*.xml文件，如果整个持久层操作不需要使用到xml文件的话（只用注解就可以搞定），则不加
         factoryBean.setTypeAliasesPackage(env.getProperty("mybatis.type-aliases-package"));// 指定基包
         //配置mybatis返回Map是值为空时显示key
