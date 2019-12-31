@@ -56,9 +56,9 @@ public class LogAopAspect {
         // 创建一个日志对象(准备记录日志)
         var log = new UserLog();
         var actType = new StringBuilder();
-        actType.append("类名 : ").append(targetName).append(" : 方法名 : ").append(methodName);
+        actType.append("类名 : ").append(targetName).append(" ; 方法名 : ").append(methodName);
         if (!StringUtils.isEmpty(operateType))
-            actType.append(" : 方法描述 : ").append(operateType);
+            actType.append(" ; 方法描述 : ").append(operateType);
         log.setActType(actType.toString());// 操作说明
 //        设置方法参数
         var param = getStrParams(pjp, methodSignature);

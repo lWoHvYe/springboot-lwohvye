@@ -3,10 +3,12 @@ package com.springboot.shiro.shiro2spboot.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.entity.UserLog;
 import com.springboot.shiro.shiro2spboot.service.UserLogService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -26,13 +28,14 @@ public class UserLogController {
     private UserLogService userLogService;
 
     /**
-    * @description 获取日志列表
-    * @params [username, searchTime, pages, limits]
-    * @return java.lang.String
-    * @author Hongyan Wang
-    * @date 2019/12/18 16:54
-    */
-    @RequestMapping("/list")
+     * @return java.lang.String
+     * @description 获取日志列表
+     * @params [username, searchTime, pages, limits]
+     * @author Hongyan Wang
+     * @date 2019/12/18 16:54
+     */
+    @ApiOperation(value = "获取日志列表", notes = "获取日志列表，包含根据用户名及操作时间分页查询")
+    @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String list(String username, String searchTime, int pages, int limits) {
         JSONObject json = new JSONObject();
@@ -45,8 +48,8 @@ public class UserLogController {
             endDate = searchTimes[1];
         }
 
-        List<UserLog> list = userLogService.list(username,startDate,endDate,pages,limits);
-        int count = userLogService.selectCount(username,startDate,endDate);
+        List<UserLog> list = userLogService.list(username, startDate, endDate, pages, limits);
+        int count = userLogService.selectCount(username, startDate, endDate);
 
         json.put("count", count);
         json.put("curPage", pages);

@@ -100,7 +100,7 @@ public class MyShiroRealm extends AuthorizingRealm {
             session.setAttribute("curUser", user);
 //            加入日志中
             UserLog log = new UserLog();
-            log.setActType("com.springboot.shiro.shiro2spboot.controller.LoginController.login : 登陆系统");// 操作说明
+            log.setActType("类名 : com.springboot.shiro.shiro2spboot.controller.LoginController ; 方法名 : login ; 方法描述 : 登陆系统");// 操作说明
             log.setUsername(user.getUsername());
 //            获取并设置参数
             String actParams = " 用户名 : " + username + " : 密码 : " + Arrays.toString(password);
