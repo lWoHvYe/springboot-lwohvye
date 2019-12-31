@@ -291,7 +291,7 @@ public class ShiroConfig {
     @Bean
     public static DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator() {
         var defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
-        /**
+        /*
          * setUsePrefix(true)用于解决一个奇怪的bug。在引入spring aop的情况下。
          * 在@Controller注解的类的方法中加入@RequiresRole等shiro注解，会导致该方法无法映射请求，导致返回404。
          * 加入这项配置能解决这个bug
