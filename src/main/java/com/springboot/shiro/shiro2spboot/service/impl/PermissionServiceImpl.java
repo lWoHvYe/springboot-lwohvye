@@ -1,5 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.springboot.shiro.shiro2spboot.common.datasource.DatabaseType;
+import com.springboot.shiro.shiro2spboot.common.datasource.dataSource;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.dao.PermissionMapper;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+//权限相关只使用主库
+@dataSource(DatabaseType.MASTER)
 @Service
 public class PermissionServiceImpl implements PermissionService {
     @Autowired

@@ -35,7 +35,6 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 16:09
      */
-    @dataSource(DatabaseType.SLAVE)
     @Cacheable(key = "'mpCustomList'")
     @Override
     public Object list() {
@@ -49,6 +48,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 17:10
      */
+    @dataSource(DatabaseType.MASTER)
     @Caching(evict = {@CacheEvict(key = "'mpCustomList'", beforeInvocation = true)},
             put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
@@ -67,6 +67,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 14:28
      */
+    @dataSource(DatabaseType.MASTER)
     @Caching(evict = {
             @CacheEvict(key = "'mpCustomList'", beforeInvocation = true),
             @CacheEvict(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#customId",
@@ -85,7 +86,6 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 16:31
      */
-    @dataSource(DatabaseType.SLAVE)
     @Cacheable(unless = "#result == null", cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")
     @Override
     public Object searchById(int customId) {
@@ -100,6 +100,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 17:13
      */
+    @dataSource(DatabaseType.MASTER)
     @Caching(evict = {
             @CacheEvict(key = "'mpCustomList'", beforeInvocation = true),
             @CacheEvict(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
@@ -113,16 +114,19 @@ public class MpCustomServiceImpl implements MpCustomService {
         return mpCustomMapper.searchById(mpCustomEntity.getCustomId());
     }
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int deleteByPrimaryKey(Integer customId) {
         return mpCustomMapper.deleteByPrimaryKey(customId);
     }
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int insert(MpCustomEntity record) {
         return mpCustomMapper.insert(record);
     }
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int insertSelective(MpCustomEntity record) {
         return mpCustomMapper.insertSelective(record);
@@ -133,11 +137,13 @@ public class MpCustomServiceImpl implements MpCustomService {
         return mpCustomMapper.selectByPrimaryKey(customId);
     }
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int updateByPrimaryKeySelective(MpCustomEntity record) {
         return mpCustomMapper.updateByPrimaryKeySelective(record);
     }
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int updateByPrimaryKey(MpCustomEntity record) {
         return mpCustomMapper.updateByPrimaryKey(record);

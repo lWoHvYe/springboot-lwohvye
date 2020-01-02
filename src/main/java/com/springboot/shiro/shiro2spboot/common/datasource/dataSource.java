@@ -12,6 +12,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface dataSource {
-//    TODO 主从库配置，项目拆分成读和写两个项目，读项目默认数据源为从库
-    DatabaseType value() default DatabaseType.MASTER;
+//    TODO 主从库配置，项目拆分成读和写两个项目，读项目默认数据源为从库，此处配置的未指定时，使用该注解，会使用的数据源，切换项目时可不改
+    DatabaseType value() default DatabaseType.SLAVE;
 }

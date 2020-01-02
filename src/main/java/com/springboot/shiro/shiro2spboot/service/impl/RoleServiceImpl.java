@@ -1,5 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.springboot.shiro.shiro2spboot.common.datasource.DatabaseType;
+import com.springboot.shiro.shiro2spboot.common.datasource.dataSource;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.dao.RoleMapper;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+//权限相关，只是用主库
+@dataSource(DatabaseType.MASTER)
 @Service
 public class RoleServiceImpl implements RoleService {
 

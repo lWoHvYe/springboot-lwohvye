@@ -17,16 +17,19 @@ public class UserLogServiceImpl implements UserLogService {
     @Resource
     private UserLogMapper userLogMapper;
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int deleteByPrimaryKey(Integer id) {
         return userLogMapper.deleteByPrimaryKey(id);
     }
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int insert(UserLog record) {
         return userLogMapper.insert(record);
     }
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int insertSelective(UserLog record) {
         return userLogMapper.insertSelective(record);
@@ -37,23 +40,23 @@ public class UserLogServiceImpl implements UserLogService {
         return userLogMapper.selectByPrimaryKey(id);
     }
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int updateByPrimaryKeySelective(UserLog record) {
         return userLogMapper.updateByPrimaryKeySelective(record);
     }
 
+    @dataSource(DatabaseType.MASTER)
     @Override
     public int updateByPrimaryKey(UserLog record) {
         return userLogMapper.updateByPrimaryKey(record);
     }
 
-    @dataSource(DatabaseType.SLAVE)
     @Override
     public List<UserLog> list(String username, String startDate, String endDate, int pages, int limits) {
         return userLogMapper.list(username, startDate, endDate, new RowBounds((pages - 1) * limits, limits));
     }
 
-    @dataSource(DatabaseType.SLAVE)
     @Override
     public int selectCount(String username, String startDate, String endDate) {
         return userLogMapper.selectCount(username, startDate, endDate);

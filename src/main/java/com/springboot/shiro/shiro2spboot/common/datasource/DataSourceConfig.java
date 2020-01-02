@@ -75,7 +75,7 @@ public class DataSourceConfig {
         var dataSource = new DynamicDataSource();
         dataSource.setTargetDataSources(targetDataSources);// 该方法是AbstractRoutingDataSource的方法
 //        TODO 主从库配置，项目拆分成读和写两个项目，读项目默认数据源为从库
-        dataSource.setDefaultTargetDataSource(masterDataSource);// 默认的DataSource设置为masterDataSource
+        dataSource.setDefaultTargetDataSource(slaveDataSource);// 默认的DataSource设置为masterDataSource
 
         return dataSource;
     }

@@ -1,5 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.springboot.shiro.shiro2spboot.common.datasource.DatabaseType;
+import com.springboot.shiro.shiro2spboot.common.datasource.dataSource;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.dao.RoleMapper;
 import com.springboot.shiro.shiro2spboot.dao.UserMapper;
@@ -17,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+//权限相关，只使用主库
+@dataSource(DatabaseType.MASTER)
 @Service
 public class UserServiceImpl implements UserService {
 
