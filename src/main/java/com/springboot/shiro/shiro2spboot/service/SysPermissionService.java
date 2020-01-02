@@ -5,7 +5,7 @@ import com.springboot.shiro.shiro2spboot.entity.Permission;
 
 import java.util.List;
 
-public interface PermissionService {
+public interface SysPermissionService {
     void findPermission(String name, PageUtil<Permission> pageUtil);
 
     void savePermission(Permission permission);

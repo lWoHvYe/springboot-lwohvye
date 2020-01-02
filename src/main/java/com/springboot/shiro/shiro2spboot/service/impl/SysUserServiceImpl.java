@@ -8,21 +8,19 @@ import com.springboot.shiro.shiro2spboot.dao.UserMapper;
 import com.springboot.shiro.shiro2spboot.repository.UserDao;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.entity.User;
-import com.springboot.shiro.shiro2spboot.service.UserService;
+import com.springboot.shiro.shiro2spboot.service.SysUserService;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 //权限相关，只使用主库
 @dataSource(DatabaseType.MASTER)
 @Service
-public class UserServiceImpl implements UserService {
+public class SysUserServiceImpl implements SysUserService {
 
     @Autowired
     private UserDao userDao;

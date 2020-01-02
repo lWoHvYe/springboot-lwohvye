@@ -21,10 +21,10 @@ public class DataSourceAspect {
     /**
      * 使用空方法定义切点表达式
      * 切点在service层，所以持久层可以是jpa或者mybatis
-     * 将切点从service层，改为有注解的位置，主要为实现只有切换了别的数据源，才在执行后切回默认，减少切换次数
+     * 将切点从service层，改为有注解的位置，主要为实现只有切换了别的数据源，才在执行后切回默认，减少切换次数，execution使用了模糊匹配
      */
 //    @Pointcut("execution(* com.springboot.shiro.shiro2spboot.service.*.*(..))")
-    @Pointcut("@annotation(dataSource)")
+    @Pointcut("@annotation(dataSource) || execution(* com.springboot.shiro.shiro2spboot.service.Sys*.*(..))")
     public void declareJointPointExpression() {
 //	    空方法，不进行内容的定义
     }

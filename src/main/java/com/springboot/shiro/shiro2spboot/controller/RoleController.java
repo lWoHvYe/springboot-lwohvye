@@ -3,7 +3,7 @@ package com.springboot.shiro.shiro2spboot.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.Role;
-import com.springboot.shiro.shiro2spboot.service.RoleService;
+import com.springboot.shiro.shiro2spboot.service.SysRoleService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +17,7 @@ import javax.validation.Valid;
 public class RoleController {
 
     @Autowired
-    private RoleService roleService;
+    private SysRoleService sysRoleService;
 
 
     /**
@@ -32,7 +32,7 @@ public class RoleController {
 //    @ResponseBody
     public String findByRole(String roleName, PageUtil<Role> pageUtil) {
         JSONObject jsonObject = new JSONObject();
-        roleService.findRole(roleName, pageUtil);
+        sysRoleService.findRole(roleName, pageUtil);
         jsonObject.put("result", "success");
         jsonObject.put("list", pageUtil);
         return jsonObject.toJSONString();
@@ -51,7 +51,7 @@ public class RoleController {
 //    @ResponseBody
     public String saveRole(@Valid Role role, String permissionId) {
         JSONObject jsonObject = new JSONObject();
-        roleService.saveRole(role, permissionId);
+        sysRoleService.saveRole(role, permissionId);
         jsonObject.put("result", "success");
         return jsonObject.toJSONString();
     }
@@ -68,7 +68,7 @@ public class RoleController {
 //    @ResponseBody
     public String deleteRole(Role role) {
         JSONObject jsonObject = new JSONObject();
-        roleService.deleteRole(role);
+        sysRoleService.deleteRole(role);
         jsonObject.put("result", "success");
         return jsonObject.toJSONString();
     }

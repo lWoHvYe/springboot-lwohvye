@@ -3,7 +3,7 @@ package com.springboot.shiro.shiro2spboot.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
-import com.springboot.shiro.shiro2spboot.service.PermissionService;
+import com.springboot.shiro.shiro2spboot.service.SysPermissionService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +17,7 @@ import javax.validation.Valid;
 public class PermissionController {
 
     @Autowired
-    private PermissionService permissionService;
+    private SysPermissionService sysPermissionService;
 
 
     /**
@@ -32,7 +32,7 @@ public class PermissionController {
 //    @ResponseBody
     public String findByPermission(String name, PageUtil<Permission> pageUtil) {
         JSONObject jsonObject = new JSONObject();
-        permissionService.findPermission(name, pageUtil);
+        sysPermissionService.findPermission(name, pageUtil);
         jsonObject.put("result", "success");
         jsonObject.put("list", pageUtil);
         return jsonObject.toJSONString();
@@ -50,7 +50,7 @@ public class PermissionController {
 //    @ResponseBody
     public String savePermission(@Valid Permission permission) {
         JSONObject jsonObject = new JSONObject();
-        permissionService.savePermission(permission);
+        sysPermissionService.savePermission(permission);
         jsonObject.put("result", "success");
         return jsonObject.toJSONString();
     }
@@ -67,7 +67,7 @@ public class PermissionController {
 //    @ResponseBody
     public String deleteRole(Permission permission) {
         JSONObject jsonObject = new JSONObject();
-        permissionService.deletePermission(permission);
+        sysPermissionService.deletePermission(permission);
         jsonObject.put("result", "success");
         return jsonObject.toJSONString();
     }
