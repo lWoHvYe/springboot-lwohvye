@@ -4,14 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheManager;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.DefaultSessionKey;
 import org.apache.shiro.session.mgt.SessionManager;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.util.WebUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Deque;
 import java.util.HashMap;
@@ -60,19 +64,19 @@ public class KickoutSessionControlFilter extends AccessControlFilter {
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         var subject = getSubject(request, response);
-        if(!subject.isAuthenticated() && !subject.isRemembered()) {
+        if (!subject.isAuthenticated() && !subject.isRemembered()) {
             //如果没有登录，直接进行之后的流程
             return true;
         }
 
 
-        var session = subject.getSession();
-        var user = (User) subject.getPrincipal();
-        var username = user.getUsername();
-        var sessionId = session.getId();
+        Session session = subject.getSession();
+        User user = (User) subject.getPrincipal();
+        String username = user.getUsername();
+        Serializable sessionId = session.getId();
 
         //读取缓存   没有就存入
-        var deque = cache.get(username);
+        Deque<Serializable> deque = cache.get(username);
 
         //如果此用户没有session队列，也就是还没有登录过，缓存中没有
         //就new一个空队列，不然deque对象为空，会报空指针
@@ -94,17 +98,19 @@ public class KickoutSessionControlFilter extends AccessControlFilter {
             if(kickoutAfter) { //如果踢出后者
                 kickoutSessionId = deque.removeFirst();
                 //踢出后再更新下缓存队列
+                cache.put(username, deque);
             } else { //否则踢出前者
                 kickoutSessionId = deque.removeLast();
                 //踢出后再更新下缓存队列
+                cache.put(username, deque);
             }
-            cache.put(username, deque);
+
 
 
             try {
                 //获取被踢出的sessionId的session对象
                 var kickoutSession = sessionManager.getSession(new DefaultSessionKey(kickoutSessionId));
-                if(kickoutSession != null) {
+                if (kickoutSession != null) {
                     //设置会话的kickout属性表示踢出了
                     kickoutSession.setAttribute("kickout", true);
                 }
@@ -122,7 +128,7 @@ public class KickoutSessionControlFilter extends AccessControlFilter {
             }
             saveRequest(request);
 
-            var resultMap = new HashMap<String, String>();
+            Map<String, String> resultMap = new HashMap<String, String>();
             //判断是不是Ajax请求
             if ("XMLHttpRequest".equalsIgnoreCase(((HttpServletRequest) request).getHeader("X-Requested-With"))) {
                 resultMap.put("user_status", "300");
@@ -140,7 +146,7 @@ public class KickoutSessionControlFilter extends AccessControlFilter {
     private void out(ServletResponse hresponse, Map<String, String> resultMap) {
         try {
             hresponse.setCharacterEncoding("UTF-8");
-            var out = hresponse.getWriter();
+            PrintWriter out = hresponse.getWriter();
             out.println(JSON.toJSONString(resultMap));
             out.flush();
             out.close();
