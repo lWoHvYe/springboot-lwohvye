@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.annotation.LogAnno;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.User;
-import com.springboot.shiro.shiro2spboot.service.UserService;
+import com.springboot.shiro.shiro2spboot.service.SysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -25,7 +25,7 @@ import javax.validation.Valid;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private SysUserService sysUserService;
 
     /**
      * 用户查询.
@@ -57,7 +57,7 @@ public class UserController {
     public String findByUsername(String username, PageUtil<User> pageUtil) {
         JSONObject jsonObject = new JSONObject();
 //        查询列表
-        userService.findUser(username, pageUtil);
+        sysUserService.findUser(username, pageUtil);
         jsonObject.put("result", "success");
         jsonObject.put("list", pageUtil);
         return jsonObject.toJSONString();
@@ -94,7 +94,7 @@ public class UserController {
 //    @ResponseBody
     public String saveUser(@Valid User user, String roleId) {
         JSONObject jsonObject = new JSONObject();
-        userService.saveUser(user, roleId);
+        sysUserService.saveUser(user, roleId);
         jsonObject.put("result", "success");
         return jsonObject.toJSONString();
     }
@@ -125,7 +125,7 @@ public class UserController {
 //    @ResponseBody
     public String deleteUser(User user) {
         JSONObject jsonObject = new JSONObject();
-        userService.deleteUser(user);
+        sysUserService.deleteUser(user);
         jsonObject.put("result", "success");
         return jsonObject.toJSONString();
     }

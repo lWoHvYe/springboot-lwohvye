@@ -4,15 +4,13 @@ import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.dao.PermissionMapper;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.repository.PermissionDao;
-import com.springboot.shiro.shiro2spboot.service.PermissionService;
+import com.springboot.shiro.shiro2spboot.service.SysPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class PermissionServiceImpl implements PermissionService {
+public class SysPermissionServiceImpl implements SysPermissionService {
     @Autowired
     private PermissionDao permissionDao;
     @Autowired

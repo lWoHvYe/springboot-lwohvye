@@ -3,7 +3,7 @@ package com.springboot.shiro.shiro2spboot.service;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.User;
 
-public interface UserService {
+public interface SysUserService {
     User findByUsername(String name);
 
     void findUser(String username, PageUtil<User> pageable);

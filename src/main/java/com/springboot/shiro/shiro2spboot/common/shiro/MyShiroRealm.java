@@ -1,14 +1,11 @@
 package com.springboot.shiro.shiro2spboot.common.shiro;
 
-import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
-import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
-import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaToken;
 import com.springboot.shiro.shiro2spboot.common.util.HttpContextUtil;
 import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import com.springboot.shiro.shiro2spboot.entity.UserLog;
 import com.springboot.shiro.shiro2spboot.service.UserLogService;
-import com.springboot.shiro.shiro2spboot.service.UserService;
+import com.springboot.shiro.shiro2spboot.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -20,7 +17,6 @@ import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 
 //实现AuthorizingRealm接口用户认证
@@ -28,7 +24,7 @@ import java.util.Arrays;
 public class MyShiroRealm extends AuthorizingRealm {
 
     @Autowired
-    private UserService userService;
+    private SysUserService sysUserService;
     @Autowired
     private UserLogService userLogService;
 
@@ -90,7 +86,7 @@ public class MyShiroRealm extends AuthorizingRealm {
             var username = ((CaptchaToken) authenticationToken).getUsername();
             var password = ((CaptchaToken) authenticationToken).getPassword();
 //            根据用户名获取用户信息
-            var user = userService.findLoginUser(username);
+            var user = sysUserService.findLoginUser(username);
 //            用户不存在，抛出相应异常
             if (user == null)
                 throw new UnknownAccountException();

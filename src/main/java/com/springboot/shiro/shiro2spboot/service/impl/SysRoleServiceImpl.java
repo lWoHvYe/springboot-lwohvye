@@ -5,7 +5,7 @@ import com.springboot.shiro.shiro2spboot.dao.RoleMapper;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.repository.RoleDao;
-import com.springboot.shiro.shiro2spboot.service.RoleService;
+import com.springboot.shiro.shiro2spboot.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class RoleServiceImpl implements RoleService {
+public class SysRoleServiceImpl implements SysRoleService {
 
     @Autowired
     private RoleDao roleDao;
