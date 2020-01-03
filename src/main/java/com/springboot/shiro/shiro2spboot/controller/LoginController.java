@@ -13,6 +13,7 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import springfox.documentation.annotations.ApiIgnore;
@@ -43,7 +44,9 @@ public class LoginController {
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
     public String login(String username, String password, String captchaCode, HttpServletRequest request, Map<String, Object> map) {
         String exception = null;
-
+//        未传用户名，直接返回，主要解决项目启动及退出登陆时报用户名不存在的错误的问题
+        if (StringUtils.isEmpty(username))
+            return "/login";
         try {
             var subject = SecurityUtils.getSubject();
             var usernamePasswordToken = new CaptchaToken(username, password, captchaCode, WebUtils.isTrue(request, "rememberMe"), subject.getSession().getHost());
