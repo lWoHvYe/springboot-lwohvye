@@ -5,6 +5,7 @@ import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,7 +22,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -112,6 +112,18 @@ public class DataSourceConfig {
     }
 
     /**
+     * @description 线程安全
+     * @params [sqlSessionFactory]
+     * @return org.mybatis.spring.SqlSessionTemplate
+     * @author Hongyan Wang
+     * @date 2020/1/3 13:23
+     */
+    @Bean
+    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("sqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
+    }
+
+    /**
      * 配置事务管理器
      */
     @Bean
@@ -120,18 +132,18 @@ public class DataSourceConfig {
     }
 
     /**
+     * @return
      * @description 配置一个管理后台的Servlet
      * @params
-     * @return
      * @author Hongyan Wang
      * @date 2020/1/3 10:09
      */
     @Bean
-    public ServletRegistrationBean druidServlet() {
-        var servletRegistrationBean = new ServletRegistrationBean();
+    public ServletRegistrationBean<StatViewServlet> druidServlet() {
+        var servletRegistrationBean = new ServletRegistrationBean<StatViewServlet>();
         servletRegistrationBean.setServlet(new StatViewServlet());
         servletRegistrationBean.addUrlMappings("/druid/*");
-        Map<String, String> initParameters = new HashMap<String, String>();
+        var initParameters = new HashMap<String, String>();
         initParameters.put("loginUsername", "admin");// 用户名
         initParameters.put("loginPassword", "admin");// 密码
         initParameters.put("resetEnable", "false");// 禁用HTML页面上的“Reset All”功能
@@ -142,18 +154,22 @@ public class DataSourceConfig {
     }
 
     /**
+     * @return org.springframework.boot.web.servlet.FilterRegistrationBean
      * @description 配置一个Web监控的filter
      * @params []
-     * @return org.springframework.boot.web.servlet.FilterRegistrationBean
      * @author Hongyan Wang
      * @date 2020/1/3 10:10
      */
     @Bean
-    public FilterRegistrationBean filterRegistrationBean() {
-        var filterRegistrationBean = new FilterRegistrationBean();
+    public FilterRegistrationBean<WebStatFilter> filterRegistrationBean() {
+        var filterRegistrationBean = new FilterRegistrationBean<WebStatFilter>();
         filterRegistrationBean.setFilter(new WebStatFilter());
         filterRegistrationBean.addUrlPatterns("/*");
         filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
+        filterRegistrationBean.addInitParameter("profileEnable", "true");
+        filterRegistrationBean.addInitParameter("principalCookieName", "USER_COOKIE");
+        filterRegistrationBean.addInitParameter("principalSessionName", "USER_SESSION");
+        filterRegistrationBean.addInitParameter("DruidWebStatFilter", "/*");
         return filterRegistrationBean;
     }
 

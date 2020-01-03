@@ -26,7 +26,7 @@ import java.util.Map;
 @Controller
 public class LoginController {
 
-
+    @ApiIgnore
     @RequestMapping(value = {"/", "/index"}, method = {RequestMethod.GET, RequestMethod.POST})
     public String index() {
         return "/index";
@@ -103,17 +103,19 @@ public class LoginController {
         }
     }
 
+    @ApiIgnore
     @RequestMapping(value = "/403", method = {RequestMethod.GET, RequestMethod.POST})
     public String unauthorizedRole() {
         return "/403";
     }
 
+    @ApiIgnore
     @RequestMapping(value = "/kickout", method = {RequestMethod.GET, RequestMethod.POST})
     public String kickout() {
         return "/kickout";
     }
 
-
+    @ApiIgnore
     @RequestMapping(value = "/jsonTestPage", method = {RequestMethod.GET, RequestMethod.POST})
     public String jsonTestPage() {
         return "/jsonTest";
