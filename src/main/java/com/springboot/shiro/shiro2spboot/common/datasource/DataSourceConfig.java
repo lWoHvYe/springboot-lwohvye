@@ -1,11 +1,16 @@
 package com.springboot.shiro.shiro2spboot.common.datasource;
 
-import com.alibaba.druid.pool.DruidDataSourceFactory;
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.support.http.StatViewServlet;
+import com.alibaba.druid.support.http.WebStatFilter;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -16,8 +21,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 
 
 /**
@@ -36,28 +41,22 @@ public class DataSourceConfig {
 
     /**
      * 创建数据源(数据源的名称：方法名可以取为XXXDataSource(),XXX为数据库名称,该名称也就是数据源的名称)
+     *
      * @Primary 注解用于标识默认使用的 DataSource Bean，因为有三个 DataSource Bean，该注解可用于 master(主数据源)
      * 或 slave(副数据源) DataSource Bean, 但不能用于 dynamicDataSource Bean, 否则会产生循环调用
+     * 使用@ConfigurationProperties的prefix参数设置要匹配的属性的前缀
      */
     @Bean
     @Primary
-    public DataSource masterDataSource() throws Exception {
-        var props = new Properties();
-        props.put("driverClassName", env.getProperty("spring.datasource.druid.master.driver-class-name"));
-        props.put("url", env.getProperty("spring.datasource.druid.master.url"));
-        props.put("username", env.getProperty("spring.datasource.druid.master.username"));
-        props.put("password", env.getProperty("spring.datasource.druid.master.password"));
-        return DruidDataSourceFactory.createDataSource(props);
+    @ConfigurationProperties(prefix = "spring.datasource.druid.master")
+    public DataSource masterDataSource() {
+        return new DruidDataSource();
     }
 
     @Bean
-    public DataSource slaveDataSource() throws Exception {
-        var props = new Properties();
-        props.put("driverClassName", env.getProperty("spring.datasource.druid.slave.driver-class-name"));
-        props.put("url", env.getProperty("spring.datasource.druid.slave.url"));
-        props.put("username", env.getProperty("spring.datasource.druid.slave.username"));
-        props.put("password", env.getProperty("spring.datasource.druid.slave.password"));
-        return DruidDataSourceFactory.createDataSource(props);
+    @ConfigurationProperties(prefix = "spring.datasource.druid.slave")
+    public DataSource slaveDataSource() {
+        return new DruidDataSource();
     }
 
     /**
@@ -83,31 +82,22 @@ public class DataSourceConfig {
     /**
      * jdbc模板
      *
-     * @param masterDataSource
-     * @param slaveDataSource
+     * @param dataSource
      * @return
      */
     @Bean
-    public JdbcTemplate jdbcTemplate(
-            @Qualifier("masterDataSource") DataSource masterDataSource,
-            @Qualifier("slaveDataSource") DataSource slaveDataSource) {
-        return new JdbcTemplate(this.dataSource(
-                masterDataSource,
-                slaveDataSource));
+    public JdbcTemplate jdbcTemplate(DynamicDataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
     /**
      * 根据数据源创建SqlSessionFactory
      */
     @Bean
-    public SqlSessionFactory sqlSessionFactory(
-            @Qualifier("masterDataSource") DataSource masterDataSource,
-            @Qualifier("slaveDataSource") DataSource slaveDataSource) throws Exception {
+    public SqlSessionFactory sqlSessionFactory(DynamicDataSource dataSource) throws Exception {
         var factoryBean = new SqlSessionFactoryBean();
 //		fb.setDataSource(ds);// 指定数据源(这个必须有，否则报错)
-        factoryBean.setDataSource(this.dataSource(
-                masterDataSource,
-                slaveDataSource));//解决上面配置产生的数据源循环依赖的问题
+        factoryBean.setDataSource(dataSource);//解决上面配置产生的数据源循环依赖的问题
         // 下边两句仅仅用于*.xml文件，如果整个持久层操作不需要使用到xml文件的话（只用注解就可以搞定），则不加
         factoryBean.setTypeAliasesPackage(env.getProperty("mybatis.type-aliases-package"));// 指定基包
         //配置mybatis返回Map是值为空时显示key
@@ -128,5 +118,44 @@ public class DataSourceConfig {
     public DataSourceTransactionManager transactionManager(DynamicDataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
+
+    /**
+     * @description 配置一个管理后台的Servlet
+     * @params
+     * @return
+     * @author Hongyan Wang
+     * @date 2020/1/3 10:09
+     */
+    @Bean
+    public ServletRegistrationBean druidServlet() {
+        var servletRegistrationBean = new ServletRegistrationBean();
+        servletRegistrationBean.setServlet(new StatViewServlet());
+        servletRegistrationBean.addUrlMappings("/druid/*");
+        Map<String, String> initParameters = new HashMap<String, String>();
+        initParameters.put("loginUsername", "admin");// 用户名
+        initParameters.put("loginPassword", "admin");// 密码
+        initParameters.put("resetEnable", "false");// 禁用HTML页面上的“Reset All”功能
+        initParameters.put("allow", ""); // IP白名单 (没有配置或者为空，则允许所有访问)
+        initParameters.put("deny", "192.168.20.38");// IP黑名单 (存在共同时，deny优先于allow)
+        servletRegistrationBean.setInitParameters(initParameters);
+        return servletRegistrationBean;
+    }
+
+    /**
+     * @description 配置一个Web监控的filter
+     * @params []
+     * @return org.springframework.boot.web.servlet.FilterRegistrationBean
+     * @author Hongyan Wang
+     * @date 2020/1/3 10:10
+     */
+    @Bean
+    public FilterRegistrationBean filterRegistrationBean() {
+        var filterRegistrationBean = new FilterRegistrationBean();
+        filterRegistrationBean.setFilter(new WebStatFilter());
+        filterRegistrationBean.addUrlPatterns("/*");
+        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
+        return filterRegistrationBean;
+    }
+
 
 }
