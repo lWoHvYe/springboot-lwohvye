@@ -92,7 +92,7 @@ public class AnotherFutureSample {
         CompletableFuture<Map<String, Integer>>[] futuresArray = new CompletableFuture[threadCount];
 //            开启模拟线程，使用线程池的方式创建CompletableFuture
         for (int i = 0; i < threadCount; i++) {
-//            创建模拟线程
+//            创建模拟线程，除了传执行方法，还可传线程池近去，不传会使用默认线程池ForkJoinPool.commonPool()
             CompletableFuture<Map<String, Integer>> future = CompletableFuture.supplyAsync(simCallable::call);
 //            将线程放入线程数组
             futuresArray[i] = future;

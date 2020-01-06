@@ -70,7 +70,11 @@ public class SearchController {
             QueryResponse query = solrServer.query(params);
             SolrDocumentList result = query.getResults();
             long numFound = result.getNumFound();
-            List<SearchEntity> list = new ArrayList<>();
+//            指定list初始长度，避免频繁扩容问题 new ArrayList<>(初始长度)
+//            也可直接创建ArrayList，然后使用其ensureCapacity(欲放入数据的长度)，来避免频繁扩容，这种更适合于list中已有数据的
+//            情况，否则不如第一种
+            ArrayList<SearchEntity> list = new ArrayList<>();
+            list.ensureCapacity(result.size());
             for (SolrDocument entries : result) {
                 SearchEntity entity = new SearchEntity();
                 entity.setId((Integer) entries.get("gid"));

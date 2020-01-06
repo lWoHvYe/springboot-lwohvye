@@ -156,22 +156,22 @@ public class RedisCacheWriterCustomer implements RedisCacheWriter {
             } else {
                 var needExpire = true;
 //                获取缓存剩余过期时间
-                var existTime = connection.pTtl(key, TimeUnit.MINUTES);
+                var existTime = connection.pTtl(key, TimeUnit.SECONDS);
 //                拿到过期时间，且key存在，方设置过期时间
                 if (existTime != null && existTime > 0) {
 //                  剩余时间在十分钟之内，将其加上半小时，作为过期时间
-                    if (existTime < 10) {
-                        existTime += 30;
+                    if (existTime < 10 * 60) {
+                        existTime += 30 * 60;
 //                  剩余时间一小时之内，将其加上两小时，作为过期时间
-                    } else if (existTime < 60) {
-                        existTime += 60 * 2;
+                    } else if (existTime < 60 * 60) {
+                        existTime += 2 * 60 * 60;
                     } else {
 //                  剩余时间两小时以上，不更新过期时间
                         needExpire = false;
                     }
 //                  设置新的过期时间，单位秒
                     if (needExpire)
-                        connection.expire(key, existTime * 60);
+                        connection.expire(key, existTime);
                 }
             }
             return connection.get(key);

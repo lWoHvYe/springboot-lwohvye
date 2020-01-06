@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -28,7 +28,7 @@ public class ThreadSample {
 
     private Logger logger4j = LoggerFactory.getLogger(ThreadSample.class);
     //    用来存放模拟的结果，同步变量，使用线程安全的HashTable
-    private volatile Map<String, Integer> countMap = new Hashtable<>() {
+    private volatile Map<String, Integer> countMap = new ConcurrentHashMap<>() {
         {
             put("s50", 0);
             put("s100", 0);
@@ -128,6 +128,7 @@ public class ThreadSample {
      * @
      */
     private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
+//        使用线程池创建线程
         var executor = Executors.newFixedThreadPool(6);
 //        开启数个线程
         for (int i = 0; i < threadCount; i++) {
