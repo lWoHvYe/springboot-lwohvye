@@ -135,6 +135,7 @@ public class ThreadSample {
             SimuThread simuThread = new SimuThread(lists);
             executor.execute(simuThread);
         }
+//        关闭线程池
         executor.shutdown();
     }
 
