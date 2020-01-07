@@ -225,6 +225,11 @@
             <artifactId>javassist</artifactId>
             <version>3.26.0-GA</version>
         </dependency>
+        <!--定时任务框架-->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
 
     </dependencies>
 
