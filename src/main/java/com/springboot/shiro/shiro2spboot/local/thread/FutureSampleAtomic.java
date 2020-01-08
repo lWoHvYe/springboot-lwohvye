@@ -14,14 +14,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.common.local
- * @className FutureSample
+ * @className FutureSampleAtomic
  * @description 抽卡模拟 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * 由于模拟采用了随机数的方式，所以池子可以任意配置，不影响结果
  * 由于使用了多线程，所以需关注其他线程的完成情况
  * 采用Feature的方式，使用CompletableFuture的runAsync()构建没有返回的子线程，各子线程实时共享数据，使用Atomic原之类代替原同步代码块
  * 需尤其注意变量的作用范围问题
- * @date 2019/9/22 8:54
+ * @date 2020/01/07 20:54
  */
 //TODO 使用CompletableFuture,子线程实时共享数据，使用Atomic原之类，资源占用更低，且不会再出现资源丢失的情况
 //@SpringBootTest

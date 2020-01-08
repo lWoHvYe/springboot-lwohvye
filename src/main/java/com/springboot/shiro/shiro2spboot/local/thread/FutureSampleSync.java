@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.common.local
- * @className FutureSample
+ * @className FutureSampleSync
  * @description 抽卡模拟 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * 由于模拟采用了随机数的方式，所以池子可以任意配置，不影响结果
