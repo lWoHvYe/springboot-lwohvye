@@ -52,8 +52,10 @@ public class UserLogServiceImpl implements UserLogService {
     @dataSource(DatabaseType.SLAVE)
     @Override
     public PageInfo<UserLog> list(String username, String startDate, String endDate, int page, int pageSize) {
-        PageHelper.startPage(page, pageSize);
-        return new PageInfo<>(userLogMapper.list(username, startDate, endDate));
+        PageInfo<UserLog> pageInfo = PageHelper.startPage(page, pageSize, "act_time desc").doSelectPageInfo(
+                () -> userLogMapper.list(username, startDate, endDate)
+        );
+        return pageInfo;
     }
 
     @dataSource(DatabaseType.SLAVE)
