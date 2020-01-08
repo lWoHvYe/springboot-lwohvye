@@ -3,6 +3,8 @@ package com.springboot.shiro.shiro2spboot.common.datasource;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
+import com.github.pagehelper.PageInterceptor;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -23,6 +25,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Properties;
 
 
 /**
@@ -108,6 +111,23 @@ public class DataSourceConfig {
                 new PathMatchingResourcePatternResolver().getResources(Objects.requireNonNull(env.getProperty("mybatis.mapper-locations"))));
 //        配置数据库下划线转驼峰命名
         Objects.requireNonNull(factoryBean.getObject()).getConfiguration().setMapUnderscoreToCamelCase(true);
+
+      /*  //分页插件相关配置
+        Interceptor interceptor = new PageInterceptor();
+        Properties properties = new Properties();
+        //数据库
+        properties.setProperty("helperDialect", "mysql");
+        //是否将参数offset作为PageNum使用
+        properties.setProperty("offsetAsPageNum", "true");
+        //是否进行count查询
+        properties.setProperty("rowBoundsWithCount", "true");
+        //是否分页合理化
+        // 注意的是reasonable参数，表示分页合理化，默认值为false。
+        //如果该参数设置为 true 时，pageNum<=0 时会查询第一页，pageNum>pages（超过总数时），会查询最后一页。默认false 时，直接根据参数进行查询。
+        properties.setProperty("reasonable", "true");
+        interceptor.setProperties(properties);
+        factoryBean.setPlugins(new Interceptor[] {interceptor});*/
+
         return factoryBean.getObject();
     }
 
