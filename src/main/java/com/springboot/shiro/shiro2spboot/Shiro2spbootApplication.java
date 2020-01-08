@@ -6,12 +6,12 @@ import org.springframework.cache.annotation.EnableCaching;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
+ * @author Hongyan Wang
  * @description Springboot项目入口，在此处开启了缓存@EnableCaching、开启了SwaggerAPI @EnableSwagger2
  * 如果使用mybatis，还需要在此配置mapper扫描，@MapperScan(value="dao路径")，
  * 因为该项目配置了数据源切换，所以将此配置放在相关类上
- * @see com.springboot.shiro.shiro2spboot.common.datasource.DataSourceConfig
- * @author Hongyan Wang
  * @date 2019/10/10 13:50
+ * @see com.springboot.shiro.shiro2spboot.common.datasource.DruidMonitorConfig
  */
 @SpringBootApplication
 //开启缓存

@@ -136,7 +136,6 @@
         <include refid="Base_Column_List"/>
         from user_log
         <include refid="selectWhat"/>
-        order by act_time desc
     </select>
     <select id="selectCount" resultType="java.lang.Integer">
         select count(*) from user_log
