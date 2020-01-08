@@ -22,7 +22,7 @@ public interface UserLogMapper {
     int updateByPrimaryKey(UserLog record);
 
     List<UserLog> list(@Param("username") String username,
-                         @Param("startDate") String startDate, @Param("endDate") String endDate, RowBounds rowBounds);
+                       @Param("startDate") String startDate, @Param("endDate") String endDate);
 
     int selectCount(@Param("username") String username, @Param("startDate") String startDate, @Param("endDate") String endDate);
 

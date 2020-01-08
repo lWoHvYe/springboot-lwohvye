@@ -1,5 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.springboot.shiro.shiro2spboot.common.datasource.DatabaseType;
 import com.springboot.shiro.shiro2spboot.common.datasource.dataSource;
 import com.springboot.shiro.shiro2spboot.dao.UserLogMapper;
@@ -53,8 +55,9 @@ public class UserLogServiceImpl implements UserLogService {
     }
 
     @Override
-    public List<UserLog> list(String username, String startDate, String endDate, int pages, int limits) {
-        return userLogMapper.list(username, startDate, endDate, new RowBounds((pages - 1) * limits, limits));
+    public PageInfo<UserLog> list(String username, String startDate, String endDate, int page, int pageSize) {
+        PageHelper.startPage(page, pageSize);
+        return new PageInfo<>(userLogMapper.list(username, startDate, endDate));
     }
 
     @Override

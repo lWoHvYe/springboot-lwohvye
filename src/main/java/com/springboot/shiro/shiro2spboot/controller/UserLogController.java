@@ -1,6 +1,7 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageInfo;
 import com.springboot.shiro.shiro2spboot.entity.UserLog;
 import com.springboot.shiro.shiro2spboot.service.UserLogService;
 import io.swagger.annotations.ApiOperation;
@@ -37,7 +38,7 @@ public class UserLogController {
     @ApiOperation(value = "获取日志列表", notes = "获取日志列表，包含根据用户名及操作时间分页查询")
     @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public String list(String username, String searchTime, int pages, int limits) {
+    public String list(String username, String searchTime, int page, int pageSize) {
         JSONObject json = new JSONObject();
 
         String startDate = null;
@@ -48,23 +49,11 @@ public class UserLogController {
             endDate = searchTimes[1];
         }
 
-        List<UserLog> list = userLogService.list(username, startDate, endDate, pages, limits);
-        int count = userLogService.selectCount(username, startDate, endDate);
+        PageInfo<UserLog> pageInfo = userLogService.list(username, startDate, endDate, page, pageSize);
 
-        json.put("count", count);
-        json.put("curPage", pages);
-        json.put("totalPage", getPageCount(count, limits));
         json.put("flag", true);
-        json.put("list", list);
+        json.put("result", pageInfo);
         return json.toJSONString();
-    }
-
-    private int getPageCount(int recordCount, int pageSize) {
-        int size = recordCount / pageSize;// 总条数/每页显示的条数=总页数
-        int mod = recordCount % pageSize;// 最后一页的条数
-        if (mod != 0)
-            size++;
-        return recordCount == 0 ? 1 : size;
     }
 
 }
