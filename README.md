@@ -6,3 +6,9 @@ shiro相关学习项目
 1、首先跑一下别人能成功的spring-boot项目，将部分环境调为跟当前项目一致
 2、将项目先调为单数据源
 3、判断会不会是mybatis集成包的问题
+
+
+在启动时会注册MybatisAutoConfiguration中的sqlSessionTemplate
+并执行PageInterceptor的setProperties方法
+查询执行时在SqlSessionTemplate.class中SqlSessionInterceptor内部类的invoke的method.invoke(sqlSession, args)后进入PageInterceptor中的intercept方法
+综上，大概率是初始化时出了问题，导致分页失效
