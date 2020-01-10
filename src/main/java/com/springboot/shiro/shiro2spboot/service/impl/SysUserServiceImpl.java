@@ -3,11 +3,12 @@ package com.springboot.shiro.shiro2spboot.service.impl;
 import com.springboot.shiro.shiro2spboot.common.datasource.DatabaseType;
 import com.springboot.shiro.shiro2spboot.common.datasource.dataSource;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
-import com.springboot.shiro.shiro2spboot.dao.master.RoleMapper;
-import com.springboot.shiro.shiro2spboot.dao.master.UserMapper;
-import com.springboot.shiro.shiro2spboot.repository.UserDao;
+import com.springboot.shiro.shiro2spboot.dao.master.MasterUserMapper;
+import com.springboot.shiro.shiro2spboot.dao.slave.SlaveRoleMapper;
+import com.springboot.shiro.shiro2spboot.dao.slave.SlaveUserMapper;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.entity.User;
+import com.springboot.shiro.shiro2spboot.repository.UserDao;
 import com.springboot.shiro.shiro2spboot.service.SysUserService;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,11 @@ public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private UserDao userDao;
     @Autowired
-    private UserMapper userMapper;
+    private MasterUserMapper masterUserMapper;
     @Autowired
-    private RoleMapper roleMapper;
+    private SlaveUserMapper slaveUserMapper;
+    @Autowired
+    private SlaveRoleMapper slaveRoleMapper;
 
     @Override
     public User findByUsername(String name) {
@@ -78,32 +81,32 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public int deleteByPrimaryKey(Long uid) {
-        return userMapper.deleteByPrimaryKey(uid);
+        return masterUserMapper.deleteByPrimaryKey(uid);
     }
 
     @Override
     public int insert(User record) {
-        return userMapper.insert(record);
+        return masterUserMapper.insert(record);
     }
 
     @Override
     public int insertSelective(User record) {
-        return userMapper.insertSelective(record);
+        return masterUserMapper.insertSelective(record);
     }
 
     @Override
     public User selectByPrimaryKey(Long uid) {
-        return userMapper.selectByPrimaryKey(uid);
+        return slaveUserMapper.selectByPrimaryKey(uid);
     }
 
     @Override
     public int updateByPrimaryKeySelective(User record) {
-        return userMapper.updateByPrimaryKeySelective(record);
+        return masterUserMapper.updateByPrimaryKeySelective(record);
     }
 
     @Override
     public int updateByPrimaryKey(User record) {
-        return userMapper.updateByPrimaryKey(record);
+        return masterUserMapper.updateByPrimaryKey(record);
     }
 
     @Override
@@ -111,10 +114,10 @@ public class SysUserServiceImpl implements SysUserService {
         var user = userDao.findByUsername(username);
         if (user != null && user.getRoleId() != null) {
 //            获取用户角色信息
-            var roles = roleMapper.selectByPrimaryKey(user.getRoleId());
+            var roles = slaveRoleMapper.selectByPrimaryKey(user.getRoleId());
             if (roles != null) {
 //                获取角色对应的权限
-                var permissions = roleMapper.selectPermissionByRoleId(roles.getId());
+                var permissions = slaveRoleMapper.selectPermissionByRoleId(roles.getId());
 //                设置角色权限
                 roles.setPermissions(permissions);
             }
