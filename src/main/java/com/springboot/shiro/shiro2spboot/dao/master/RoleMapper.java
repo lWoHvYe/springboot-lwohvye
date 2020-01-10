@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.dao;
+package com.springboot.shiro.shiro2spboot.dao.master;
 
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.entity.Role;

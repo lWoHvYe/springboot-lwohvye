@@ -20,5 +20,4 @@ public interface UserLogService {
 
     PageInfo<UserLog> list(String username, String startDate, String endDate, int page, int pageSize);
 
-    int selectCount(String username, String startDate, String endDate);
 }
