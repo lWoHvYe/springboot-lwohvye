@@ -1,14 +1,5 @@
 # shiro-springboot
 shiro相关学习项目
 
-当前认为，PageHelper插件失效，可能与SqlSessionFactory有关，怀疑未成功初始化
-在项目启动时，并未成功初始化PageHelper相关插件，当前有两个方案
-1、首先跑一下别人能成功的spring-boot项目，将部分环境调为跟当前项目一致
-2、将项目先调为单数据源
-3、判断会不会是mybatis集成包的问题
-
-
-在启动时会注册MybatisAutoConfiguration中的sqlSessionTemplate
-并执行PageInterceptor的setProperties方法
-查询执行时在SqlSessionTemplate.class中SqlSessionInterceptor内部类的invoke的method.invoke(sqlSession, args)后进入PageInterceptor中的intercept方法
-综上，大概率是初始化时出了问题，导致分页失效
+PageHelper分页插件相关问题已解决
+下阶段，集成dubbo
