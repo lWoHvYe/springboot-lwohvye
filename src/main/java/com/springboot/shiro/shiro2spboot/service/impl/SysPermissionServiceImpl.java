@@ -3,7 +3,7 @@ package com.springboot.shiro.shiro2spboot.service.impl;
 import com.springboot.shiro.shiro2spboot.common.datasource.DatabaseType;
 import com.springboot.shiro.shiro2spboot.common.datasource.dataSource;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
-import com.springboot.shiro.shiro2spboot.dao.PermissionMapper;
+import com.springboot.shiro.shiro2spboot.dao.master.PermissionMapper;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.repository.PermissionDao;
 import com.springboot.shiro.shiro2spboot.service.SysPermissionService;
