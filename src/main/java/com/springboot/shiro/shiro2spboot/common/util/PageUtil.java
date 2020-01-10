@@ -118,40 +118,46 @@ public class PageUtil<T> {
         Pageable pageable;
         if (StringUtils.isEmpty(order)) {
 //           未传排序字段则使用默认排序
-            pageable = PageRequest.of(currentPage-1, pageSize);
+            pageable = PageRequest.of(currentPage - 1, pageSize);
         } else {
 //        创建sort,使用静态方法创建
             var sort = Sort.by(Sort.Direction.DESC, order);
 //        Sort.Order.by(order);
 //        创建pageable,传入页码、每页记录数和排序字段
-            pageable = PageRequest.of(currentPage-1, pageSize, sort);
+            pageable = PageRequest.of(currentPage - 1, pageSize, sort);
         }
         return pageable;
     }
-//  是否是首页
+
+    //  是否是首页
     public boolean isFirst() {
         return (this.currentPage == 1) || (this.totalCount == 0);
     }
-//  是否是尾页
+
+    //  是否是尾页
     public boolean isLast() {
         return (this.totalCount == 0) || (this.currentPage >= obtPageCount());
     }
-//  是否有下一页
+
+    //  是否有下一页
     public boolean isHasNext() {
         return this.currentPage < obtPageCount();
     }
-//  是否有上一页
+
+    //  是否有上一页
     public boolean isHasPrev() {
         return this.currentPage > 1;
     }
-//  下一页页码
+
+    //  下一页页码
     public Integer getNextPage() {
         if (this.currentPage >= obtPageCount()) {
             return obtPageCount();
         }
         return this.currentPage + 1;
     }
-//  上一页页码
+
+    //  上一页页码
     public Integer getPrevPage() {
         if (this.currentPage <= 1) {
             return 1;
