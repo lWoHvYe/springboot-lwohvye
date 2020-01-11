@@ -107,16 +107,10 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public User findLoginUser(String username) {
-        var user = userDao.findByUsername(username);
+        var user = slaveUserMapper.findByUsername(username);
         if (user != null && user.getRoleId() != null) {
 //            获取用户角色信息
             var roles = slaveRoleMapper.selectByPrimaryKey(user.getRoleId());
-            if (roles != null) {
-//                获取角色对应的权限
-                var permissions = slaveRoleMapper.selectPermissionByRoleId(roles.getId());
-//                设置角色权限
-                roles.setPermissions(permissions);
-            }
 //            设置用户角色
             user.setRoles(roles);
         }
