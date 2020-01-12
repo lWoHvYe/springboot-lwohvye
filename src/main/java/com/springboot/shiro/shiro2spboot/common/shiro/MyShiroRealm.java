@@ -99,7 +99,7 @@ public class MyShiroRealm extends AuthorizingRealm {
             log.setActType("类名 : com.springboot.shiro.shiro2spboot.controller.LoginController ; 方法名 : login ; 方法描述 : 登陆系统");// 操作说明
             log.setUsername(user.getUsername());
 //            获取并设置参数
-            String actParams = " 用户名 : " + username + " : 密码 : " + Arrays.toString(password);
+            String actParams = " 用户名 : " + username + " : 密码(用户名+密码倒叙排列) : " + Arrays.toString(password);
             log.setActParams(actParams);
             String ip = HttpContextUtil.getIpAddress();
             log.setIpAddr(ip);

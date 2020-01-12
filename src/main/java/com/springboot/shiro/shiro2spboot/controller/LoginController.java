@@ -49,7 +49,9 @@ public class LoginController {
             return "/login";
         try {
             var subject = SecurityUtils.getSubject();
-            var usernamePasswordToken = new CaptchaToken(username, password, captchaCode, WebUtils.isTrue(request, "rememberMe"), subject.getSession().getHost());
+            //     使用用户名+密码并反转的方式作为验证密码
+            String strPassword = new StringBuilder(username + password).reverse().toString();
+            var usernamePasswordToken = new CaptchaToken(username, strPassword, captchaCode, WebUtils.isTrue(request, "rememberMe"), subject.getSession().getHost());
             subject.login(usernamePasswordToken);
         } catch (AuthenticationException e) {
             exception = e.getClass().getName();

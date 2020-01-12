@@ -59,9 +59,11 @@ public class SysUserServiceImpl implements SysUserService {
                     UUID.randomUUID().toString().replace("-", "").toLowerCase();
             //    设置盐
             user.setSalt(salt);
+            //     使用用户名+密码并反转的方式作为新密码
+            String password = new StringBuilder(user.getUsername() + user.getPassword()).reverse().toString();
             //    使用md5加盐加密
             SimpleHash simpleHash =
-                    new SimpleHash("md5", user.getPassword(), user.getCredentialsSalt(), 2);
+                    new SimpleHash("md5", password, user.getCredentialsSalt(), 2);
             //    设置密码
             user.setPassword(simpleHash.toString());
         }
