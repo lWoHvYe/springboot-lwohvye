@@ -11,7 +11,7 @@
         <result column="state" jdbcType="TINYINT" property="state"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="role_id" jdbcType="BIGINT" property="roleId"/>
-
+        <!--用户与角色是多对一的关系-->
         <association property="roles" javaType="com.springboot.shiro.shiro2spboot.entity.Role">
             <id property="id" column="id"/>
             <result property="roleName" column="role_name"/>
