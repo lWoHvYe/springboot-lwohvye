@@ -20,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 
 @Api(value = "用户相关操作API")
+//RestController相当于@Controller+@ResponseBody
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -53,7 +54,6 @@ public class UserController {
     })
     @RequestMapping(value = "/findUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:view")
-//    @ResponseBody
     public String findByUsername(String username, PageUtil<User> pageUtil) {
         JSONObject jsonObject = new JSONObject();
 //        查询列表
@@ -78,23 +78,18 @@ public class UserController {
 
     /**
      * @Description:
-     * @Param: [user, roleId]
+     * @Param: [user]
      * @return: java.lang.String
      * @Author: Hongyan Wang
      * @Date: 2019/9/23 13:27
      */
     @LogAnno(operateType = "添加用户")
     @ApiOperation(value = "添加新用户", notes = "添加新用户，包含用户的授权")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "user", value = "用户实体类", required = true, dataType = "User"),
-            @ApiImplicitParam(name = "roleId", value = "用户授权角色id", dataType = "String")
-    })
     @RequestMapping(value = "/saveUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:add")
-//    @ResponseBody
-    public String saveUser(@Valid User user, String roleId) {
+    public String saveUser(@Valid User user) {
         JSONObject jsonObject = new JSONObject();
-        sysUserService.saveUser(user, roleId);
+        sysUserService.saveUser(user);
         jsonObject.put("result", "success");
         return jsonObject.toJSONString();
     }
@@ -126,6 +121,24 @@ public class UserController {
     public String deleteUser(User user) {
         JSONObject jsonObject = new JSONObject();
         sysUserService.deleteUser(user);
+        jsonObject.put("result", "success");
+        return jsonObject.toJSONString();
+    }
+
+    /**
+     * @return java.lang.String
+     * @description 修改用户信息
+     * @params [user]
+     * @author Hongyan Wang
+     * @date 2020/1/13 13:35
+     */
+    @LogAnno(operateType = "修改用户信息")
+    @ApiOperation(value = "修改用户信息", notes = "根据用户id修改用户信息，包含部分信息修改。用户名username不可修改")
+    @RequestMapping(value = "/updateUser", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequiresPermissions("user:update")
+    public String updateUser(User user) {
+        JSONObject jsonObject = new JSONObject();
+        sysUserService.updateByPrimaryKeySelective(user);
         jsonObject.put("result", "success");
         return jsonObject.toJSONString();
     }
