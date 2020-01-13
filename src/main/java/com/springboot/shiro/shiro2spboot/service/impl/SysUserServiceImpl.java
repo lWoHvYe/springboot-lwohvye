@@ -1,17 +1,21 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
+import com.springboot.shiro.shiro2spboot.common.util.HttpContextUtil;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
+import com.springboot.shiro.shiro2spboot.dao.master.MasterUserLogMapper;
 import com.springboot.shiro.shiro2spboot.dao.master.MasterUserMapper;
 import com.springboot.shiro.shiro2spboot.dao.slave.SlaveRoleMapper;
 import com.springboot.shiro.shiro2spboot.dao.slave.SlaveUserMapper;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.entity.User;
+import com.springboot.shiro.shiro2spboot.entity.UserLog;
 import com.springboot.shiro.shiro2spboot.repository.UserDao;
 import com.springboot.shiro.shiro2spboot.service.SysUserService;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.UUID;
@@ -27,6 +31,8 @@ public class SysUserServiceImpl implements SysUserService {
     private SlaveUserMapper slaveUserMapper;
     @Autowired
     private SlaveRoleMapper slaveRoleMapper;
+    @Autowired
+    private MasterUserLogMapper masterUserLogMapper;
 
     @Override
     public User findByUsername(String name) {
@@ -107,6 +113,8 @@ public class SysUserServiceImpl implements SysUserService {
         return masterUserMapper.updateByPrimaryKey(record);
     }
 
+//    开启事务
+    @Transactional
     @Override
     public User findLoginUser(String username) {
         var user = slaveUserMapper.findByUsername(username);
@@ -115,6 +123,17 @@ public class SysUserServiceImpl implements SysUserService {
             var roles = slaveRoleMapper.selectByPrimaryKey(user.getRoleId());
 //            设置用户角色
             user.setRoles(roles);
+
+//            加入日志中
+            UserLog log = new UserLog();
+            log.setActType("类名 :" + this.getClass().getName() + " ; 方法名 : login ; 方法描述 : 登陆系统");// 操作说明
+            log.setUsername(user.getUsername());
+//            获取并设置参数
+            String actParams = " 用户名 : " + username + " : 加密密码 : " + user.getPassword() + " : 盐 : " + user.getCredentialsSalt();
+            log.setActParams(actParams);
+            String ip = HttpContextUtil.getIpAddress();
+            log.setIpAddr(ip);
+            masterUserLogMapper.insertSelective(log);// 添加日志记录
         }
 //        返回结果
         return user;

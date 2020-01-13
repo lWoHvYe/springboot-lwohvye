@@ -1,10 +1,7 @@
 package com.springboot.shiro.shiro2spboot.common.shiro;
 
-import com.springboot.shiro.shiro2spboot.common.util.HttpContextUtil;
 import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
 import com.springboot.shiro.shiro2spboot.entity.User;
-import com.springboot.shiro.shiro2spboot.entity.UserLog;
-import com.springboot.shiro.shiro2spboot.service.UserLogService;
 import com.springboot.shiro.shiro2spboot.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -17,16 +14,12 @@ import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-
 //实现AuthorizingRealm接口用户认证
 @Slf4j
 public class MyShiroRealm extends AuthorizingRealm {
 
     @Autowired
     private SysUserService sysUserService;
-    @Autowired
-    private UserLogService userLogService;
 
     /**
      * @return org.apache.shiro.authz.AuthorizationInfo
@@ -84,8 +77,7 @@ public class MyShiroRealm extends AuthorizingRealm {
 
 //          获取用户名
             var username = ((CaptchaToken) authenticationToken).getUsername();
-            var password = ((CaptchaToken) authenticationToken).getPassword();
-//            根据用户名获取用户信息
+            //            根据用户名获取用户信息
             var user = sysUserService.findLoginUser(username);
 //            用户不存在，抛出相应异常
             if (user == null)
@@ -94,17 +86,6 @@ public class MyShiroRealm extends AuthorizingRealm {
 
 //            将用户信息放入session中
             session.setAttribute("curUser", user);
-//            加入日志中
-            UserLog log = new UserLog();
-            log.setActType("类名 : com.springboot.shiro.shiro2spboot.controller.LoginController ; 方法名 : login ; 方法描述 : 登陆系统");// 操作说明
-            log.setUsername(user.getUsername());
-//            获取并设置参数
-            String actParams = " 用户名 : " + username + " : 密码(用户名+密码倒叙排列) : " + Arrays.toString(password);
-            log.setActParams(actParams);
-            String ip = HttpContextUtil.getIpAddress();
-            log.setIpAddr(ip);
-            userLogService.insertSelective(log);// 添加日志记录
-
 //                验证authenticationToken和authenticationInfo信息
             return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes(user.getCredentialsSalt()), getName());
         }
