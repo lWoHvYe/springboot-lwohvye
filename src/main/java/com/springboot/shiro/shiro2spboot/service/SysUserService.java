@@ -8,7 +8,7 @@ public interface SysUserService {
 
     void findUser(String username, PageUtil<User> pageable);
 
-    void saveUser(User user, String roleId);
+    void saveUser(User user);
 
     void deleteUser(User user);
 

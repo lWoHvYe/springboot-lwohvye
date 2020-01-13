@@ -6,7 +6,6 @@ import com.springboot.shiro.shiro2spboot.dao.master.MasterUserLogMapper;
 import com.springboot.shiro.shiro2spboot.dao.master.MasterUserMapper;
 import com.springboot.shiro.shiro2spboot.dao.slave.SlaveRoleMapper;
 import com.springboot.shiro.shiro2spboot.dao.slave.SlaveUserMapper;
-import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import com.springboot.shiro.shiro2spboot.entity.UserLog;
 import com.springboot.shiro.shiro2spboot.repository.UserDao;
@@ -50,10 +49,9 @@ public class SysUserServiceImpl implements SysUserService {
      * 授权
      *
      * @param user
-     * @param roleId
      */
     @Override
-    public void saveUser(User user, String roleId) {
+    public void saveUser(User user) {
 //        页面传密码时，放进行密码相关操作
         if (!StringUtils.isEmpty(user.getPassword())) {
             //    每次改密码都重新生成盐，提高安全性
@@ -68,12 +66,6 @@ public class SysUserServiceImpl implements SysUserService {
                     new SimpleHash("md5", password, user.getCredentialsSalt(), 2);
             //    设置密码
             user.setPassword(simpleHash.toString());
-        }
-//        页面传的角色Id不为空时进行保存
-        if (!StringUtils.isEmpty(roleId)) {
-            Role role = new Role();
-            role.setId(Long.parseLong(roleId));
-            user.setRoles(role);
         }
         userDao.save(user);
     }
@@ -104,8 +96,22 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public int updateByPrimaryKeySelective(User record) {
-        return masterUserMapper.updateByPrimaryKeySelective(record);
+    public int updateByPrimaryKeySelective(User user) {
+        if (!StringUtils.isEmpty(user.getPassword())) {
+            //    每次改密码都重新生成盐，提高安全性
+            String salt =
+                    UUID.randomUUID().toString().replace("-", "").toLowerCase();
+            //    设置盐
+            user.setSalt(salt);
+            //     使用用户名+密码并反转的方式作为新密码
+            String password = new StringBuilder(user.getUsername() + user.getPassword()).reverse().toString();
+            //    使用md5加盐加密
+            SimpleHash simpleHash =
+                    new SimpleHash("md5", password, user.getCredentialsSalt(), 2);
+            //    设置密码
+            user.setPassword(simpleHash.toString());
+        }
+        return masterUserMapper.updateByPrimaryKeySelective(user);
     }
 
     @Override
@@ -113,7 +119,7 @@ public class SysUserServiceImpl implements SysUserService {
         return masterUserMapper.updateByPrimaryKey(record);
     }
 
-//    开启事务
+    //    开启事务
     @Transactional
     @Override
     public User findLoginUser(String username) {
