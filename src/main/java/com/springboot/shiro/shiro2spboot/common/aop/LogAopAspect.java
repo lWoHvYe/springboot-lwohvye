@@ -15,9 +15,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpSession;
-import java.lang.reflect.Method;
-
 /**
  * AOP实现日志
  *

@@ -3,8 +3,6 @@ package com.springboot.shiro.shiro2spboot.service;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 
-import java.util.List;
-
 public interface SysPermissionService {
     void findPermission(String name, PageUtil<Permission> pageUtil);
 

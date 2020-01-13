@@ -1,28 +1,24 @@
 package com.springboot.shiro.shiro2spboot.local;
 
-import com.alibaba.fastjson.JSON;
-import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
-import com.springboot.shiro.shiro2spboot.common.util.RedisUtil;
-import com.springboot.shiro.shiro2spboot.entity.User;
-import com.springboot.shiro.shiro2spboot.service.MpCustomService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+
+import com.alibaba.fastjson.JSON;
+import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
+import com.springboot.shiro.shiro2spboot.common.util.RedisUtil;
+import com.springboot.shiro.shiro2spboot.entity.User;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Hongyan Wang
@@ -41,9 +37,7 @@ public class RedisTest {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    private MpCustomService mpCustomService;
-
+    
     public void redisTest() {
         var redisUtil = new RedisUtil(redisTemplate);
         var key = "keySet";
@@ -98,7 +92,7 @@ public class RedisTest {
     @RequiresPermissions(value = {"user:view", "role:view", "permission:view"}, logical = Logical.OR)
     public String getKeys() {
 //        mpCustomService.searchById(8);
-        var keys = redisTemplate.keys("*");
+        // var keys = redisTemplate.keys("*");
         Objects.requireNonNull(redisTemplate.keys("*")).forEach(e -> log.warn(MessageFormat.format("{0} | {1}", DateTimeUtil.getCurFormatTime(), e)));
 //        mpCustomService.delete(8);
         return "success";
