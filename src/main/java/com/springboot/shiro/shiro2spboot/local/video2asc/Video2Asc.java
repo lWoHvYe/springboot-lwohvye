@@ -5,8 +5,6 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
-import java.awt.image.BufferedImage;
-
 /**
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.local.video2asc

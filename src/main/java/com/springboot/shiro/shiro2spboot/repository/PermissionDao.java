@@ -1,6 +1,5 @@
 package com.springboot.shiro.shiro2spboot.repository;
 
-import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
