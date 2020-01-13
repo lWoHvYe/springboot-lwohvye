@@ -3,7 +3,7 @@ package com.springboot.shiro.shiro2spboot.service.impl;
 import com.springboot.shiro.shiro2spboot.dao.master.MasterMpCustomMapper;
 import com.springboot.shiro.shiro2spboot.dao.slave.SlaveMpCustomMapper;
 import com.springboot.shiro.shiro2spboot.entity.MpCustomEntity;
-import com.springboot.shiro.shiro2spboot.local.redis.RedisKeys;
+import com.springboot.shiro.shiro2spboot.common.redis.RedisKeys;
 import com.springboot.shiro.shiro2spboot.service.MpCustomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.*;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.springboot.shiro.shiro2spboot.local.redis;
+package com.springboot.shiro.shiro2spboot.common.redis;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
