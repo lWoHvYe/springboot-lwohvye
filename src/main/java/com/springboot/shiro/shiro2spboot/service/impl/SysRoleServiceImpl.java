@@ -31,14 +31,16 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public void saveRole(Role role, String permissionId) {
+    public int saveRole(Role role, String permissionId) {
         savePermissionId(role, permissionId);
         roleDao.save(role);
+        return 1;
     }
 
     @Override
-    public void deleteRole(Role role) {
+    public int deleteRole(Role role) {
         roleDao.delete(role);
+        return 1;
     }
 
 

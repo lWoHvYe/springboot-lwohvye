@@ -3,6 +3,7 @@ package com.springboot.shiro.shiro2spboot.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.annotation.LogAnno;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
+import com.springboot.shiro.shiro2spboot.common.util.ResultModel;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import com.springboot.shiro.shiro2spboot.service.SysUserService;
 import io.swagger.annotations.Api;
@@ -54,7 +55,7 @@ public class UserController {
     })
     @RequestMapping(value = "/findUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:view")
-    public String findByUsername(String username, PageUtil<User> pageUtil) {
+    public String list(String username, PageUtil<User> pageUtil) {
         JSONObject jsonObject = new JSONObject();
 //        查询列表
         sysUserService.findUser(username, pageUtil);
@@ -77,21 +78,22 @@ public class UserController {
     }
 
     /**
-     * @Description:
-     * @Param: [user]
-     * @return: java.lang.String
-     * @Author: Hongyan Wang
-     * @Date: 2019/9/23 13:27
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel<java.lang.Integer>
+     * @description 添加用户
+     * @params [user]
+     * @author Hongyan Wang
+     * @date 2020/1/14 10:28
      */
     @LogAnno(operateType = "添加用户")
     @ApiOperation(value = "添加新用户", notes = "添加新用户，包含用户的授权")
     @RequestMapping(value = "/saveUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:add")
-    public String saveUser(@Valid User user) {
-        JSONObject jsonObject = new JSONObject();
-        sysUserService.saveUser(user);
-        jsonObject.put("result", "success");
-        return jsonObject.toJSONString();
+    public ResultModel<Integer> saveUser(@Valid User user) {
+//        JSONObject jsonObject = new JSONObject();
+//        sysUserService.saveUser(user);
+//        jsonObject.put("result", "success");
+//        return jsonObject.toJSONString();
+        return new ResultModel<>(sysUserService.insertSelective(user));
     }
 
     /**
@@ -107,26 +109,27 @@ public class UserController {
     }
 
     /**
-     * 删除用户
-     *
-     * @param user
-     * @return
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel<java.lang.Integer>
+     * @description 删除用户
+     * @params [uid]
+     * @author Hongyan Wang
+     * @date 2020/1/14 10:24
      */
     @LogAnno(operateType = "删除用户")
     @ApiOperation(value = "删除指定用户", notes = "根据用户的id删除对应的用户与权限")
     @ApiImplicitParam(name = "uid", value = "用户ID", required = true, dataType = "Long")
     @RequestMapping(value = "/deleteUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:del")
-//    @ResponseBody
-    public String deleteUser(User user) {
-        JSONObject jsonObject = new JSONObject();
-        sysUserService.deleteUser(user);
-        jsonObject.put("result", "success");
-        return jsonObject.toJSONString();
+    public ResultModel<Integer> deleteUser(Long uid) {
+//        JSONObject jsonObject = new JSONObject();
+//        sysUserService.deleteUser(user);
+//        jsonObject.put("result", "success");
+//        return jsonObject.toJSONString();
+        return new ResultModel<>(sysUserService.deleteByPrimaryKey(uid));
     }
 
     /**
-     * @return java.lang.String
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
      * @description 修改用户信息
      * @params [user]
      * @author Hongyan Wang
@@ -136,11 +139,12 @@ public class UserController {
     @ApiOperation(value = "修改用户信息", notes = "根据用户id修改用户信息，包含部分信息修改。用户名username不可修改")
     @RequestMapping(value = "/updateUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:update")
-    public String updateUser(User user) {
-        JSONObject jsonObject = new JSONObject();
-        sysUserService.updateByPrimaryKeySelective(user);
-        jsonObject.put("result", "success");
-        return jsonObject.toJSONString();
+    public ResultModel<Integer> updateUser(User user) {
+//        JSONObject jsonObject = new JSONObject();
+//        sysUserService.updateByPrimaryKeySelective(user);
+//        jsonObject.put("result", "success");
+//        return jsonObject.toJSONString();
+        return new ResultModel<>(sysUserService.updateByPrimaryKeySelective(user));
     }
 
     @ApiIgnore

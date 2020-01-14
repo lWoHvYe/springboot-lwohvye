@@ -34,25 +34,25 @@ public class SysUserServiceImpl implements SysUserService {
     private MasterUserLogMapper masterUserLogMapper;
 
     @Override
-    public User findByUsername(String name) {
-        return userDao.findByUsername(name);
-    }
-
-    @Override
     public void findUser(String username, PageUtil<User> pageUtil) {
         Page<User> userPage = userDao.findUser(username, pageUtil.obtPageable());
         pageUtil.setPageEntity(userPage);
 //        return pageUtil;
     }
 
-    /**
-     * 授权
-     *
-     * @param user
-     */
     @Override
-    public void saveUser(User user) {
-//        页面传密码时，放进行密码相关操作
+    public int deleteByPrimaryKey(Long uid) {
+        return masterUserMapper.deleteByPrimaryKey(uid);
+    }
+
+    @Override
+    public int insert(User record) {
+        return masterUserMapper.insert(record);
+    }
+
+    @Override
+    public int insertSelective(User user) {
+        //        页面传密码时，放进行密码相关操作
         if (!StringUtils.isEmpty(user.getPassword())) {
             //    每次改密码都重新生成盐，提高安全性
             String salt =
@@ -67,27 +67,7 @@ public class SysUserServiceImpl implements SysUserService {
             //    设置密码
             user.setPassword(simpleHash.toString());
         }
-        userDao.save(user);
-    }
-
-    @Override
-    public void deleteUser(User user) {
-        userDao.delete(user);
-    }
-
-    @Override
-    public int deleteByPrimaryKey(Long uid) {
-        return masterUserMapper.deleteByPrimaryKey(uid);
-    }
-
-    @Override
-    public int insert(User record) {
-        return masterUserMapper.insert(record);
-    }
-
-    @Override
-    public int insertSelective(User record) {
-        return masterUserMapper.insertSelective(record);
+        return masterUserMapper.insertSelective(user);
     }
 
     @Override

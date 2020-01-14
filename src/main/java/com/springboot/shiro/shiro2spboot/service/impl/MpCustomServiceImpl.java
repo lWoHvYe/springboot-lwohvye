@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
  * 执行添加操作时，清除客户列表缓存
  * 执行修改、删除操作时，清除客户列表和对应客户缓存
  * 将缓存放在Service层，方便使用shiro进行权限控制
+ * 使用缓存时，对应接口的返回类型需设置为Object，这一点需特别注意
  * @date 2019/10/10 13:37
  */
 @Service
@@ -78,8 +79,8 @@ public class MpCustomServiceImpl implements MpCustomService {
     )
     @Override
     public Object insertSelective(MpCustomEntity mpCustomEntity) {
-         masterMpCustomMapper.insertSelective(mpCustomEntity);
-         return mpCustomEntity;
+        masterMpCustomMapper.insertSelective(mpCustomEntity);
+        return mpCustomEntity;
     }
 
     /**

@@ -26,13 +26,15 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     }
 
     @Override
-    public void savePermission(Permission permission) {
+    public int savePermission(Permission permission) {
         permissionDao.save(permission);
+        return 1;
     }
 
     @Override
-    public void deletePermission(Permission permission) {
+    public int deletePermission(Permission permission) {
         permissionDao.delete(permission);
+        return 1;
     }
 
     @Override

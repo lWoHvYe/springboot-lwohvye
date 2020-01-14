@@ -6,9 +6,9 @@ import com.springboot.shiro.shiro2spboot.entity.Permission;
 public interface SysPermissionService {
     void findPermission(String name, PageUtil<Permission> pageUtil);
 
-    void savePermission(Permission permission);
+    int savePermission(Permission permission);
 
-    void deletePermission(Permission permission);
+    int deletePermission(Permission permission);
 
     int deleteByPrimaryKey(Long id);
 
