@@ -71,7 +71,6 @@ public class AnotherFutureSample {
         int simCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
-        AnotherFutureSample anotherFutureSample = new AnotherFutureSample();
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -122,7 +121,7 @@ public class AnotherFutureSample {
         Arrays.asList(values).forEach(ThreadLocal::remove);
 
 //         输出总结果
-        anotherFutureSample.printResult(countMap, simCount / 100, totalCount);
+        this.printResult(countMap, simCount / 100, totalCount);
 //         记录结束时间
         long end = DateTimeUtil.getCurMilli();
         System.out.println(end - start);
