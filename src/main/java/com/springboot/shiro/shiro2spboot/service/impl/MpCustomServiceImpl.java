@@ -43,23 +43,6 @@ public class MpCustomServiceImpl implements MpCustomService {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.entity.MpCustomEntity
-     * @description 添加客户，清空客户列表缓存并将新加客户加入缓存
-     * @params [mpCustomEntity]
-     * @author Hongyan Wang
-     * @date 2019/10/10 17:10
-     */
-    @Caching(evict = {@CacheEvict(key = "'mpCustomList'", beforeInvocation = true)},
-            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
-                    cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
-    )
-    @Override
-    public Object save(MpCustomEntity mpCustomEntity) {
-        masterMpCustomMapper.save(mpCustomEntity);
-        return mpCustomEntity;
-    }
-
-    /**
      * @return void
      * @description 根据id删除企业，并清除对应的缓存，对于需要对多个key执行操作，使用@Caching注解
      * 设置beforeInvocation = true，是防止方法执行抛异常导致缓存未被清
@@ -73,8 +56,30 @@ public class MpCustomServiceImpl implements MpCustomService {
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600", beforeInvocation = true)
     })
     @Override
-    public void delete(int customId) {
-        masterMpCustomMapper.delete(customId);
+    public int deleteByPrimaryKey(Integer customId) {
+        return masterMpCustomMapper.deleteByPrimaryKey(customId);
+    }
+
+    @Override
+    public int insert(MpCustomEntity record) {
+        return masterMpCustomMapper.insert(record);
+    }
+
+    /**
+     * @return com.springboot.shiro.shiro2spboot.entity.MpCustomEntity
+     * @description 添加客户，清空客户列表缓存并将新加客户加入缓存
+     * @params [mpCustomEntity]
+     * @author Hongyan Wang
+     * @date 2019/10/10 17:10
+     */
+    @Caching(evict = {@CacheEvict(key = "'mpCustomList'", beforeInvocation = true)},
+            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
+                    cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
+    )
+    @Override
+    public Object insertSelective(MpCustomEntity mpCustomEntity) {
+         masterMpCustomMapper.insertSelective(mpCustomEntity);
+         return mpCustomEntity;
     }
 
     /**
@@ -87,10 +92,9 @@ public class MpCustomServiceImpl implements MpCustomService {
      */
     @Cacheable(unless = "#result == null", cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")
     @Override
-    public Object searchById(int customId) {
-        return slaveMpCustomMapper.searchById(customId);
+    public Object selectByPrimaryKey(Integer customId) {
+        return slaveMpCustomMapper.selectByPrimaryKey(customId);
     }
-
 
     /**
      * @return com.springboot.shiro.shiro2spboot.entity.MpCustomEntity
@@ -107,34 +111,9 @@ public class MpCustomServiceImpl implements MpCustomService {
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
     )
     @Override
-    public Object update(MpCustomEntity mpCustomEntity) {
-        masterMpCustomMapper.update(mpCustomEntity);
+    public Object updateByPrimaryKeySelective(MpCustomEntity mpCustomEntity) {
+        masterMpCustomMapper.updateByPrimaryKeySelective(mpCustomEntity);
         return slaveMpCustomMapper.searchById(mpCustomEntity.getCustomId());
-    }
-
-    @Override
-    public int deleteByPrimaryKey(Integer customId) {
-        return masterMpCustomMapper.deleteByPrimaryKey(customId);
-    }
-
-    @Override
-    public int insert(MpCustomEntity record) {
-        return masterMpCustomMapper.insert(record);
-    }
-
-    @Override
-    public int insertSelective(MpCustomEntity record) {
-        return masterMpCustomMapper.insertSelective(record);
-    }
-
-    @Override
-    public MpCustomEntity selectByPrimaryKey(Integer customId) {
-        return slaveMpCustomMapper.selectByPrimaryKey(customId);
-    }
-
-    @Override
-    public int updateByPrimaryKeySelective(MpCustomEntity record) {
-        return masterMpCustomMapper.updateByPrimaryKeySelective(record);
     }
 
     @Override
