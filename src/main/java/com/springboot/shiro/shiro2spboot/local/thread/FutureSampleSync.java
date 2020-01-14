@@ -55,9 +55,9 @@ public class FutureSampleSync {
     @SuppressWarnings("unchecked")
     public void startWork() {
         //   开启模拟线程数
-        Integer threadCount = 10;
+        int threadCount = 10;
 //        模拟次数
-        Integer simCount = 1000000;
+        int simCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
 //        FutureSampleSync futureSample = new FutureSampleSync();
