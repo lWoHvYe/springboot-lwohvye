@@ -2,6 +2,7 @@ package com.springboot.shiro.shiro2spboot.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
+import com.springboot.shiro.shiro2spboot.common.util.ResultModel;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.service.SysPermissionService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -29,7 +30,6 @@ public class PermissionController {
      */
     @RequestMapping(value = "/findPermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:view")
-//    @ResponseBody
     public String findByPermission(String name, PageUtil<Permission> pageUtil) {
         JSONObject jsonObject = new JSONObject();
         sysPermissionService.findPermission(name, pageUtil);
@@ -47,12 +47,12 @@ public class PermissionController {
      */
     @RequestMapping(value = "/savePermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:add")
-//    @ResponseBody
-    public String savePermission(@Valid Permission permission) {
-        JSONObject jsonObject = new JSONObject();
-        sysPermissionService.savePermission(permission);
-        jsonObject.put("result", "success");
-        return jsonObject.toJSONString();
+    public ResultModel<Integer> savePermission(@Valid Permission permission) {
+//        JSONObject jsonObject = new JSONObject();
+//        sysPermissionService.savePermission(permission);
+//        jsonObject.put("result", "success");
+//        return jsonObject.toJSONString();
+        return new ResultModel<>(sysPermissionService.savePermission(permission));
     }
 
 
@@ -64,12 +64,12 @@ public class PermissionController {
      */
     @RequestMapping(value = "/deletePermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:del")
-//    @ResponseBody
-    public String deleteRole(Permission permission) {
-        JSONObject jsonObject = new JSONObject();
-        sysPermissionService.deletePermission(permission);
-        jsonObject.put("result", "success");
-        return jsonObject.toJSONString();
+    public ResultModel<Integer> deleteRole(Permission permission) {
+//        JSONObject jsonObject = new JSONObject();
+//        sysPermissionService.deletePermission(permission);
+//        jsonObject.put("result", "success");
+//        return jsonObject.toJSONString();
+        return new ResultModel<>(sysPermissionService.deletePermission(permission));
     }
 
 
