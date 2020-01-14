@@ -16,9 +16,4 @@ public interface MasterMpCustomMapper {
 
     int updateByPrimaryKey(MpCustomEntity record);
 
-    void save(MpCustomEntity mpCustomEntity);
-
-    void delete(@Param("customId") int customId);
-
-    void update(MpCustomEntity mpCustomEntity);
 }
