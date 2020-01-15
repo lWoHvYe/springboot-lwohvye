@@ -139,12 +139,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!--本地仓库，oracle连接驱动包-->
         <dependency>
             <groupId>com.jdbc.oracle</groupId>
             <artifactId>ojdbc14</artifactId>
             <version>1.0</version>
-            <systemPath>${basedir}/src/main/resources/lib/ojdbc14.jar</systemPath>
-            <scope>system</scope>
         </dependency>
         <!--alibaba druid-->
         <dependency>
@@ -190,13 +189,11 @@
             <artifactId>kaptcha</artifactId>
             <version>2.3.2</version>
         </dependency>
-        <!--视频转Asc相关jar-->
+        <!--本地仓库，视频转Asc相关jar-->
         <dependency>
             <groupId>com.github.opencv</groupId>
             <artifactId>opencv</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <systemPath>${basedir}/src/main/resources/lib/opencv-410.jar</systemPath>
-            <scope>system</scope>
+            <version>4.1.0</version>
         </dependency>
         <!--调用C库函数相关jar，替换原来的com.sun.jna，暂未使用该包-->
         <dependency>
@@ -260,9 +257,7 @@
         <dependency>
             <groupId>com.aspose</groupId>
             <artifactId>aspose-words</artifactId>
-            <version>2.0</version>
-            <systemPath>${basedir}/src/main/resources/lib/aspose-words-19.2-jdk16.jar</systemPath>
-            <scope>system</scope>
+            <version>19.2</version>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
