@@ -3,7 +3,6 @@ package com.springboot.shiro.shiro2spboot.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
@@ -17,12 +16,14 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @date 2020/1/16 14:33
  */
 @Configuration
-@EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
 
     private static final int CORE_POOL_SIZE = 2;
     private static final int MAX_POOL_SIZE = 6;
     private static final int QUEUE_CAPACITY = 20;
+    public static final int KEEP_ALIVE_SECONDS = 200;
+    public static final boolean WAIT_FOR_TASKS_TO_COMPLETE_ON_SHUTDOWN = true;
+    public static final int AWAIT_TERMINATION_SECONDS = 60;
 
     @Bean
     public Executor taskExecutor() {
@@ -34,9 +35,16 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setMaxPoolSize(MAX_POOL_SIZE);
         // 队列大小
         executor.setQueueCapacity(QUEUE_CAPACITY);
+        // 线程空闲时间
+        executor.setKeepAliveSeconds(KEEP_ALIVE_SECONDS);
         // 当最大池已满时，此策略保证不会丢失任务请求，但是可能会影响应用程序整体性能。
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.setThreadNamePrefix(" WHY- ThreadPoolTaskExecutor-");
+        // 线程名称前缀
+        executor.setThreadNamePrefix(" WHY-ThreadPoolTaskExecutor-");
+        // 等待所有任务都完成再继续销毁其他的Bean
+        executor.setWaitForTasksToCompleteOnShutdown(WAIT_FOR_TASKS_TO_COMPLETE_ON_SHUTDOWN);
+        // 线程池中任务的等待时间，如果超过这个时候还没有销毁就强制销毁，以确保应用最后能够被关闭，而不是阻塞住
+        executor.setAwaitTerminationSeconds(AWAIT_TERMINATION_SECONDS);
         executor.initialize();
         return executor;
     }
