@@ -18,8 +18,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 public class AsyncConfig implements AsyncConfigurer {
 
-    private static final int CORE_POOL_SIZE = 2;
-    private static final int MAX_POOL_SIZE = 6;
+    private static final int CORE_POOL_SIZE = 4;
+    private static final int MAX_POOL_SIZE = 8;
     private static final int QUEUE_CAPACITY = 20;
     public static final int KEEP_ALIVE_SECONDS = 200;
     public static final boolean WAIT_FOR_TASKS_TO_COMPLETE_ON_SHUTDOWN = true;
@@ -29,7 +29,7 @@ public class AsyncConfig implements AsyncConfigurer {
     public Executor taskExecutor() {
         // Spring 默认配置是核心线程数大小为1，最大线程容量大小不受限制，队列容量也不受限制。
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        // 核心线程数
+        // 核心线程数，即同时运行的最大线程数
         executor.setCorePoolSize(CORE_POOL_SIZE);
         // 最大线程数
         executor.setMaxPoolSize(MAX_POOL_SIZE);
