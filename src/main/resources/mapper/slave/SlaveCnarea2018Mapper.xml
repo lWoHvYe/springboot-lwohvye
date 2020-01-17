@@ -61,7 +61,7 @@
                 and short_name=#{shortName,jdbcType=VARCHAR}
             </if>
             <if test="mergerName != null">
-                and merger_name like #{mergerName,jdbcType=VARCHAR}'%'
+                and merger_name like concat(#{mergerName,jdbcType=VARCHAR},'%')
             </if>
             <if test="pinyin != null">
                 and pinyin=#{pinyin,jdbcType=VARCHAR}

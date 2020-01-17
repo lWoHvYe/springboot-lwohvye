@@ -38,17 +38,14 @@ public class Cnarea2018Controller {
     public List<PageInfo<Cnarea2018>> list(String province, int page, int pageSize) {
 //      切割字符串
         var completableFutureList = Arrays.stream(province.split(","))
-//                并发流，提高效率
-                .parallel()
 //                用map后获取一个新的流，可以继续操作，用foreach后流便没了
                 .map(name -> cnarea2018Service.list(name, page, pageSize))
                 .collect(Collectors.toList());
 
-        var results = completableFutureList.parallelStream()
+        return completableFutureList.stream()
 //                将任务放入队列，等待结束
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
-        return results;
     }
 
 }
