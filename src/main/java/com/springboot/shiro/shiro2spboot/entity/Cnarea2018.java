@@ -25,7 +25,7 @@ public class Cnarea2018 implements Serializable {
     /**
     * 父级行政代码
     */
-    private Integer parentCode;
+    private Long parentCode;
 
     /**
     * 行政代码
