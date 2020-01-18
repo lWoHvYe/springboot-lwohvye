@@ -3,6 +3,7 @@ package com.springboot.shiro.shiro2spboot.controller;
 import com.github.pagehelper.PageInfo;
 import com.springboot.shiro.shiro2spboot.entity.Cnarea2018;
 import com.springboot.shiro.shiro2spboot.service.Cnarea2018Service;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,7 @@ public class Cnarea2018Controller {
      * @author Hongyan Wang
      * @date 2020/1/16 22:13
      */
+    @ApiOperation(value = "根据省名获取下属区划", notes = "多个省名使用逗号分隔")
     @PostMapping("/list")
     public List<PageInfo<Cnarea2018>> list(String province, int page, int pageSize) {
 //      切割字符串
