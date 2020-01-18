@@ -60,7 +60,8 @@ public class Cnarea2018ServiceImpl implements Cnarea2018Service {
         log.warn(Thread.currentThread().getName() + " start this task!");
         Cnarea2018 cnarea2018 = new Cnarea2018();
         cnarea2018.setMergerName(province);
-        PageInfo<Cnarea2018> pageInfo = PageHelper.startPage(page, pageSize, "id asc").doSelectPageInfo(() -> slaveCnarea2018Mapper.selectByAll(cnarea2018));
+        PageInfo<Cnarea2018> pageInfo = PageHelper.startPage(page, pageSize, "id asc")
+                .doSelectPageInfo(() -> slaveCnarea2018Mapper.selectByAll(cnarea2018));
 //        暂停一会，使异步更明显
 //        try {
 //            Thread.sleep(10000L);
