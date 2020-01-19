@@ -1,6 +1,6 @@
 package com.springboot.shiro.shiro2spboot.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,12 +26,14 @@ public class Role implements Serializable {
     private String description;//角色描述
     private Boolean available = Boolean.FALSE;//是否可用
 
+
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)//单向立即加载
     // 设置关联表、关联字段(主键)及副表的关联字段(主键)
     @JoinTable(name = "role_permission", joinColumns = {@JoinColumn(name = "role_id")}, inverseJoinColumns = {@JoinColumn(name = "permission_id")})
     private List<Permission> permissions;
 
-    @JSONField(serialize = false)//不序列化该属性
+    @JsonIgnore//不序列化该属性
 //    一个角色对应多个用户，角色是one端
     @OneToMany(targetEntity = User.class)
     private List<User> users;

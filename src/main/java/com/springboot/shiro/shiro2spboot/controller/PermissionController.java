@@ -1,6 +1,5 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.common.util.ResultModel;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
@@ -24,18 +23,19 @@ public class PermissionController {
     /**
      * @Description: 获取权限列表
      * @Param: [name, pageUtil]
-     * @return: java.lang.String
+     * @return: com.springboot.shiro.shiro2spboot.common.util.PageUtil
      * @Author: Hongyan Wang
      * @Date: 2019/9/23 17:28
      */
     @RequestMapping(value = "/findPermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:view")
-    public String findByPermission(String name, PageUtil<Permission> pageUtil) {
-        JSONObject jsonObject = new JSONObject();
+    public PageUtil<Permission> findByPermission(String name, PageUtil<Permission> pageUtil) {
+//        JSONObject jsonObject = new JSONObject();
         sysPermissionService.findPermission(name, pageUtil);
-        jsonObject.put("result", "success");
-        jsonObject.put("list", pageUtil);
-        return jsonObject.toJSONString();
+//        jsonObject.put("result", "success");
+//        jsonObject.put("list", pageUtil);
+//        return jsonObject.toJSONString();
+        return pageUtil;
     }
 
 

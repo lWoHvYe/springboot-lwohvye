@@ -1,13 +1,18 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.entity.JsonTestEntity;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -25,7 +30,7 @@ public class JsonTestController {
 //    设置RequestBody用于接收json串
     @ApiOperation(value = "接收json串，并进行解析", notes = "需要前台传入json串，后台进行解析后返回")
     @ApiImplicitParam(name = "jsonStr", value = "待解析json串", required = true, dataType = "String")
-    public String jsonTest(@RequestBody String jsonStr) {
+    public List<JsonTestEntity> jsonTest(@RequestBody String jsonStr) throws JsonProcessingException {
 
         String result = jsonStr
 //                "{\n" +
@@ -103,22 +108,28 @@ public class JsonTestController {
         //}
         // 所以需将rows部分取出来
 //        将结果转为json对象，未传实体类class时，转换所有字段
-        JSONObject jsonObject = JSON.parseObject(result);
-//        获取data部分
-        JSONObject data = jsonObject.getJSONObject("data");
-//        获取rows部分
-        JSONArray rows = data.getJSONArray("rows");
-//        将rows转化为集合，传实体类class时，只转换实体类相关字段（可有多的字段也可有少的字段）
-        List<JsonTestEntity> list = JSON.parseArray(rows.toJSONString(), JsonTestEntity.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+        JsonNode jsonNode = objectMapper.readTree(result);
+        String string = jsonNode.get("data").get("rows").toString();
+        List<JsonTestEntity> list = objectMapper.readValue(string, new TypeReference<>() {
+        });
+////        获取data部分
+//        JSONObject data = jsonObject.getJSONObject("data");
+////        获取rows部分
+//        JSONArray rows = data.getJSONArray("rows");
+////        将rows转化为集合，传实体类class时，只转换实体类相关字段（可有多的字段也可有少的字段）
+//        List<JsonTestEntity> list = JSON.parseArray(rows.toJSONString(), JsonTestEntity.class);
 //        操作集合设置属性
         for (JsonTestEntity jsonTestEntity : list) {
             jsonTestEntity.setCreateTime(DateTimeUtil.getCurFormatTime());
             jsonTestEntity.setUpdateTime(DateTimeUtil.getCurFormatDate());
         }
 
-        JSONObject json = new JSONObject();
-        json.put("flag", true);
-        json.put("list", list);
-        return json.toJSONString();
+//        JSONObject json = new JSONObject();
+//        json.put("flag", true);
+//        json.put("list", list);
+//        return json.toJSONString();
+        return list;
     }
 }

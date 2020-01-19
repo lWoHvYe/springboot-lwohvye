@@ -1,6 +1,5 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.annotation.LogAnno;
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.common.util.ResultModel;
@@ -44,7 +43,7 @@ public class UserController {
     /**
      * @Description: 获取用户列表
      * @Param: [username, pageUtil]
-     * @return: java.lang.String
+     * @return: com.springboot.shiro.shiro2spboot.common.util.PageUtil
      * @Author: Hongyan Wang
      * @Date: 2019/9/23 13:26
      */
@@ -55,13 +54,14 @@ public class UserController {
     })
     @RequestMapping(value = "/findUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:view")
-    public String list(String username, PageUtil<User> pageUtil) {
-        JSONObject jsonObject = new JSONObject();
+    public PageUtil<User> list(String username, PageUtil<User> pageUtil) {
+//        JSONObject jsonObject = new JSONObject();
 //        查询列表
         sysUserService.findUser(username, pageUtil);
-        jsonObject.put("result", "success");
-        jsonObject.put("list", pageUtil);
-        return jsonObject.toJSONString();
+//        jsonObject.put("result", "success");
+//        jsonObject.put("list", pageUtil);
+//        return jsonObject.toJSONString();
+        return pageUtil;
     }
 
 

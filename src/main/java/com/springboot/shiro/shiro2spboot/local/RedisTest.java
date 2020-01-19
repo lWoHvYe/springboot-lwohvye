@@ -1,15 +1,11 @@
 package com.springboot.shiro.shiro2spboot.local;
 
-import java.text.MessageFormat;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.common.util.RedisUtil;
 import com.springboot.shiro.shiro2spboot.entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +14,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
+import java.text.MessageFormat;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Hongyan Wang
@@ -38,7 +38,7 @@ public class RedisTest {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     
-    public void redisTest() {
+    public void redisTest() throws JsonProcessingException {
         var redisUtil = new RedisUtil(redisTemplate);
         var key = "keySet";
 //        创建实体类并赋值
@@ -54,10 +54,11 @@ public class RedisTest {
         redisUtil.expire(key, 100);
 //        从redis中取出实体类对象Object类型
         var objUser = redisUtil.get(key);
+        var objectMapper = new ObjectMapper();
 //        转换为json串，只能将Object类型转为json串
-        var strUser = JSON.toJSONString(objUser);
+        var strUser = objectMapper.writeValueAsString(objUser);
 //        将json串转换为User对象
-        var tranUser = JSON.parseObject(strUser, User.class);
+        var tranUser = objectMapper.readValue(strUser, User.class);
         System.out.println(tranUser.toString());
         var completableFuture = CompletableFuture.runAsync(() -> {
             for (int i = 0; i < 12; i++) {
