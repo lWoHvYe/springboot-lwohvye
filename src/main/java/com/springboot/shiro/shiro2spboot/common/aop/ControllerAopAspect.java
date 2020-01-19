@@ -1,7 +1,9 @@
 package com.springboot.shiro.shiro2spboot.common.aop;
 
 import com.springboot.shiro.shiro2spboot.common.util.ResultModel;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -48,11 +50,16 @@ public class ControllerAopAspect {
     private ResultModel<?> handlerControllerException(ProceedingJoinPoint pjp, Throwable throwable) {
         ResultModel<?> result = new ResultModel<>(throwable);
 //        这里可以根据不同的异常，做出不同的操作
+//        sql语法错误
         if (throwable instanceof BadSqlGrammarException) {
             result.setMsg(ResultModel.SQL_ERROR_MSG);
             result.setCode(ResultModel.SQL_ERROR_CODE);
         }
-
+//        用户权限不足
+        if (throwable instanceof UnauthorizedException) {
+            result.setMsg(ResultModel.NEED_PERMISSION_MSG);
+            result.setCode(ResultModel.NEED_PERMISSION);
+        }
         return result;
     }
 }
