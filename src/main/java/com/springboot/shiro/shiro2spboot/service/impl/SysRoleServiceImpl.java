@@ -29,9 +29,10 @@ public class SysRoleServiceImpl implements SysRoleService {
     private SlaveRoleMapper slaveRoleMapper;
 
     @Override
-    public void findRole(String roleName, PageUtil<Role> pageUtil) {
+    public PageUtil<Role> findRole(String roleName, PageUtil<Role> pageUtil) {
         Page<Role> rolePage = roleDao.findRole(roleName, pageUtil.obtPageable());
         pageUtil.setPageEntity(rolePage);
+        return pageUtil;
     }
 
     @Override

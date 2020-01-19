@@ -24,9 +24,10 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     private SlavePermissionMapper slavePermissionMapper;
 
     @Override
-    public void findPermission(String name, PageUtil<Permission> pageUtil) {
+    public PageUtil<Permission> findPermission(String name, PageUtil<Permission> pageUtil) {
         Page<Permission> permissionPage = permissionDao.findPermission(name, pageUtil.obtPageable());
         pageUtil.setPageEntity(permissionPage);
+        return pageUtil;
     }
 
     @Override
