@@ -60,7 +60,8 @@ public class Cnarea2018ServiceImpl implements Cnarea2018Service {
         log.warn(Thread.currentThread().getName() + " start this task!");
         Cnarea2018 cnarea2018 = new Cnarea2018();
         cnarea2018.setMergerName(province);
-        PageInfo<Cnarea2018> pageInfo = PageHelper.startPage(page, pageSize, "id asc")
+//        当使用索引时，不要使用order by非查询的索引字段，即当查询条件与排序使用不同的字段时，即使两字段都建立索引，也会导致索引失效
+        PageInfo<Cnarea2018> pageInfo = PageHelper.startPage(page, pageSize)
                 .doSelectPageInfo(() -> slaveCnarea2018Mapper.selectByAll(cnarea2018));
 //        暂停一会，使异步更明显
 //        try {
