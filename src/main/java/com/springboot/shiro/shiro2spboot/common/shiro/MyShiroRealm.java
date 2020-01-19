@@ -1,5 +1,6 @@
 package com.springboot.shiro.shiro2spboot.common.shiro;
 
+import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import com.springboot.shiro.shiro2spboot.service.SysUserService;
@@ -65,9 +66,18 @@ public class MyShiroRealm extends AuthorizingRealm {
 //            验证码为空，抛出相应异常
             if (StringUtils.isEmpty(captchaCode))
                 throw new CaptchaEmptyException();
-
-            // 从session获取正确的验证码
+//            获取session
             var session = SecurityUtils.getSubject().getSession();
+//            获取当前时间
+            var curMilli = DateTimeUtil.getCurMilli();
+//            获取验证码生成时间
+            var verifyMilli = (Long) session.getAttribute(VerifyCodeUtils.VERIFY_CODE_CREATE_MILLI);
+//            验证码经历分钟数
+            long useTime = (curMilli - verifyMilli) / 1000 / 60;
+//            验证码过期，抛出相应异常
+            if (useTime > 5)
+                throw new CaptchaExpireException();
+            // 从session获取正确的验证码
             var sessionCaptchaCode = (String) session.getAttribute(VerifyCodeUtils.VERIFY_CODE_SESSION_KEY);
 //            var sessionCaptchaCode = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
 

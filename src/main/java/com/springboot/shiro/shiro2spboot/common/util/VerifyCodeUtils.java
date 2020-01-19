@@ -27,6 +27,8 @@ public class VerifyCodeUtils {
 
     //存入session的key
     public static final String VERIFY_CODE_SESSION_KEY = "VERIFY_CODE_SESSION_KEY";
+    //验证码生成时间
+    public static final String VERIFY_CODE_CREATE_MILLI = "VERIFY_CODE_CREATE_MILLI";
     //使用到Algerian字体，系统里没有的话需要安装字体，字体只显示大写，去掉了1,0,i,o几个容易混淆的字符
     public static final String VERIFY_CODES = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static Random random;
@@ -89,9 +91,9 @@ public class VerifyCodeUtils {
 //        定义样式数组，用于确定是数值还是汉字，值为0或1
         var index4 = random.nextInt(2);
 //        然后定义两个数字数组，
-            var str1 = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-            var str2 = new String[]{"零", "一", "二", "三", "四", "五", "六", "七", "八", "九"};
-            var strs = new String[][]{str1, str2};
+        var str1 = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        var str2 = new String[]{"零", "一", "二", "三", "四", "五", "六", "七", "八", "九"};
+        var strs = new String[][]{str1, str2};
 //        再定义下运算符数组
         var oper1 = new String[]{"+", "-", "x"};
         var oper2 = new String[]{"加", "减", "乘"};
@@ -316,8 +318,8 @@ public class VerifyCodeUtils {
         for (int i = 0; i < h1; i++) {
             var d = (double) (period >> 1)
                     * Math.sin((double) i / (double) period
-                    + (6.2831853071795862D * (double) phase)
-                    / (double) frames);
+                               + (6.2831853071795862D * (double) phase)
+                                 / (double) frames);
             g.copyArea(0, i, w1, 1, (int) d, 0);
             g.setColor(color);
             g.drawLine((int) d, i, 0, i);
@@ -334,9 +336,9 @@ public class VerifyCodeUtils {
         var phase = 7;
         for (int i = 0; i < w1; i++) {
             double d = (double) (period >> 1)
-                    * Math.sin((double) i / (double) period
-                    + (6.2831853071795862D * (double) phase)
-                    / (double) frames);
+                       * Math.sin((double) i / (double) period
+                                  + (6.2831853071795862D * (double) phase)
+                                    / (double) frames);
             g.copyArea(i, 0, 1, h1, 0, (int) d);
             g.setColor(color);
             g.drawLine(i, (int) d, i, 0);
