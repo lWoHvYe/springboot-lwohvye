@@ -1,6 +1,5 @@
 package com.springboot.shiro.shiro2spboot.config;
 
-import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
 import com.springboot.shiro.shiro2spboot.common.redis.RedisCacheWriterCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -11,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 import java.lang.reflect.Method;
@@ -49,8 +49,8 @@ public class RedisCachingConfigurer extends CachingConfigurerSupport {
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
 
         configuration = configuration.serializeValuesWith
-//                使用FastJson的相关方法来序列化redis，需注意拿到的是JsonObject对象，所以添加注解的方法，返回值应为Object类型
-        (RedisSerializationContext.SerializationPair.fromSerializer(new FastJsonRedisSerializer<>(Object.class)))
+//                使用Jackson的相关方法来序列化redis，
+        (RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<>(Object.class)))
 //                设置默认过期时间，600s
                 .entryTtl(Duration.ofSeconds(600));
 

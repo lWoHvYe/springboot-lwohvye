@@ -1,6 +1,5 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.entity.SearchEntity;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -40,7 +39,7 @@ public class SearchController {
 //    solr搜索
     @SuppressWarnings("unchecked")
     public String solrSearch(String searchKey, String pages, String limits) {
-        JSONObject json = new JSONObject();
+//        JSONObject json = new JSONObject();
         try {
             int currentPage = 1;
             int limit = 10;
@@ -83,16 +82,17 @@ public class SearchController {
                 list.add(entity);
             }
 //            将结果拼接为geoJson
-            json.put("list", list);
-            json.put("numFound", numFound);
-            json.put("curPage", currentPage);
-            json.put("totalPage", numFound / limit + 1);
+//            json.put("list", list);
+//            json.put("numFound", numFound);
+//            json.put("curPage", currentPage);
+//            json.put("totalPage", numFound / limit + 1);
 
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return json.toJSONString();
+//        return json.toJSONString();
+        return "success";
     }
 
     /**

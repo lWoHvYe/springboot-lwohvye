@@ -1,6 +1,6 @@
 package com.springboot.shiro.shiro2spboot.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,7 +31,7 @@ public class Permission implements Serializable {
     private String parentIds;//父编号列表
     private Boolean available = Boolean.FALSE;//是否可用
 
-    @JSONField(serialize = false)//不序列化该属性
+    @JsonIgnore//不序列化该属性
     @ManyToMany(fetch = FetchType.LAZY)//配置反向延迟加载
     @JoinTable(name = "role_permission", joinColumns = {@JoinColumn(name = "permission_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private List<Role> roles;

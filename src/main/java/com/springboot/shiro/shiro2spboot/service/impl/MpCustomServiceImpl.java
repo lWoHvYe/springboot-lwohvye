@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.service.impl
@@ -39,7 +41,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      */
     @Cacheable(key = "'mpCustomList'")
     @Override
-    public Object list() {
+    public List<MpCustomEntity> list() {
         return slaveMpCustomMapper.list();
     }
 
@@ -78,7 +80,7 @@ public class MpCustomServiceImpl implements MpCustomService {
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
     )
     @Override
-    public Object insertSelective(MpCustomEntity mpCustomEntity) {
+    public MpCustomEntity insertSelective(MpCustomEntity mpCustomEntity) {
         masterMpCustomMapper.insertSelective(mpCustomEntity);
         return mpCustomEntity;
     }
@@ -93,7 +95,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      */
     @Cacheable(unless = "#result == null", cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")
     @Override
-    public Object selectByPrimaryKey(Integer customId) {
+    public MpCustomEntity selectByPrimaryKey(Integer customId) {
         return slaveMpCustomMapper.selectByPrimaryKey(customId);
     }
 
@@ -112,7 +114,7 @@ public class MpCustomServiceImpl implements MpCustomService {
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
     )
     @Override
-    public Object updateByPrimaryKeySelective(MpCustomEntity mpCustomEntity) {
+    public MpCustomEntity updateByPrimaryKeySelective(MpCustomEntity mpCustomEntity) {
         masterMpCustomMapper.updateByPrimaryKeySelective(mpCustomEntity);
         return slaveMpCustomMapper.searchById(mpCustomEntity.getCustomId());
     }

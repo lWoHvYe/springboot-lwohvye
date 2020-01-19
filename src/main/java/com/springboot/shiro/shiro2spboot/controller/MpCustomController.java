@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 前端控制器
  *
@@ -39,7 +41,7 @@ public class MpCustomController {
     @ApiOperation(value = "获取客户列表", notes = "获取客户列表，暂不提供分页及搜索")
     @GetMapping("/list")
     @RequiresPermissions("custom:view")
-    public ResultModel<Object> list() {
+    public ResultModel<List<MpCustomEntity>> list() {
 //        var json = new JSONObject();
 //        var list = mpCustomService.list();
 //        json.put("flag", true);
@@ -65,7 +67,7 @@ public class MpCustomController {
     })
     @PostMapping("/save")
     @RequiresPermissions("custom:add")
-    public ResultModel<Object> save(MpCustomEntity mpCustomEntity) {
+    public ResultModel<MpCustomEntity> save(MpCustomEntity mpCustomEntity) {
 //        var json = new JSONObject();
 //        mpCustomService.save(mpCustomEntity);
 //        json.put("flag", true);
@@ -84,7 +86,7 @@ public class MpCustomController {
     @ApiOperation(value = "获取客户信息", notes = "根据id获取客户信息")
     @ApiImplicitParam(name = "customId", value = "客户编号", required = true, dataType = "Integer")
     @GetMapping("/searchById")
-    public ResultModel<Object> searchById(@NonNull int customId) {
+    public ResultModel<MpCustomEntity> searchById(@NonNull int customId) {
 //        var json = new JSONObject();
 //        var entity = mpCustomService.searchById(customId);
 //        json.put("flag", true);
@@ -125,7 +127,7 @@ public class MpCustomController {
     @ApiOperation(value = "修改客户信息", notes = "根据客户id，修改客户信息")
     @ApiImplicitParam(name = "customId", value = "客户编号", required = true, dataType = "Integer")
     @PostMapping("/update")
-    public ResultModel<Object> update(@NonNull MpCustomEntity mpCustomEntity) {
+    public ResultModel<MpCustomEntity> update(@NonNull MpCustomEntity mpCustomEntity) {
 //        var json = new JSONObject();
 //        mpCustomService.update(mpCustomEntity);
 //        json.put("flag", true);
