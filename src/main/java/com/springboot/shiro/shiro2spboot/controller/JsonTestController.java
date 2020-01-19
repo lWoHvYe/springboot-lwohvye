@@ -109,6 +109,7 @@ public class JsonTestController {
         // 所以需将rows部分取出来
 //        将结果转为json对象，未传实体类class时，转换所有字段
         ObjectMapper objectMapper = new ObjectMapper();
+        //        配置不转换实体类中没有的字段
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
         JsonNode jsonNode = objectMapper.readTree(result);
         String string = jsonNode.get("data").get("rows").toString();
