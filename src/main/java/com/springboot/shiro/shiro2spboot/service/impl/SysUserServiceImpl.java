@@ -34,10 +34,10 @@ public class SysUserServiceImpl implements SysUserService {
     private MasterUserLogMapper masterUserLogMapper;
 
     @Override
-    public void findUser(String username, PageUtil<User> pageUtil) {
+    public PageUtil<User> findUser(String username, PageUtil<User> pageUtil) {
         Page<User> userPage = userDao.findUser(username, pageUtil.obtPageable());
         pageUtil.setPageEntity(userPage);
-//        return pageUtil;
+        return pageUtil;
     }
 
     @Override
@@ -53,20 +53,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public int insertSelective(User user) {
         //        页面传密码时，放进行密码相关操作
-        if (!StringUtils.isEmpty(user.getPassword())) {
-            //    每次改密码都重新生成盐，提高安全性
-            String salt =
-                    UUID.randomUUID().toString().replace("-", "").toLowerCase();
-            //    设置盐
-            user.setSalt(salt);
-            //     使用用户名+密码并反转的方式作为新密码
-            String password = new StringBuilder(user.getUsername() + user.getPassword()).reverse().toString();
-            //    使用md5加盐加密
-            SimpleHash simpleHash =
-                    new SimpleHash("md5", password, user.getCredentialsSalt(), 2);
-            //    设置密码
-            user.setPassword(simpleHash.toString());
-        }
+        setUserParams(user);
         return masterUserMapper.insertSelective(user);
     }
 
@@ -77,6 +64,11 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public int updateByPrimaryKeySelective(User user) {
+        setUserParams(user);
+        return masterUserMapper.updateByPrimaryKeySelective(user);
+    }
+
+    private void setUserParams(User user) {
         if (!StringUtils.isEmpty(user.getPassword())) {
             //    每次改密码都重新生成盐，提高安全性
             String salt =
@@ -91,7 +83,6 @@ public class SysUserServiceImpl implements SysUserService {
             //    设置密码
             user.setPassword(simpleHash.toString());
         }
-        return masterUserMapper.updateByPrimaryKeySelective(user);
     }
 
     @Override

@@ -41,11 +41,11 @@ public class UserController {
     }
 
     /**
-     * @Description: 获取用户列表
-     * @Param: [username, pageUtil]
-     * @return: com.springboot.shiro.shiro2spboot.common.util.PageUtil
-     * @Author: Hongyan Wang
-     * @Date: 2019/9/23 13:26
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @description 获取用户列表
+     * @params [username, pageUtil]
+     * @author Hongyan Wang
+     * @date 2019/9/23 13:26
      */
     @ApiOperation(value = "获取用户列表", notes = "获取用户列表，可以通过用户名模糊查询，包含PageUtil分页")
     @ApiImplicitParams({
@@ -54,14 +54,14 @@ public class UserController {
     })
     @RequestMapping(value = "/findUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:view")
-    public PageUtil<User> list(String username, PageUtil<User> pageUtil) {
+    public ResultModel<PageUtil<User>> list(String username, PageUtil<User> pageUtil) {
 //        JSONObject jsonObject = new JSONObject();
 //        查询列表
-        sysUserService.findUser(username, pageUtil);
+        return new ResultModel<>(sysUserService.findUser(username, pageUtil));
 //        jsonObject.put("result", "success");
 //        jsonObject.put("list", pageUtil);
 //        return jsonObject.toJSONString();
-        return pageUtil;
+//        return pageUtil;
     }
 
 
@@ -99,7 +99,7 @@ public class UserController {
     /**
      * 用户删除;
      *
-     * @return
+     * @return java.lang.String
      */
     @ApiIgnore
     @RequestMapping("/delUser")

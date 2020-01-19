@@ -23,21 +23,21 @@ public class RoleController {
 
 
     /**
-     * @Description: 获取角色列表
-     * @Param: [role, pageUtil]
-     * @return: com.springboot.shiro.shiro2spboot.common.util.PageUtil
-     * @Author: Hongyan Wang
-     * @Date: 2019/9/23 17:05
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @description 获取角色列表
+     * @params [role, pageUtil]
+     * @author Hongyan Wang
+     * @date 2019/9/23 17:05
      */
     @RequestMapping(value = "/findRole", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("role:view")
-    public PageUtil<Role> findByRole(String roleName, PageUtil<Role> pageUtil) {
+    public ResultModel<PageUtil<Role>> findByRole(String roleName, PageUtil<Role> pageUtil) {
 //        JSONObject jsonObject = new JSONObject();
-        sysRoleService.findRole(roleName, pageUtil);
+        return new ResultModel<>(sysRoleService.findRole(roleName, pageUtil));
 //        jsonObject.put("result", "success");
 //        jsonObject.put("list", pageUtil);
 //        return jsonObject.toJSONString();
-        return pageUtil;
+//        return pageUtil;
     }
 
     /**

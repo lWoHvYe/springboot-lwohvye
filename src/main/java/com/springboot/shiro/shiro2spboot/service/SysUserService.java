@@ -5,7 +5,7 @@ import com.springboot.shiro.shiro2spboot.entity.User;
 
 public interface SysUserService {
 
-    void findUser(String username, PageUtil<User> pageable);
+    PageUtil<User> findUser(String username, PageUtil<User> pageable);
 
     int deleteByPrimaryKey(Long uid);
 

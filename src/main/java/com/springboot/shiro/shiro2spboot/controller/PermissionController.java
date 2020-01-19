@@ -21,21 +21,21 @@ public class PermissionController {
 
 
     /**
-     * @Description: 获取权限列表
-     * @Param: [name, pageUtil]
-     * @return: com.springboot.shiro.shiro2spboot.common.util.PageUtil
-     * @Author: Hongyan Wang
-     * @Date: 2019/9/23 17:28
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @description 获取权限列表
+     * @params [name, pageUtil]
+     * @author Hongyan Wang
+     * @date 2019/9/23 17:28
      */
     @RequestMapping(value = "/findPermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:view")
-    public PageUtil<Permission> findByPermission(String name, PageUtil<Permission> pageUtil) {
+    public ResultModel<PageUtil<Permission>> findByPermission(String name, PageUtil<Permission> pageUtil) {
 //        JSONObject jsonObject = new JSONObject();
-        sysPermissionService.findPermission(name, pageUtil);
+        return new ResultModel<>(sysPermissionService.findPermission(name, pageUtil));
 //        jsonObject.put("result", "success");
 //        jsonObject.put("list", pageUtil);
 //        return jsonObject.toJSONString();
-        return pageUtil;
+//        return pageUtil;
     }
 
 
