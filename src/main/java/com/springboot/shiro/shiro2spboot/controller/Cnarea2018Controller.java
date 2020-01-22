@@ -3,6 +3,7 @@ package com.springboot.shiro.shiro2spboot.controller;
 import com.github.pagehelper.PageInfo;
 import com.springboot.shiro.shiro2spboot.entity.Cnarea2018;
 import com.springboot.shiro.shiro2spboot.service.Cnarea2018Service;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -37,6 +38,7 @@ public class Cnarea2018Controller {
      * @date 2020/1/16 22:13
      */
     @ApiOperation(value = "根据省名获取下属区划", notes = "多个省名使用逗号分隔")
+    @ApiImplicitParam(name = "levels", value = "查询区划级别，实际可使用下拉选择 0省、直辖市 1市 2区县 3街道办事处 4社区居委会")
     @PostMapping("/list")
     public List<PageInfo<Cnarea2018>> list(String province, String levels, int page, int pageSize) {
 //        设置区划级别，0省、直辖市 1市 2区县 3街道办事处 4社区居委会
