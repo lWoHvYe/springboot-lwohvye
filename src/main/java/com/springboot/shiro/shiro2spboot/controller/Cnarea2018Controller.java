@@ -5,6 +5,7 @@ import com.springboot.shiro.shiro2spboot.entity.Cnarea2018;
 import com.springboot.shiro.shiro2spboot.service.Cnarea2018Service;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,13 +38,19 @@ public class Cnarea2018Controller {
      */
     @ApiOperation(value = "根据省名获取下属区划", notes = "多个省名使用逗号分隔")
     @PostMapping("/list")
-    public List<PageInfo<Cnarea2018>> list(String province, int page, int pageSize) {
+    public List<PageInfo<Cnarea2018>> list(String province, String levels, int page, int pageSize) {
+//        设置区划级别，0省、直辖市 1市 2区县 3街道办事处 4社区居委会
+        Integer level = null;
+        if (!StringUtils.isEmpty(levels)) {
+            level = Integer.parseInt(levels);
+        }
+//        设置参数值
+        Integer finalLevel = level;
 //      切割字符串
         var completableFutureList = Arrays.stream(province.split(","))
 //                用map后获取一个新的流，可以继续操作，用foreach后流便没了
-                .map(name -> cnarea2018Service.list(name, page, pageSize))
+                .map(name -> cnarea2018Service.list(name, finalLevel, page, pageSize))
                 .collect(Collectors.toList());
-
         return completableFutureList.stream()
 //                将任务放入队列，等待结束
                 .map(CompletableFuture::join)
