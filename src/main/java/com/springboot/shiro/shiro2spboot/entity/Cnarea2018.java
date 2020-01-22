@@ -20,7 +20,7 @@ public class Cnarea2018 implements Serializable {
     /**
     * 层级
     */
-    private Boolean level;
+    private Integer level;
 
     /**
     * 父级行政代码

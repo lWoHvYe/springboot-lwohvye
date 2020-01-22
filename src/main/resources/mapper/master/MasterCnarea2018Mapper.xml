@@ -5,7 +5,7 @@
     <!--@mbg.generated-->
     <!--@Table cnarea_2018-->
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="level" jdbcType="BOOLEAN" property="level" />
+    <result column="level" jdbcType="INTEGER" property="level" />
     <result column="parent_code" jdbcType="INTEGER" property="parentCode" />
     <result column="area_code" jdbcType="BIGINT" property="areaCode" />
     <result column="zip_code" jdbcType="INTEGER" property="zipCode" />
@@ -33,7 +33,7 @@
       zip_code, city_code, `name`, 
       short_name, merger_name, pinyin, 
       lng, lat)
-    values (#{level,jdbcType=BOOLEAN}, #{parentCode,jdbcType=INTEGER}, #{areaCode,jdbcType=BIGINT}, 
+    values (#{level,jdbcType=INTEGER}, #{parentCode,jdbcType=INTEGER}, #{areaCode,jdbcType=BIGINT},
       #{zipCode,jdbcType=INTEGER}, #{cityCode,jdbcType=CHAR}, #{name,jdbcType=VARCHAR}, 
       #{shortName,jdbcType=VARCHAR}, #{mergerName,jdbcType=VARCHAR}, #{pinyin,jdbcType=VARCHAR}, 
       #{lng,jdbcType=DECIMAL}, #{lat,jdbcType=DECIMAL})
@@ -78,7 +78,7 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="level != null">
-        #{level,jdbcType=BOOLEAN},
+        #{level,jdbcType=INTEGER},
       </if>
       <if test="parentCode != null">
         #{parentCode,jdbcType=INTEGER},
@@ -117,7 +117,7 @@
     update cnarea_2018
     <set>
       <if test="level != null">
-        `level` = #{level,jdbcType=BOOLEAN},
+        `level` = #{level,jdbcType=INTEGER},
       </if>
       <if test="parentCode != null">
         parent_code = #{parentCode,jdbcType=INTEGER},
@@ -155,7 +155,7 @@
   <update id="updateByPrimaryKey" parameterType="com.springboot.shiro.shiro2spboot.entity.Cnarea2018">
     <!--@mbg.generated-->
     update cnarea_2018
-    set `level` = #{level,jdbcType=BOOLEAN},
+    set `level` = #{level,jdbcType=INTEGER},
       parent_code = #{parentCode,jdbcType=INTEGER},
       area_code = #{areaCode,jdbcType=BIGINT},
       zip_code = #{zipCode,jdbcType=INTEGER},
