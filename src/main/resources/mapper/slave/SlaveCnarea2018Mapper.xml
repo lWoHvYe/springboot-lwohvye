@@ -5,7 +5,7 @@
         <!--@mbg.generated-->
         <!--@Table cnarea_2018-->
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="level" jdbcType="BOOLEAN" property="level"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
         <result column="parent_code" jdbcType="INTEGER" property="parentCode"/>
         <result column="area_code" jdbcType="BIGINT" property="areaCode"/>
         <result column="zip_code" jdbcType="INTEGER" property="zipCode"/>
@@ -40,7 +40,7 @@
                 and id=#{id,jdbcType=INTEGER}
             </if>
             <if test="level != null">
-                and `level`=#{level,jdbcType=BOOLEAN}
+                and `level`=#{level,jdbcType=INTEGER}
             </if>
             <if test="parentCode != null">
                 and parent_code=#{parentCode,jdbcType=INTEGER}
