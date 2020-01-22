@@ -20,5 +20,5 @@ public interface Cnarea2018Service{
 
     int updateByPrimaryKey(Cnarea2018 record);
 
-    CompletableFuture<PageInfo<Cnarea2018>> list(String province, int page, int pageSize);
+    CompletableFuture<PageInfo<Cnarea2018>> list(String province, Integer finalLevel, int page, int pageSize);
 }
