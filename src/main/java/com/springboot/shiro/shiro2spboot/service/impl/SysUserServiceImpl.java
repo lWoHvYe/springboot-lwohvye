@@ -14,6 +14,8 @@ import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -90,8 +92,10 @@ public class SysUserServiceImpl implements SysUserService {
         return masterUserMapper.updateByPrimaryKey(record);
     }
 
-    //    开启事务
-    @Transactional
+    //    开启事务，可以配置事务的参数
+    //    PROPAGATION_REQUIRED： 如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务
+    //    ISOLATION_DEFAULT: 使用后端数据库默认的隔离级别，Mysql 默认采用的 REPEATABLE_READ隔离级别 Oracle 默认采用的 READ_COMMITTED隔离级别
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, readOnly = false, timeout = -1)
     @Override
     public User findLoginUser(String username) {
         var user = slaveUserMapper.findByUsername(username);
