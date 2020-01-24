@@ -6,11 +6,10 @@ import com.springboot.shiro.shiro2spboot.entity.UserLog;
 import com.springboot.shiro.shiro2spboot.service.UserLogService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Hongyan Wang
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @description
  * @date 2019/12/18 16:42
  */
-@Controller
+@RestController
 @RequestMapping("/userLog")
 public class UserLogController {
 
@@ -35,7 +34,7 @@ public class UserLogController {
      */
     @ApiOperation(value = "获取日志列表", notes = "获取日志列表，包含根据用户名及操作时间分页查询")
     @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
+//    @ResponseBody
     public ResultModel<PageInfo<UserLog>> list(String username, String searchTime, int page, int pageSize) {
 //        JSONObject json = new JSONObject();
 //
