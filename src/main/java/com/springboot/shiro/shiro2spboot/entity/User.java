@@ -33,7 +33,7 @@ public class User implements Serializable {
     private byte state;//用户状态
 
     //    一个用户对应一个角色，一个角色对应多个用户，用户是Many端
-    @Transient
+    @Transient//配置字段不被持久化，即不与数据库字段映射
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)//配置单向立即加载
     @JoinColumn(name = "role_id")
