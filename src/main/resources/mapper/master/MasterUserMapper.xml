@@ -11,6 +11,7 @@
         <result column="state" jdbcType="TINYINT" property="state"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="role_id" jdbcType="BIGINT" property="roleId"/>
+        <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber"/>
     </resultMap>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         <!--@mbg.generated-->
@@ -21,10 +22,11 @@
             useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into user (`name`, `password`, salt,
-        `state`, username, role_id
+        `state`, username, role_id, phone_number
         )
         values (#{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR},
-        #{state,jdbcType=TINYINT}, #{username,jdbcType=VARCHAR}, #{roleId,jdbcType=BIGINT}
+        #{state,jdbcType=TINYINT}, #{username,jdbcType=VARCHAR},
+        #{roleId,jdbcType=BIGINT}, #{phoneNumber,jdbcType=VARCHAR}
         )
     </insert>
     <insert id="insertSelective" keyColumn="uid" keyProperty="uid"
@@ -50,6 +52,9 @@
             <if test="roleId != null">
                 role_id,
             </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                phone_number,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null">
@@ -69,6 +74,9 @@
             </if>
             <if test="roleId != null">
                 #{roleId,jdbcType=BIGINT},
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                #{phoneNumber,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -94,6 +102,9 @@
             <if test="roleId != null">
                 role_id = #{roleId,jdbcType=BIGINT},
             </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                phone_number = #{phoneNumber,jdbcType=VARCHAR},
+            </if>
         </set>
         where `uid` = #{uid,jdbcType=BIGINT}
     </update>
@@ -105,7 +116,8 @@
         salt = #{salt,jdbcType=VARCHAR},
         `state` = #{state,jdbcType=TINYINT},
         username = #{username,jdbcType=VARCHAR},
-        role_id = #{roleId,jdbcType=BIGINT}
+        role_id = #{roleId,jdbcType=BIGINT},
+        phone_number = #{phoneNumber,jdbcType=VARCHAR}
         where `uid` = #{uid,jdbcType=BIGINT}
     </update>
 </mapper>

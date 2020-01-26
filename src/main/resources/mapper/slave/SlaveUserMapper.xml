@@ -11,6 +11,7 @@
         <result column="state" jdbcType="TINYINT" property="state"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="role_id" jdbcType="BIGINT" property="roleId"/>
+        <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber"/>
         <!--用户与角色是多对一的关系-->
         <association property="roles" javaType="com.springboot.shiro.shiro2spboot.entity.Role">
             <id property="id" column="id"/>
@@ -21,7 +22,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        `uid`, `name`, `password`, salt, `state`, username, role_id
+        `uid`, `name`, `password`, salt, `state`, username, role_id, phone_number
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         <!--@mbg.generated-->
@@ -57,6 +58,9 @@
             </if>
             <if test="roleId != null">
                 and u.role_id=#{roleId,jdbcType=BIGINT}
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                and u.phone_number=#{phoneNumber,jdbcType=VARCHAR}
             </if>
         </where>
     </select>
