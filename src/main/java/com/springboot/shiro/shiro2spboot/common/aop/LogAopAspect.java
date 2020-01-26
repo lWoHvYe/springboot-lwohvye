@@ -77,9 +77,9 @@ public class LogAopAspect {
         var result = pjp.proceed();
         var doResult = "方法执行出错";
         if (result != null) {
-            if (result.toString().contains("\"flag\":true")) {
+            if (result.toString().contains("flag=true")) {
                 doResult = "方法执行成功";
-            } else if (result.toString().contains("\"flag\":false")) {
+            } else if (result.toString().contains("flag=false")) {
                 doResult = "方法执行失败";
             }
         }
