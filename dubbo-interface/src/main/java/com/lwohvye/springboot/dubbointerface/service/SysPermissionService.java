@@ -1,7 +1,7 @@
-package com.springboot.shiro.shiro2spboot.service;
+package com.lwohvye.springboot.dubbointerface.service;
 
-import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
-import com.springboot.shiro.shiro2spboot.entity.Permission;
+import com.lwohvye.springboot.dubbointerface.common.util.PageUtil;
+import com.lwohvye.springboot.dubbointerface.entity.Permission;
 
 public interface SysPermissionService {
     PageUtil<Permission> findPermission(String name, PageUtil<Permission> pageUtil);

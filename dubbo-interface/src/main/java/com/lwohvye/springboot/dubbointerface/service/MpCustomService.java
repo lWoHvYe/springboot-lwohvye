@@ -1,6 +1,6 @@
-package com.springboot.shiro.shiro2spboot.service;
+package com.lwohvye.springboot.dubbointerface.service;
 
-import com.springboot.shiro.shiro2spboot.entity.MpCustomEntity;
+import com.lwohvye.springboot.dubbointerface.entity.MpCustomEntity;
 
 import java.util.List;
 

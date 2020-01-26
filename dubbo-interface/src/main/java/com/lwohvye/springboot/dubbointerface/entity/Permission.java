@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.entity;
+package com.lwohvye.springboot.dubbointerface.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;

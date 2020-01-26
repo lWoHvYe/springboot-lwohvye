@@ -1,6 +1,6 @@
-package com.springboot.shiro.shiro2spboot.common.annotation;
+package com.lwohvye.springboot.dubbointerface.common.annotation;
 
-import com.springboot.shiro.shiro2spboot.common.validator.PhoneNumberValidator;
+import com.lwohvye.springboot.dubbointerface.common.validator.PhoneNumberValidator;
 
 import javax.validation.Constraint;
 import java.lang.annotation.Documented;

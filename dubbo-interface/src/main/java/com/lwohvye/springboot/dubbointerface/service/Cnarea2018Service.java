@@ -1,7 +1,7 @@
-package com.springboot.shiro.shiro2spboot.service;
+package com.lwohvye.springboot.dubbointerface.service;
 
 import com.github.pagehelper.PageInfo;
-import com.springboot.shiro.shiro2spboot.entity.Cnarea2018;
+import com.lwohvye.springboot.dubbointerface.entity.Cnarea2018;
 
 import java.util.concurrent.CompletableFuture;
 

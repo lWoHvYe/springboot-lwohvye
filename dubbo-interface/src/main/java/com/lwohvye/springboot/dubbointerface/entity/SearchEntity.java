@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.entity;
+package com.lwohvye.springboot.dubbointerface.entity;
 
 import lombok.Getter;
 import lombok.Setter;
