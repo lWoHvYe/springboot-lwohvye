@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 
 @Api(value = "用户相关操作API")
+@Validated
 //RestController相当于@Controller+@ResponseBody
 @RestController
 @RequestMapping("/user")
@@ -139,7 +141,7 @@ public class UserController {
     @ApiOperation(value = "修改用户信息", notes = "根据用户id修改用户信息，包含部分信息修改。用户名username不可修改")
     @RequestMapping(value = "/updateUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:update")
-    public ResultModel<Integer> updateUser(User user) {
+    public ResultModel<Integer> updateUser(@Valid User user) {
 //        JSONObject jsonObject = new JSONObject();
 //        sysUserService.updateByPrimaryKeySelective(user);
 //        jsonObject.put("result", "success");

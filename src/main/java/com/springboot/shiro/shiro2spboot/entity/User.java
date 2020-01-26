@@ -1,11 +1,13 @@
 package com.springboot.shiro.shiro2spboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.springboot.shiro.shiro2spboot.common.annotation.PhoneNumber;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Getter
@@ -31,6 +33,10 @@ public class User implements Serializable {
     @JsonIgnore
     private String salt;//加密密码的盐
     private byte state;//用户状态
+    //      手机号不可为空且需符合规则
+    @PhoneNumber(message = "phoneNumber isn't valid")
+    @NotNull(message = "phoneNumber can't be null")
+    private String phoneNumber;
 
     //    一个用户对应一个角色，一个角色对应多个用户，用户是Many端
     @Transient//配置字段不被持久化，即不与数据库字段映射
