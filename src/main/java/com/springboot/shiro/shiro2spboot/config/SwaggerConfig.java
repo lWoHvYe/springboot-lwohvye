@@ -24,6 +24,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @ApiResponse：HTTP响应其中1个描述
  */
 @Configuration
+//开启SwaggerAPI
 @EnableSwagger2
 public class SwaggerConfig {
 
