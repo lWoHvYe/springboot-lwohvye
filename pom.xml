@@ -23,6 +23,15 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Spring Boot 不加这个会导致引入的spring版本过低-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- Apache Dubbo  -->
             <dependency>
                 <groupId>org.apache.dubbo</groupId>
@@ -37,6 +46,10 @@
                 <artifactId>dubbo</artifactId>
                 <version>${dubbo.version}</version>
                 <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring</artifactId>
+                    </exclusion>
                     <exclusion>
                         <groupId>javax.servlet</groupId>
                         <artifactId>servlet-api</artifactId>
