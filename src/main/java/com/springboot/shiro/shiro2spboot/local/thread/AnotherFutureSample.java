@@ -66,12 +66,11 @@ public class AnotherFutureSample {
 //        创建存放子线程返回结果的List
         List<Map<String, Integer>> resultList = new ArrayList<>();
         //   开启模拟线程数
-        Integer threadCount = 10;
+        int threadCount = 10;
 //        模拟次数
-        Integer simCount = 1000000;
+        int simCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
-        AnotherFutureSample anotherFutureSample = new AnotherFutureSample();
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -122,7 +121,7 @@ public class AnotherFutureSample {
         Arrays.asList(values).forEach(ThreadLocal::remove);
 
 //         输出总结果
-        anotherFutureSample.printResult(countMap, simCount / 100, totalCount);
+        this.printResult(countMap, simCount / 100, totalCount);
 //         记录结束时间
         long end = DateTimeUtil.getCurMilli();
         System.out.println(end - start);

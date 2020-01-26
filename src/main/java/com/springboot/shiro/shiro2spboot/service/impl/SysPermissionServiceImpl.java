@@ -1,7 +1,8 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
-import com.springboot.shiro.shiro2spboot.dao.PermissionMapper;
+import com.springboot.shiro.shiro2spboot.dao.master.MasterPermissionMapper;
+import com.springboot.shiro.shiro2spboot.dao.slave.SlavePermissionMapper;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.repository.PermissionDao;
 import com.springboot.shiro.shiro2spboot.service.SysPermissionService;
@@ -14,52 +15,57 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     @Autowired
     private PermissionDao permissionDao;
     @Autowired
-    private PermissionMapper permissionMapper;
+    private MasterPermissionMapper masterPermissionMapper;
+    @Autowired
+    private SlavePermissionMapper slavePermissionMapper;
 
     @Override
-    public void findPermission(String name, PageUtil<Permission> pageUtil) {
+    public PageUtil<Permission> findPermission(String name, PageUtil<Permission> pageUtil) {
         Page<Permission> permissionPage = permissionDao.findPermission(name, pageUtil.obtPageable());
         pageUtil.setPageEntity(permissionPage);
+        return pageUtil;
     }
 
     @Override
-    public void savePermission(Permission permission) {
+    public int savePermission(Permission permission) {
         permissionDao.save(permission);
+        return 1;
     }
 
     @Override
-    public void deletePermission(Permission permission) {
+    public int deletePermission(Permission permission) {
         permissionDao.delete(permission);
+        return 1;
     }
 
     @Override
     public int deleteByPrimaryKey(Long id) {
-        return permissionMapper.deleteByPrimaryKey(id);
+        return masterPermissionMapper.deleteByPrimaryKey(id);
     }
 
     @Override
     public int insert(Permission record) {
-        return permissionMapper.insert(record);
+        return masterPermissionMapper.insert(record);
     }
 
     @Override
     public int insertSelective(Permission record) {
-        return permissionMapper.insertSelective(record);
+        return masterPermissionMapper.insertSelective(record);
     }
 
     @Override
     public Permission selectByPrimaryKey(Long id) {
-        return permissionMapper.selectByPrimaryKey(id);
+        return slavePermissionMapper.selectByPrimaryKey(id);
     }
 
     @Override
     public int updateByPrimaryKeySelective(Permission record) {
-        return permissionMapper.updateByPrimaryKeySelective(record);
+        return masterPermissionMapper.updateByPrimaryKeySelective(record);
     }
 
     @Override
     public int updateByPrimaryKey(Permission record) {
-        return permissionMapper.updateByPrimaryKey(record);
+        return masterPermissionMapper.updateByPrimaryKey(record);
     }
 }
 

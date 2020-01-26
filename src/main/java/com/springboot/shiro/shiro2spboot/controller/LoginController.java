@@ -2,6 +2,7 @@ package com.springboot.shiro.shiro2spboot.controller;
 
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaEmptyException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaErrorException;
+import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaExpireException;
 import com.springboot.shiro.shiro2spboot.common.shiro.CaptchaToken;
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.common.util.VerifyCodeUtils;
@@ -49,13 +50,15 @@ public class LoginController {
             return "/login";
         try {
             var subject = SecurityUtils.getSubject();
-            var usernamePasswordToken = new CaptchaToken(username, password, captchaCode, WebUtils.isTrue(request, "rememberMe"), subject.getSession().getHost());
+            //     使用用户名+密码并反转的方式作为验证密码
+            var strPassword = new StringBuilder(username + password).reverse().toString();
+            var usernamePasswordToken = new CaptchaToken(username, strPassword, captchaCode, WebUtils.isTrue(request, "rememberMe"), subject.getSession().getHost());
             subject.login(usernamePasswordToken);
         } catch (AuthenticationException e) {
             exception = e.getClass().getName();
         }
 
-        String msg = "登陆成功";
+        var msg = "登陆成功";
         if (exception != null) {
             if (UnknownAccountException.class.getName().equals(exception)) {
                 msg = "UnknownAccountException --> 账号不存在";
@@ -65,6 +68,8 @@ public class LoginController {
                 msg = "CaptchaEmptyException --> 验证码不可为空";
             } else if (CaptchaErrorException.class.getName().equals(exception)) {
                 msg = "CaptchaErrorException --> 验证码错误";
+            } else if (CaptchaExpireException.class.getName().equals(exception)) {
+                msg = "CaptchaExpireException --> 验证码过期";
             } else {
                 msg = "else --> " + exception;
             }
@@ -91,12 +96,12 @@ public class LoginController {
 
             //生成随机字串
             var verifyMap = VerifyCodeUtils.generateVerifyCode(4);
-            //当前时间
-            String nowTime = DateTimeUtil.getCurFormatTime();
+            //当前时间毫秒值
+            var nowTime = DateTimeUtil.getCurMilli();
             //存入会话session
-            HttpSession session = request.getSession();
+            var session = request.getSession();
             session.setAttribute(VerifyCodeUtils.VERIFY_CODE_SESSION_KEY, verifyMap.get("result"));
-            session.setAttribute("verify_date", nowTime);
+            session.setAttribute(VerifyCodeUtils.VERIFY_CODE_CREATE_MILLI, nowTime);
             //生成图片
             int w = 150;
             int h = 50;

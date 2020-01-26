@@ -139,12 +139,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!--本地仓库，oracle连接驱动包-->
         <dependency>
             <groupId>com.jdbc.oracle</groupId>
             <artifactId>ojdbc14</artifactId>
             <version>1.0</version>
-            <systemPath>${basedir}/src/main/resources/lib/ojdbc14.jar</systemPath>
-            <scope>system</scope>
         </dependency>
         <!--alibaba druid-->
         <dependency>
@@ -153,11 +152,11 @@
             <version>1.1.21</version>
         </dependency>
         <!--alibaba fastjson-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.62</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba</groupId>-->
+<!--            <artifactId>fastjson</artifactId>-->
+<!--            <version>1.2.62</version>-->
+<!--        </dependency>-->
         <!--lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -185,18 +184,16 @@
             <version>4.12</version>
         </dependency>
         <!--验证码相关，未使用该方式-->
-        <dependency>
-            <groupId>com.github.penggle</groupId>
-            <artifactId>kaptcha</artifactId>
-            <version>2.3.2</version>
-        </dependency>
-        <!--视频转Asc相关jar-->
+<!--        <dependency>-->
+<!--            <groupId>com.github.penggle</groupId>-->
+<!--            <artifactId>kaptcha</artifactId>-->
+<!--            <version>2.3.2</version>-->
+<!--        </dependency>-->
+        <!--本地仓库，视频转Asc相关jar-->
         <dependency>
             <groupId>com.github.opencv</groupId>
             <artifactId>opencv</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <systemPath>${basedir}/src/main/resources/lib/opencv-410.jar</systemPath>
-            <scope>system</scope>
+            <version>4.1.0</version>
         </dependency>
         <!--调用C库函数相关jar，替换原来的com.sun.jna，暂未使用该包-->
         <dependency>
@@ -260,14 +257,23 @@
         <dependency>
             <groupId>com.aspose</groupId>
             <artifactId>aspose-words</artifactId>
-            <version>2.0</version>
-            <systemPath>${basedir}/src/main/resources/lib/aspose-words-19.2-jdk16.jar</systemPath>
-            <scope>system</scope>
+            <version>19.2</version>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <version>3.26.0-GA</version>
+        </dependency>
+        <!--定时任务框架-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+        <!--分页插件-->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.2.13</version>
         </dependency>
         <!-- Dubbo Spring Boot Starter -->
         <dependency>

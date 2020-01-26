@@ -7,13 +7,16 @@ import org.slf4j.LoggerFactory;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.common.local
- * @className FutureSample
+ * @className FutureSampleSync
  * @description 抽卡模拟 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * 由于模拟采用了随机数的方式，所以池子可以任意配置，不影响结果
@@ -22,11 +25,11 @@ import java.util.concurrent.CompletableFuture;
  * 需尤其注意变量的作用范围问题
  * @date 2019/9/22 8:54
  */
-//TODO 使用CompletableFuture,子线程实时共享数据，使用synchronized同步代码块，不能使用volatile
+//TODO 使用CompletableFuture,子线程实时共享数据，使用synchronized同步代码块，不能使用volatile,会有极少量数据丢失，原因未知
 //@SpringBootTest
-public class FutureSample {
+public class FutureSampleSync {
 
-    private Logger logger4j = LoggerFactory.getLogger(FutureSample.class);
+    private Logger logger4j = LoggerFactory.getLogger(FutureSampleSync.class);
 
     private Integer s50 = 0;
     private Integer s100 = 0;
@@ -52,12 +55,12 @@ public class FutureSample {
     @SuppressWarnings("unchecked")
     public void startWork() {
         //   开启模拟线程数
-        Integer threadCount = 10;
+        int threadCount = 10;
 //        模拟次数
-        Integer simCount = 1000000;
+        int simCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
-        FutureSample futureSample = new FutureSample();
+//        FutureSampleSync futureSample = new FutureSampleSync();
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();

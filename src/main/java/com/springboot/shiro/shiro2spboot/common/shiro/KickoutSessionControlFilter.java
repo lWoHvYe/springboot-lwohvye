@@ -1,6 +1,6 @@
 package com.springboot.shiro.shiro2spboot.common.shiro;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.shiro.shiro2spboot.entity.User;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheManager;
@@ -143,7 +143,7 @@ public class KickoutSessionControlFilter extends AccessControlFilter {
         try {
             hresponse.setCharacterEncoding("UTF-8");
             var out = hresponse.getWriter();
-            out.println(JSON.toJSONString(resultMap));
+            out.println(new ObjectMapper().writeValueAsString(resultMap));
             out.flush();
             out.close();
         } catch (Exception e) {

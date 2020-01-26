@@ -1,7 +1,8 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
 import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
-import com.springboot.shiro.shiro2spboot.dao.RoleMapper;
+import com.springboot.shiro.shiro2spboot.dao.master.MasterRoleMapper;
+import com.springboot.shiro.shiro2spboot.dao.slave.SlaveRoleMapper;
 import com.springboot.shiro.shiro2spboot.entity.Permission;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 import com.springboot.shiro.shiro2spboot.repository.RoleDao;
@@ -19,23 +20,28 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Autowired
     private RoleDao roleDao;
     @Autowired
-    private RoleMapper roleMapper;
+    private MasterRoleMapper masterRoleMapper;
+    @Autowired
+    private SlaveRoleMapper slaveRoleMapper;
 
     @Override
-    public void findRole(String roleName, PageUtil<Role> pageUtil) {
+    public PageUtil<Role> findRole(String roleName, PageUtil<Role> pageUtil) {
         Page<Role> rolePage = roleDao.findRole(roleName, pageUtil.obtPageable());
         pageUtil.setPageEntity(rolePage);
+        return pageUtil;
     }
 
     @Override
-    public void saveRole(Role role, String permissionId) {
+    public int saveRole(Role role, String permissionId) {
         savePermissionId(role, permissionId);
         roleDao.save(role);
+        return 1;
     }
 
     @Override
-    public void deleteRole(Role role) {
+    public int deleteRole(Role role) {
         roleDao.delete(role);
+        return 1;
     }
 
 
@@ -64,32 +70,32 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public int deleteByPrimaryKey(Long id) {
-        return roleMapper.deleteByPrimaryKey(id);
+        return masterRoleMapper.deleteByPrimaryKey(id);
     }
 
     @Override
     public int insert(Role record) {
-        return roleMapper.insert(record);
+        return masterRoleMapper.insert(record);
     }
 
     @Override
     public int insertSelective(Role record) {
-        return roleMapper.insertSelective(record);
+        return masterRoleMapper.insertSelective(record);
     }
 
     @Override
     public Role selectByPrimaryKey(Long id) {
-        return roleMapper.selectByPrimaryKey(id);
+        return slaveRoleMapper.selectByPrimaryKey(id);
     }
 
     @Override
     public int updateByPrimaryKeySelective(Role record) {
-        return roleMapper.updateByPrimaryKeySelective(record);
+        return masterRoleMapper.updateByPrimaryKeySelective(record);
     }
 
     @Override
     public int updateByPrimaryKey(Role record) {
-        return roleMapper.updateByPrimaryKey(record);
+        return masterRoleMapper.updateByPrimaryKey(record);
     }
 }
 

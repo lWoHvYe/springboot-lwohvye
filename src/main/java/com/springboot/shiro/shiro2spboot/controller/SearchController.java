@@ -1,6 +1,6 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.SearchEntity;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,9 +38,8 @@ public class SearchController {
     @GetMapping("/solrSearch")
 //    @ResponseBody
 //    solr搜索
-    @SuppressWarnings("unchecked")
-    public String solrSearch(String searchKey, String pages, String limits) {
-        JSONObject json = new JSONObject();
+    public Object solrSearch(String searchKey, String pages, String limits) {
+//        JSONObject json = new JSONObject();
         try {
             int currentPage = 1;
             int limit = 10;
@@ -83,17 +81,27 @@ public class SearchController {
                 entity.setGeom((String) entries.get("geom"));
                 list.add(entity);
             }
+            PageUtil<SearchEntity> pageUtil = new PageUtil<>();
+//            设置结果集
+            pageUtil.setPageData(list);
+//            设置当前页
+            pageUtil.setCurrentPage(currentPage);
+//            设置每页记录数
+            pageUtil.setPageSize(limit);
+//            设置总记录数
+            pageUtil.setTotalCount(Long.valueOf(numFound).intValue());
 //            将结果拼接为geoJson
-            json.put("list", list);
-            json.put("numFound", numFound);
-            json.put("curPage", currentPage);
-            json.put("totalPage", numFound / limit + 1);
+//            json.put("list", list);
+//            json.put("numFound", numFound);
+//            json.put("curPage", currentPage);
+//            json.put("totalPage", numFound / limit + 1);
 
-
+            return pageUtil;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return json.toJSONString();
+//        return json.toJSONString();
+        return "success";
     }
 
     /**

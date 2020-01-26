@@ -1,19 +1,15 @@
 package com.springboot.shiro.shiro2spboot.local;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
 import com.springboot.shiro.shiro2spboot.common.util.RedisUtil;
 import com.springboot.shiro.shiro2spboot.entity.User;
-import com.springboot.shiro.shiro2spboot.service.MpCustomService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,10 +37,8 @@ public class RedisTest {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    private MpCustomService mpCustomService;
-
-    public void redisTest() {
+    
+    public void redisTest() throws JsonProcessingException {
         var redisUtil = new RedisUtil(redisTemplate);
         var key = "keySet";
 //        创建实体类并赋值
@@ -60,10 +54,11 @@ public class RedisTest {
         redisUtil.expire(key, 100);
 //        从redis中取出实体类对象Object类型
         var objUser = redisUtil.get(key);
+        var objectMapper = new ObjectMapper();
 //        转换为json串，只能将Object类型转为json串
-        var strUser = JSON.toJSONString(objUser);
+        var strUser = objectMapper.writeValueAsString(objUser);
 //        将json串转换为User对象
-        var tranUser = JSON.parseObject(strUser, User.class);
+        var tranUser = objectMapper.readValue(strUser, User.class);
         System.out.println(tranUser.toString());
         var completableFuture = CompletableFuture.runAsync(() -> {
             for (int i = 0; i < 12; i++) {
@@ -98,7 +93,7 @@ public class RedisTest {
     @RequiresPermissions(value = {"user:view", "role:view", "permission:view"}, logical = Logical.OR)
     public String getKeys() {
 //        mpCustomService.searchById(8);
-        var keys = redisTemplate.keys("*");
+        // var keys = redisTemplate.keys("*");
         Objects.requireNonNull(redisTemplate.keys("*")).forEach(e -> log.warn(MessageFormat.format("{0} | {1}", DateTimeUtil.getCurFormatTime(), e)));
 //        mpCustomService.delete(8);
         return "success";

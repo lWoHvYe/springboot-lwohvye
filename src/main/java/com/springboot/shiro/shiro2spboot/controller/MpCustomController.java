@@ -1,8 +1,8 @@
 package com.springboot.shiro.shiro2spboot.controller;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.springboot.shiro.shiro2spboot.common.annotation.LogAnno;
+import com.springboot.shiro.shiro2spboot.common.util.ResultModel;
 import com.springboot.shiro.shiro2spboot.entity.MpCustomEntity;
 import com.springboot.shiro.shiro2spboot.service.MpCustomService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -34,7 +32,7 @@ public class MpCustomController {
     private MpCustomService mpCustomService;
 
     /**
-     * @return java.lang.String
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
      * @description 获取列表
      * @params []
      * @author Hongyan Wang
@@ -43,16 +41,17 @@ public class MpCustomController {
     @ApiOperation(value = "获取客户列表", notes = "获取客户列表，暂不提供分页及搜索")
     @GetMapping("/list")
     @RequiresPermissions("custom:view")
-    public String list() {
-        var json = new JSONObject();
-        var list = mpCustomService.list();
-        json.put("flag", true);
-        json.put("list", list);
-        return json.toJSONString();
+    public ResultModel<List<MpCustomEntity>> list() {
+//        var json = new JSONObject();
+//        var list = mpCustomService.list();
+//        json.put("flag", true);
+//        json.put("list", list);
+//        return json.toJSONString();
+        return new ResultModel<>(mpCustomService.list());
     }
 
     /**
-     * @return java.lang.String
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
      * @description 添加企业信息
      * @params [mpCustomEntity]
      * @author Hongyan Wang
@@ -68,16 +67,17 @@ public class MpCustomController {
     })
     @PostMapping("/save")
     @RequiresPermissions("custom:add")
-    public String save(MpCustomEntity mpCustomEntity) {
-        var json = new JSONObject();
-        mpCustomService.save(mpCustomEntity);
-        json.put("flag", true);
-        json.put("msg", "添加成功");
-        return json.toJSONString();
+    public ResultModel<MpCustomEntity> save(MpCustomEntity mpCustomEntity) {
+//        var json = new JSONObject();
+//        mpCustomService.save(mpCustomEntity);
+//        json.put("flag", true);
+//        json.put("msg", "添加成功");
+//        return json.toJSONString();
+        return new ResultModel<>(mpCustomService.insertSelective(mpCustomEntity));
     }
 
     /**
-     * @return java.lang.String
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
      * @description 根据id获取客户信息
      * @params [customId]
      * @author Hongyan Wang
@@ -86,16 +86,17 @@ public class MpCustomController {
     @ApiOperation(value = "获取客户信息", notes = "根据id获取客户信息")
     @ApiImplicitParam(name = "customId", value = "客户编号", required = true, dataType = "Integer")
     @GetMapping("/searchById")
-    public String searchById(@NonNull int customId) {
-        var json = new JSONObject();
-        var entity = mpCustomService.searchById(customId);
-        json.put("flag", true);
-        json.put("entity", entity);
-        return json.toJSONString();
+    public ResultModel<MpCustomEntity> searchById(@NonNull int customId) {
+//        var json = new JSONObject();
+//        var entity = mpCustomService.searchById(customId);
+//        json.put("flag", true);
+//        json.put("entity", entity);
+//        return json.toJSONString();
+        return new ResultModel<>(mpCustomService.selectByPrimaryKey(customId));
     }
 
     /**
-     * @return java.lang.String
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
      * @description 根据企业id删除企业信息
      * @params [customId]
      * @author Hongyan Wang
@@ -106,16 +107,17 @@ public class MpCustomController {
     @ApiImplicitParam(name = "customId", value = "客户编号", required = true, dataType = "Integer")
     @GetMapping("/delete")
     @RequiresPermissions("custom:del")
-    public String delete(@NonNull int customId) {
-        var json = new JSONObject();
-        mpCustomService.delete(customId);
-        json.put("flag", true);
-        json.put("msg", "删除成功");
-        return json.toJSONString();
+    public ResultModel<Integer> delete(@NonNull int customId) {
+//        var json = new JSONObject();
+//        mpCustomService.delete(customId);
+//        json.put("flag", true);
+//        json.put("msg", "删除成功");
+//        return json.toJSONString();
+        return new ResultModel<>(mpCustomService.deleteByPrimaryKey(customId));
     }
 
     /**
-     * @return java.lang.String
+     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
      * @description 修改客户信息
      * @params [mpCustomEntity]
      * @author Hongyan Wang
@@ -125,11 +127,12 @@ public class MpCustomController {
     @ApiOperation(value = "修改客户信息", notes = "根据客户id，修改客户信息")
     @ApiImplicitParam(name = "customId", value = "客户编号", required = true, dataType = "Integer")
     @PostMapping("/update")
-    public String update(@NonNull MpCustomEntity mpCustomEntity) {
-        var json = new JSONObject();
-        mpCustomService.update(mpCustomEntity);
-        json.put("flag", true);
-        json.put("msg", "修改成功");
-        return json.toJSONString();
+    public ResultModel<MpCustomEntity> update(@NonNull MpCustomEntity mpCustomEntity) {
+//        var json = new JSONObject();
+//        mpCustomService.update(mpCustomEntity);
+//        json.put("flag", true);
+//        json.put("msg", "修改成功");
+//        return json.toJSONString();
+        return new ResultModel<>(mpCustomService.updateByPrimaryKeySelective(mpCustomEntity));
     }
 }

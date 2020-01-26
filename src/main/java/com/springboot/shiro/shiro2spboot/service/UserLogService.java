@@ -1,8 +1,7 @@
 package com.springboot.shiro.shiro2spboot.service;
 
+import com.github.pagehelper.PageInfo;
 import com.springboot.shiro.shiro2spboot.entity.UserLog;
-
-import java.util.List;
 
 public interface UserLogService {
 
@@ -19,7 +18,6 @@ public interface UserLogService {
 
     int updateByPrimaryKey(UserLog record);
 
-    List<UserLog> list(String username, String startDate, String endDate, int pages, int limits);
+    PageInfo<UserLog> list(String username, String startDate, String endDate, int page, int pageSize);
 
-    int selectCount(String username, String startDate, String endDate);
 }

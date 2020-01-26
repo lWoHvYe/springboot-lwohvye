@@ -1,14 +1,15 @@
 package com.springboot.shiro.shiro2spboot.service.impl;
 
-import com.springboot.shiro.shiro2spboot.common.datasource.DatabaseType;
-import com.springboot.shiro.shiro2spboot.common.datasource.dataSource;
-import com.springboot.shiro.shiro2spboot.dao.MpCustomMapper;
+import com.springboot.shiro.shiro2spboot.dao.master.MasterMpCustomMapper;
+import com.springboot.shiro.shiro2spboot.dao.slave.SlaveMpCustomMapper;
 import com.springboot.shiro.shiro2spboot.entity.MpCustomEntity;
-import com.springboot.shiro.shiro2spboot.local.redis.RedisKeys;
+import com.springboot.shiro.shiro2spboot.common.redis.RedisKeys;
 import com.springboot.shiro.shiro2spboot.service.MpCustomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Hongyan Wang
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
  * 执行添加操作时，清除客户列表缓存
  * 执行修改、删除操作时，清除客户列表和对应客户缓存
  * 将缓存放在Service层，方便使用shiro进行权限控制
+ * 使用缓存时，对应接口的返回类型需设置为Object，这一点需特别注意
  * @date 2019/10/10 13:37
  */
 @Service
@@ -26,7 +28,9 @@ import org.springframework.stereotype.Service;
 public class MpCustomServiceImpl implements MpCustomService {
 
     @Autowired
-    private MpCustomMapper mpCustomMapper;
+    private MasterMpCustomMapper masterMpCustomMapper;
+    @Autowired
+    private SlaveMpCustomMapper slaveMpCustomMapper;
 
     /**
      * @return java.util.List<com.springboot.shiro.shiro2spboot.entity.MpCustomEntity>
@@ -35,28 +39,10 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 16:09
      */
-    @dataSource(DatabaseType.SLAVE)
     @Cacheable(key = "'mpCustomList'")
     @Override
-    public Object list() {
-        return mpCustomMapper.list();
-    }
-
-    /**
-     * @return com.springboot.shiro.shiro2spboot.entity.MpCustomEntity
-     * @description 添加客户，清空客户列表缓存并将新加客户加入缓存
-     * @params [mpCustomEntity]
-     * @author Hongyan Wang
-     * @date 2019/10/10 17:10
-     */
-    @Caching(evict = {@CacheEvict(key = "'mpCustomList'", beforeInvocation = true)},
-            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
-                    cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
-    )
-    @Override
-    public Object save(MpCustomEntity mpCustomEntity) {
-        mpCustomMapper.save(mpCustomEntity);
-        return mpCustomEntity;
+    public List<MpCustomEntity> list() {
+        return slaveMpCustomMapper.list();
     }
 
     /**
@@ -73,8 +59,30 @@ public class MpCustomServiceImpl implements MpCustomService {
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600", beforeInvocation = true)
     })
     @Override
-    public void delete(int customId) {
-        mpCustomMapper.delete(customId);
+    public int deleteByPrimaryKey(Integer customId) {
+        return masterMpCustomMapper.deleteByPrimaryKey(customId);
+    }
+
+    @Override
+    public int insert(MpCustomEntity record) {
+        return masterMpCustomMapper.insert(record);
+    }
+
+    /**
+     * @return com.springboot.shiro.shiro2spboot.entity.MpCustomEntity
+     * @description 添加客户，清空客户列表缓存并将新加客户加入缓存
+     * @params [mpCustomEntity]
+     * @author Hongyan Wang
+     * @date 2019/10/10 17:10
+     */
+    @Caching(evict = {@CacheEvict(key = "'mpCustomList'", beforeInvocation = true)},
+            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
+                    cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
+    )
+    @Override
+    public MpCustomEntity insertSelective(MpCustomEntity mpCustomEntity) {
+        masterMpCustomMapper.insertSelective(mpCustomEntity);
+        return mpCustomEntity;
     }
 
     /**
@@ -85,13 +93,11 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @author Hongyan Wang
      * @date 2019/10/10 16:31
      */
-    @dataSource(DatabaseType.SLAVE)
     @Cacheable(unless = "#result == null", cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")
     @Override
-    public Object searchById(int customId) {
-        return mpCustomMapper.searchById(customId);
+    public MpCustomEntity selectByPrimaryKey(Integer customId) {
+        return slaveMpCustomMapper.selectByPrimaryKey(customId);
     }
-
 
     /**
      * @return com.springboot.shiro.shiro2spboot.entity.MpCustomEntity
@@ -108,39 +114,14 @@ public class MpCustomServiceImpl implements MpCustomService {
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
     )
     @Override
-    public Object update(MpCustomEntity mpCustomEntity) {
-        mpCustomMapper.update(mpCustomEntity);
-        return mpCustomMapper.searchById(mpCustomEntity.getCustomId());
-    }
-
-    @Override
-    public int deleteByPrimaryKey(Integer customId) {
-        return mpCustomMapper.deleteByPrimaryKey(customId);
-    }
-
-    @Override
-    public int insert(MpCustomEntity record) {
-        return mpCustomMapper.insert(record);
-    }
-
-    @Override
-    public int insertSelective(MpCustomEntity record) {
-        return mpCustomMapper.insertSelective(record);
-    }
-
-    @Override
-    public MpCustomEntity selectByPrimaryKey(Integer customId) {
-        return mpCustomMapper.selectByPrimaryKey(customId);
-    }
-
-    @Override
-    public int updateByPrimaryKeySelective(MpCustomEntity record) {
-        return mpCustomMapper.updateByPrimaryKeySelective(record);
+    public MpCustomEntity updateByPrimaryKeySelective(MpCustomEntity mpCustomEntity) {
+        masterMpCustomMapper.updateByPrimaryKeySelective(mpCustomEntity);
+        return slaveMpCustomMapper.searchById(mpCustomEntity.getCustomId());
     }
 
     @Override
     public int updateByPrimaryKey(MpCustomEntity record) {
-        return mpCustomMapper.updateByPrimaryKey(record);
+        return masterMpCustomMapper.updateByPrimaryKey(record);
     }
 }
 

@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.local.redis;
+package com.springboot.shiro.shiro2spboot.common.redis;
 
 /**
  * @author Hongyan Wang

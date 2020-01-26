@@ -4,11 +4,11 @@ import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
 import com.springboot.shiro.shiro2spboot.entity.Role;
 
 public interface SysRoleService {
-    void findRole(String roleName, PageUtil<Role> pageUtil);
+    PageUtil<Role> findRole(String roleName, PageUtil<Role> pageUtil);
 
-    void saveRole(Role role, String permissionId);
+    int saveRole(Role role, String permissionId);
 
-    void deleteRole(Role role);
+    int deleteRole(Role role);
 
     int deleteByPrimaryKey(Long id);
 
