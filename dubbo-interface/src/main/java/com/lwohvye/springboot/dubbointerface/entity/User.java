@@ -1,7 +1,7 @@
-package com.springboot.shiro.shiro2spboot.entity;
+package com.lwohvye.springboot.dubbointerface.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.springboot.shiro.shiro2spboot.common.annotation.PhoneNumber;
+import com.lwohvye.springboot.dubbointerface.common.annotation.PhoneNumber;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,7 +1,7 @@
-package com.springboot.shiro.shiro2spboot.service;
+package com.lwohvye.springboot.dubbointerface.service;
 
-import com.springboot.shiro.shiro2spboot.common.util.PageUtil;
-import com.springboot.shiro.shiro2spboot.entity.User;
+import com.lwohvye.springboot.dubbointerface.common.util.PageUtil;
+import com.lwohvye.springboot.dubbointerface.entity.User;
 
 public interface SysUserService {
 
@@ -22,7 +22,7 @@ public interface SysUserService {
     /**
      * @description 由于配置了懒加载，项目存在部分问题，登陆验证时需手动获取用户角色及权限信息
      * @params [username]
-     * @return com.springboot.shiro.shiro2spboot.entity.User
+     * @return com.lwohvye.springboot.dubbo.entity.User
      * @author Hongyan Wang
      * @date 2019/12/5 10:28
      */

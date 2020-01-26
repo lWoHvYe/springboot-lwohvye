@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.common.util;
+package com.lwohvye.springboot.dubbointerface.common.util;
 
 import lombok.Getter;
 import lombok.Setter;
