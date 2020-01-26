@@ -3,8 +3,6 @@ package com.springboot.shiro.shiro2spboot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.scheduling.annotation.EnableAsync;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * @author Hongyan Wang
@@ -17,12 +15,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 //开启缓存
 @EnableCaching
-//开启SwaggerAPI
-@EnableSwagger2
-//开启异步
-@EnableAsync
-//添加mapper bean扫描，该配置移到数据源切换类上
-//@MapperScan(value = "com.springboot.shiro.shiro2spboot.dao")
+//部分配置类注释移动到相关配置类上，包括@MapperScan、@EnableSwagger2、@EnableAsync
 public class Shiro2spbootApplication {
 
     public static void main(String[] args) {

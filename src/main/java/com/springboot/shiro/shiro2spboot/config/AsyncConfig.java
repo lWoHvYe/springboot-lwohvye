@@ -3,6 +3,7 @@ package com.springboot.shiro.shiro2spboot.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
@@ -16,6 +17,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @date 2020/1/16 14:33
  */
 @Configuration
+//开启异步
+@EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
 
     private static final int CORE_POOL_SIZE = 4;
