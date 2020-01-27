@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,8 +21,9 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class PageUtil<T> {
+public class PageUtil<T> implements Serializable {
 
+    public static final long serialVersionUID = 1L;
     //  查询数据集合
     private List<T> pageData;
     //	页码
