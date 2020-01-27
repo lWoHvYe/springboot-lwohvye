@@ -14,6 +14,7 @@ import org.apache.dubbo.config.annotation.Service;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 //这里的@Service注解使用dubbo的，需注意
 @Service(version = "${lwohvye.service.version}")
+@Component
 public class SysUserServiceImpl implements SysUserService {
 
     @Autowired

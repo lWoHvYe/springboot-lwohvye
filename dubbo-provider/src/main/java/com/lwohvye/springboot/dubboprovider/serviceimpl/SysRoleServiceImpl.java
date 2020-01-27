@@ -10,12 +10,14 @@ import com.lwohvye.springboot.dubboprovider.repository.RoleDao;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 //这里的@Service注解使用dubbo的，需注意
 @Service(version = "${lwohvye.service.version}")
+@Component
 public class SysRoleServiceImpl implements SysRoleService {
 
     @Autowired

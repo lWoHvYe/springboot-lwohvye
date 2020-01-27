@@ -10,11 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
 
 //这里的@Service注解使用dubbo的，需注意
 @Service(version = "${lwohvye.service.version}")
+@Component
 @Slf4j
 public class Cnarea2018ServiceImpl implements Cnarea2018Service {
 

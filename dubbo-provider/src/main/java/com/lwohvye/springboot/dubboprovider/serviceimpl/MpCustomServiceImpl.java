@@ -8,6 +8,7 @@ import com.lwohvye.springboot.dubboprovider.dao.slave.SlaveMpCustomMapper;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.*;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ import java.util.List;
  */
 //这里的@Service注解使用dubbo的，需注意
 @Service(version = "${lwohvye.service.version}")
+@Component
 //CacheConfig注解用来配置缓存中一些公共属性的值
 @CacheConfig(cacheNames = "mpCustom")
 public class MpCustomServiceImpl implements MpCustomService {
