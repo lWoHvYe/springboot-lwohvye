@@ -116,7 +116,12 @@ public class SysUserServiceImpl implements SysUserService {
 //            获取并设置参数
             String actParams = " 用户名 : " + username + " : 加密密码 : " + user.getPassword() + " : 盐 : " + user.getCredentialsSalt();
             log.setActParams(actParams);
-            String ip = HttpContextUtil.getIpAddress();
+            String ip = null;
+            try {
+                ip = HttpContextUtil.getIpAddress();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             log.setIpAddr(ip);
             masterUserLogMapper.insertSelective(log);// 添加日志记录
         }
