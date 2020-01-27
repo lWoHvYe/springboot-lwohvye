@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.local.video2asc;
+package com.lwohvye.springboot.otherpart.local.video2asc;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;

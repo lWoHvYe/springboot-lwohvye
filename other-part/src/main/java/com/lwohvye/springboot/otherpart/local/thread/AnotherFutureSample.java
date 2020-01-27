@@ -1,6 +1,6 @@
-package com.springboot.shiro.shiro2spboot.local.thread;
+package com.lwohvye.springboot.otherpart.local.thread;
 
-import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
+import com.lwohvye.springboot.dubbointerface.common.util.DateTimeUtil;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

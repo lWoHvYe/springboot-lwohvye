@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.common.util;
+package com.lwohvye.springboot.otherpart.local.video2asc.util;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package com.springboot.shiro.shiro2spboot.common.util;
+package com.lwohvye.springboot.otherpart.local;
 
 import com.aspose.words.Document;
 import com.aspose.words.License;

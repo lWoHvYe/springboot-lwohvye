@@ -1,10 +1,6 @@
-package com.springboot.shiro.shiro2spboot.local;
+package com.lwohvye.springboot.otherpart.local;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
-import com.springboot.shiro.shiro2spboot.common.util.RedisUtil;
-import com.springboot.shiro.shiro2spboot.entity.User;
+import com.lwohvye.springboot.dubbointerface.common.util.DateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -18,7 +14,6 @@ import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Hongyan Wang
@@ -38,44 +33,34 @@ public class RedisTest {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     
-    public void redisTest() throws JsonProcessingException {
-        var redisUtil = new RedisUtil(redisTemplate);
-        var key = "keySet";
-//        创建实体类并赋值
-        var user = new User();
-        user.setUid(10086L);
-        user.setName("redis存储用户");
-        user.setUsername("redisUser");
-        user.setPassword("redis");
-        user.setSalt("加密用Salt");
-//        将实体类放入redis中
-        redisUtil.set(key, user);
-//        设置过期时间
-        redisUtil.expire(key, 100);
-//        从redis中取出实体类对象Object类型
-        var objUser = redisUtil.get(key);
-        var objectMapper = new ObjectMapper();
-//        转换为json串，只能将Object类型转为json串
-        var strUser = objectMapper.writeValueAsString(objUser);
-//        将json串转换为User对象
-        var tranUser = objectMapper.readValue(strUser, User.class);
-        System.out.println(tranUser.toString());
-        var completableFuture = CompletableFuture.runAsync(() -> {
-            for (int i = 0; i < 12; i++) {
-                var expires = redisUtil.getExpire(key);
-                if (expires <= 0)
-                    break;
-                System.out.println(expires);
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-//        Thread thread = new Thread(() -> {
+//    public void redisTest() throws JsonProcessingException {
+//        var redisUtil = new RedisUtil(redisTemplate);
+//        var key = "keySet";
+////        创建实体类并赋值
+//        var user = new User();
+//        user.setUid(10086L);
+//        user.setName("redis存储用户");
+//        user.setUsername("redisUser");
+//        user.setPassword("redis");
+//        user.setSalt("加密用Salt");
+////        将实体类放入redis中
+//        redisUtil.set(key, user);
+////        设置过期时间
+//        redisUtil.expire(key, 100);
+////        从redis中取出实体类对象Object类型
+//        var objUser = redisUtil.get(key);
+//        var objectMapper = new ObjectMapper();
+////        转换为json串，只能将Object类型转为json串
+//        var strUser = objectMapper.writeValueAsString(objUser);
+////        将json串转换为User对象
+//        var tranUser = objectMapper.readValue(strUser, User.class);
+//        System.out.println(tranUser.toString());
+//        var completableFuture = CompletableFuture.runAsync(() -> {
 //            for (int i = 0; i < 12; i++) {
-//                redisTemplate.getExpire(key);
+//                var expires = redisUtil.getExpire(key);
+//                if (expires <= 0)
+//                    break;
+//                System.out.println(expires);
 //                try {
 //                    Thread.sleep(10000);
 //                } catch (InterruptedException e) {
@@ -83,10 +68,20 @@ public class RedisTest {
 //                }
 //            }
 //        });
-//        thread.start();
-        var allOf = CompletableFuture.allOf(completableFuture);
-        allOf.join();
-    }
+////        Thread thread = new Thread(() -> {
+////            for (int i = 0; i < 12; i++) {
+////                redisTemplate.getExpire(key);
+////                try {
+////                    Thread.sleep(10000);
+////                } catch (InterruptedException e) {
+////                    e.printStackTrace();
+////                }
+////            }
+////        });
+////        thread.start();
+//        var allOf = CompletableFuture.allOf(completableFuture);
+//        allOf.join();
+//    }
 
     @GetMapping("/getKeys")
 //    需要用户至少有其中一个权限
