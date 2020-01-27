@@ -1,10 +1,10 @@
 package com.lwohvye.springboot.dubboprovider.serviceimpl;
 
+import com.lwohvye.springboot.dubbointerface.common.util.HttpContextUtil;
 import com.lwohvye.springboot.dubbointerface.common.util.PageUtil;
 import com.lwohvye.springboot.dubbointerface.entity.User;
 import com.lwohvye.springboot.dubbointerface.entity.UserLog;
 import com.lwohvye.springboot.dubbointerface.service.SysUserService;
-import com.lwohvye.springboot.dubboprovider.common.util.HttpContextUtil;
 import com.lwohvye.springboot.dubboprovider.dao.master.MasterUserLogMapper;
 import com.lwohvye.springboot.dubboprovider.dao.master.MasterUserMapper;
 import com.lwohvye.springboot.dubboprovider.dao.slave.SlaveRoleMapper;

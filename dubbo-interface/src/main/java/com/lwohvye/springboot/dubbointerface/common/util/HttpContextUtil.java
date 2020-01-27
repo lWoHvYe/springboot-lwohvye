@@ -1,4 +1,4 @@
-package com.lwohvye.springboot.dubboprovider.common.util;
+package com.lwohvye.springboot.dubbointerface.common.util;
 
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
