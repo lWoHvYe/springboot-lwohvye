@@ -105,8 +105,9 @@ public class LogAopAspect {
             for (var i = 0; i < paraNames.length; i++) {
                 sb.append(paraNames[i]).append(":").append(args[i]).append(",");
             }
+//            字符截取应放在方法内，否则若方法无参数，会报错
+            sb.delete(sb.length() - 1, sb.length() + 1);
         }
-        sb.delete(sb.length() - 1, sb.length() + 1);
         return sb.toString();
     }
 
