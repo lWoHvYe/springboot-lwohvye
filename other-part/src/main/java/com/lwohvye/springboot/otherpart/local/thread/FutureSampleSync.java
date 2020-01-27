@@ -1,46 +1,47 @@
-package com.springboot.shiro.shiro2spboot.local.thread;
+package com.lwohvye.springboot.otherpart.local.thread;
 
-import com.springboot.shiro.shiro2spboot.common.util.DateTimeUtil;
+import com.lwohvye.springboot.dubbointerface.common.util.DateTimeUtil;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Hongyan Wang
  * @packageName com.springboot.shiro.shiro2spboot.common.local
- * @className FutureSampleAtomic
+ * @className FutureSampleSync
  * @description 抽卡模拟 将抽卡简化成随机取一个1000的样本中的数，取到指定的算抽中
  * 在取到需要的时，会将与其同样的从期望中一并移除
  * 由于模拟采用了随机数的方式，所以池子可以任意配置，不影响结果
  * 由于使用了多线程，所以需关注其他线程的完成情况
- * 采用Feature的方式，使用CompletableFuture的runAsync()构建没有返回的子线程，各子线程实时共享数据，使用Atomic原之类代替原同步代码块
+ * 采用Feature的方式，使用CompletableFuture的runAsync()构建没有返回的子线程，各子线程实时共享数据，使用synchronized同步代码块
  * 需尤其注意变量的作用范围问题
- * @date 2020/01/07 20:54
+ * @date 2019/9/22 8:54
  */
-//TODO 使用CompletableFuture,子线程实时共享数据，使用Atomic原之类，资源占用更低，且不会再出现资源丢失的情况
+//TODO 使用CompletableFuture,子线程实时共享数据，使用synchronized同步代码块，不能使用volatile,会有极少量数据丢失，原因未知
 //@SpringBootTest
-public class FutureSampleAtomic {
+public class FutureSampleSync {
 
-    private Logger logger4j = LoggerFactory.getLogger(FutureSampleAtomic.class);
+    private Logger logger4j = LoggerFactory.getLogger(FutureSampleSync.class);
 
-//    使用原子类,较使用synchronized资源占用更少
-    private AtomicInteger s50 = new AtomicInteger(0);
-    private AtomicInteger s100 = new AtomicInteger(0);
-    private AtomicInteger s150 = new AtomicInteger(0);
-    private AtomicInteger s200 = new AtomicInteger(0);
-    private AtomicInteger s250 = new AtomicInteger(0);
-    private AtomicInteger s300 = new AtomicInteger(0);
-    private AtomicInteger s350 = new AtomicInteger(0);
-    private AtomicInteger s400 = new AtomicInteger(0);
-    private AtomicInteger s450 = new AtomicInteger(0);
-    private AtomicInteger s500 = new AtomicInteger(0);
-    private AtomicInteger other = new AtomicInteger(0);
+    private Integer s50 = 0;
+    private Integer s100 = 0;
+    private Integer s150 = 0;
+    private Integer s200 = 0;
+    private Integer s250 = 0;
+    private Integer s300 = 0;
+    private Integer s350 = 0;
+    private Integer s400 = 0;
+    private Integer s450 = 0;
+    private Integer s500 = 0;
+    private Integer other = 0;
 
 
     /**
@@ -59,7 +60,7 @@ public class FutureSampleAtomic {
         int simCount = 1000000;
 //        记录开始时间
         long start = DateTimeUtil.getCurMilli();
-//        FutureSampleAtomic futureSampleAtomic = new FutureSampleAtomic();
+//        FutureSampleSync futureSample = new FutureSampleSync();
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -96,19 +97,18 @@ public class FutureSampleAtomic {
 //         记录结束时间
         long end = DateTimeUtil.getCurMilli();
 //          输出结果
-        logger4j.info("50次以内：" + (double) s50.get() * 100 / simCount + "%;");
-        logger4j.info("100次以内：" + (double) s100.get() * 100 / simCount + "%;");
-        logger4j.info("150次以内：" + (double) s150.get() * 100 / simCount + "%;");
-        logger4j.info("200次以内：" + (double) s200.get() * 100 / simCount + "%;");
-        logger4j.info("250次以内：" + (double) s250.get() * 100 / simCount + "%;");
-        logger4j.info("300次以内：" + (double) s300.get() * 100 / simCount + "%;");
-        logger4j.info("350次以内：" + (double) s350.get() * 100 / simCount + "%;");
-        logger4j.info("400次以内：" + (double) s400.get() * 100 / simCount + "%;");
-        logger4j.info("450次以内：" + (double) s450.get() * 100 / simCount + "%;");
-        logger4j.info("500次以内：" + (double) s500.get() * 100 / simCount + "%;");
-        logger4j.info("500次以上：" + (double) other.get() * 100 / simCount + "%;");
-        System.out.println("总计模拟:" + (s50.get() + s100.get() + s150.get() + s200.get() + s250.get() + s300.get()
-                                      + s350.get() + s400.get() + s450.get() + s500.get() + other.get()) + "次");
+        logger4j.info("50次以内：" + (double) s50 * 100 / simCount + "%;");
+        logger4j.info("100次以内：" + (double) s100 * 100 / simCount + "%;");
+        logger4j.info("150次以内：" + (double) s150 * 100 / simCount + "%;");
+        logger4j.info("200次以内：" + (double) s200 * 100 / simCount + "%;");
+        logger4j.info("250次以内：" + (double) s250 * 100 / simCount + "%;");
+        logger4j.info("300次以内：" + (double) s300 * 100 / simCount + "%;");
+        logger4j.info("350次以内：" + (double) s350 * 100 / simCount + "%;");
+        logger4j.info("400次以内：" + (double) s400 * 100 / simCount + "%;");
+        logger4j.info("450次以内：" + (double) s450 * 100 / simCount + "%;");
+        logger4j.info("500次以内：" + (double) s500 * 100 / simCount + "%;");
+        logger4j.info("500次以上：" + (double) other * 100 / simCount + "%;");
+        System.out.println("总计模拟:" + (s50 + s100 + s150 + s200 + s250 + s300 + s350 + s400 + s450 + s500 + other) + "次");
 
         System.out.println(end - start);
     }
@@ -149,29 +149,39 @@ public class FutureSampleAtomic {
                     int count = simulateWork(random, lists, ranArray);
                     //TODO 后续需对统计进行优化
 //                将模拟结果放入集合中
-                    if (count <= 50) {
-                        s50.getAndIncrement();
-                    } else if (count <= 100) {
-                        s100.getAndIncrement();
-                    } else if (count <= 150) {
-                        s150.getAndIncrement();
-                    } else if (count <= 200) {
-                        s200.getAndIncrement();
-                    } else if (count <= 250) {
-                        s250.getAndIncrement();
-                    } else if (count <= 300) {
-                        s300.getAndIncrement();
-                    } else if (count <= 350) {
-                        s350.getAndIncrement();
-                    } else if (count <= 400) {
-                        s400.getAndIncrement();
-                    } else if (count <= 450) {
-                        s450.getAndIncrement();
-                    } else if (count <= 500) {
-                        s500.getAndIncrement();
-                    } else {
-                        other.getAndIncrement();
+                    if (count <= 50) synchronized (s50) {
+                        s50++;
                     }
+                    else if (count <= 100) synchronized (s100) {
+                        s100++;
+                    }
+                    else if (count <= 150) synchronized (s150) {
+                        s150++;
+                    }
+                    else if (count <= 200) synchronized (s200) {
+                        s200++;
+                    }
+                    else if (count <= 250) synchronized (s250) {
+                        s250++;
+                    }
+                    else if (count <= 300) synchronized (s300) {
+                        s300++;
+                    }
+                    else if (count <= 350) synchronized (s350) {
+                        s350++;
+                    }
+                    else if (count <= 400) synchronized (s400) {
+                        s400++;
+                    }
+                    else if (count <= 450) synchronized (s450) {
+                        s450++;
+                    }
+                    else if (count <= 500) synchronized (s500) {
+                        s500++;
+                    }
+                    else synchronized (other) {
+                            other++;
+                        }
                 }
                 System.out.println(Thread.currentThread().getName());
             } catch (NoSuchAlgorithmException e) {

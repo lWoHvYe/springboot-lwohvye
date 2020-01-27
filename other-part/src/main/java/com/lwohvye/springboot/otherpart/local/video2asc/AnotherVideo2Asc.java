@@ -1,5 +1,6 @@
-package com.springboot.shiro.shiro2spboot.common.util;
+package com.lwohvye.springboot.otherpart.local.video2asc;
 
+import com.lwohvye.springboot.otherpart.local.video2asc.util.ImageGUI;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -8,7 +9,7 @@ import org.opencv.videoio.VideoCapture;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Video2Asc {
+public class AnotherVideo2Asc {
 
     static {
 
