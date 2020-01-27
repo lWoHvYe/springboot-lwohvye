@@ -3,7 +3,7 @@ package com.lwohvye.springboot.dubboconsumer.controller;
 import com.lwohvye.springboot.dubboconsumer.common.shiro.CaptchaEmptyException;
 import com.lwohvye.springboot.dubboconsumer.common.shiro.CaptchaErrorException;
 import com.lwohvye.springboot.dubboconsumer.common.shiro.CaptchaToken;
-import com.lwohvye.springboot.dubboconsumer.common.util.DateTimeUtil;
+import com.lwohvye.springboot.dubbointerface.common.util.DateTimeUtil;
 import com.lwohvye.springboot.dubboconsumer.common.util.VerifyCodeUtils;
 import com.lwohvye.springboot.dubboconsumer.common.shiro.CaptchaExpireException;
 import io.swagger.annotations.Api;

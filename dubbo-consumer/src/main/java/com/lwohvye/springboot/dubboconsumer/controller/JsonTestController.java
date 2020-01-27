@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lwohvye.springboot.dubboconsumer.common.util.DateTimeUtil;
+import com.lwohvye.springboot.dubbointerface.common.util.DateTimeUtil;
 import com.lwohvye.springboot.dubbointerface.entity.JsonTestEntity;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;

@@ -39,7 +39,6 @@ public class MpCustomController {
      * @author Hongyan Wang
      * @date 2019/10/9 15:52
      */
-    @LogAnno(operateType = "获取客户列表")
     @ApiOperation(value = "获取客户列表", notes = "获取客户列表，暂不提供分页及搜索")
     @GetMapping("/list")
     @RequiresPermissions("custom:view")

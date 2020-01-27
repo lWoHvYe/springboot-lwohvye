@@ -1,7 +1,7 @@
 package com.lwohvye.springboot.dubboconsumer.common.aop;
 
 import com.lwohvye.springboot.dubboconsumer.common.annotation.LogAnno;
-import com.lwohvye.springboot.dubboconsumer.common.util.HttpContextUtil;
+import com.lwohvye.springboot.dubbointerface.common.util.HttpContextUtil;
 import com.lwohvye.springboot.dubbointerface.entity.User;
 import com.lwohvye.springboot.dubbointerface.entity.UserLog;
 import com.lwohvye.springboot.dubbointerface.service.UserLogService;

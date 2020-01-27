@@ -1,6 +1,6 @@
 package com.lwohvye.springboot.dubboconsumer.common.shiro;
 
-import com.lwohvye.springboot.dubboconsumer.common.util.DateTimeUtil;
+import com.lwohvye.springboot.dubbointerface.common.util.DateTimeUtil;
 import com.lwohvye.springboot.dubboconsumer.common.util.VerifyCodeUtils;
 import com.lwohvye.springboot.dubbointerface.entity.User;
 import com.lwohvye.springboot.dubbointerface.service.SysUserService;

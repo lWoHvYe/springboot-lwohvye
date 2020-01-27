@@ -1,4 +1,4 @@
-package com.lwohvye.springboot.dubboconsumer.common.util;
+package com.lwohvye.springboot.dubbointerface.common.util;
 
 import lombok.Getter;
 
