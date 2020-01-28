@@ -30,3 +30,5 @@ mvnw*
 
 ### VS Code ###
 .vscode/
+/dubbo-interface/target/
+/other-part/target/
