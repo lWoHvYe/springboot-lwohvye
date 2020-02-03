@@ -43,7 +43,7 @@ public class UserController {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 获取用户列表
      * @params [username, pageUtil]
      * @author Hongyan Wang
@@ -80,7 +80,7 @@ public class UserController {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel<java.lang.Integer>
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel<java.lang.Integer>
      * @description 添加用户
      * @params [user]
      * @author Hongyan Wang
@@ -111,7 +111,7 @@ public class UserController {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel<java.lang.Integer>
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel<java.lang.Integer>
      * @description 删除用户
      * @params [uid]
      * @author Hongyan Wang
@@ -131,7 +131,7 @@ public class UserController {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 修改用户信息
      * @params [user]
      * @author Hongyan Wang

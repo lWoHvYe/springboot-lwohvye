@@ -18,7 +18,7 @@ import java.time.Duration;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.config
+ * @packageName com.lwohvye.springboot.dubboprovider.config
  * @className RedisCachingConfigurer
  * @description 缓存配置类，改类用于配置部分缓存的属性CachingConfigurer，这里使用注解的方式使用缓存
  * @date 2019/10/10 14:44

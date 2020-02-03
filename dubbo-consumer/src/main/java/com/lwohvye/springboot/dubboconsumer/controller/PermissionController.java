@@ -21,7 +21,7 @@ public class PermissionController {
 
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 获取权限列表
      * @params [name, pageUtil]
      * @author Hongyan Wang

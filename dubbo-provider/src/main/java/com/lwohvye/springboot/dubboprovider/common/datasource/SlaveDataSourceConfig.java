@@ -19,7 +19,7 @@ import java.util.Objects;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.common.datasource
+ * @packageName com.lwohvye.springboot.dubboprovider.common.datasource
  * @className SlaveDataSourceConfig
  * @description
  * @date 2020/1/8 22:57

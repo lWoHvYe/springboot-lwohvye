@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.common.util
+ * @packageName com.lwohvye.springboot.dubbointerface.common.util
  * @className ListUtil
  * @description 使用Stream分割list为多个list
  * @date 2020/1/15 15:48

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.common.util
+ * @packageName com.lwohvye.springboot.dubboconsumer.common.util
  * @className RedisUtil
  * @description Redis 工具类
  * @date 2019/10/6 20:05

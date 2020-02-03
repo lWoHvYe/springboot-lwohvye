@@ -26,7 +26,7 @@ import java.util.Properties;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.config
+ * @packageName com.lwohvye.springboot.dubboconsumer.config
  * @className ShiroConfig
  * @description Shiro相关配置类，替代原xml配置方式
  * @date 2019/05/12 12:21
@@ -118,7 +118,7 @@ public class ShiroConfig {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.shiro.MyShiroRealm
+     * @return com.lwohvye.springboot.dubboconsumer.common.shiro.MyShiroRealm
      * @description 身份认证realm
      * @params []
      * @author Hongyan Wang
@@ -226,7 +226,7 @@ public class ShiroConfig {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.shiro.KickoutSessionControlFilter
+     * @return com.lwohvye.springboot.dubboconsumer.common.shiro.KickoutSessionControlFilter
      * @description 并发登陆控制
      * @params []
      * @author Hongyan Wang

@@ -17,7 +17,7 @@ import java.util.Objects;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.local
+ * @packageName com.lwohvye.springboot.otherpart.local
  * @className RedisTest
  * @description
  * @date 2019/10/6 17:19

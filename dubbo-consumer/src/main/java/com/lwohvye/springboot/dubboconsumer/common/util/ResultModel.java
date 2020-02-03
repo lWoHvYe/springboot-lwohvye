@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.common.util
+ * @packageName com.lwohvye.springboot.dubboconsumer.common.util
  * @className ResultBean
  * @description 通用的数据返回，及数据获取异常处理，优化返回逻辑
  * @date 2020/1/14 8:41

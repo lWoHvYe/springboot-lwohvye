@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.service.impl
+ * @packageName com.lwohvye.springboot.dubboprovider.serviceimpl
  * @interfaceName MpCustomServiceImpl
  * @description 使用redis缓存，分别缓存客户列表及单个客户两种数据，
  * 执行添加操作时，清除客户列表缓存
@@ -58,7 +58,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      */
     @Caching(evict = {
             @CacheEvict(key = "'mpCustomList'", beforeInvocation = true),
-            @CacheEvict(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#customId",
+            @CacheEvict(key = "'com.lwohvye.springboot.dubboprovider.serviceimpl.MpCustomServiceImpl_searchById_'+#customId",
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600", beforeInvocation = true)
     })
     @Override
@@ -79,7 +79,7 @@ public class MpCustomServiceImpl implements MpCustomService {
      * @date 2019/10/10 17:10
      */
     @Caching(evict = {@CacheEvict(key = "'mpCustomList'", beforeInvocation = true)},
-            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
+            put = {@CachePut(key = "'com.lwohvye.springboot.dubboprovider.serviceimpl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
     )
     @Override
@@ -111,9 +111,9 @@ public class MpCustomServiceImpl implements MpCustomService {
      */
     @Caching(evict = {
             @CacheEvict(key = "'mpCustomList'", beforeInvocation = true),
-            @CacheEvict(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
+            @CacheEvict(key = "'com.lwohvye.springboot.dubboprovider.serviceimpl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
                     beforeInvocation = true, cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")},
-            put = {@CachePut(key = "'com.springboot.shiro.shiro2spboot.service.impl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
+            put = {@CachePut(key = "'com.lwohvye.springboot.dubboprovider.serviceimpl.MpCustomServiceImpl_searchById_'+#mpCustomEntity.customId",
                     cacheNames = "mpCustom::" + RedisKeys.REDIS_EXPIRE_TIME_KEY + "=600")}
     )
     @Override

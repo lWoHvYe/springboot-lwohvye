@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.config
+ * @packageName com.lwohvye.springboot.dubboprovider.config
  * @className AsyncConfig
  * @description 异步执行配置类
  * @date 2020/1/16 14:33
