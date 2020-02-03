@@ -1,12 +1,12 @@
 # springboot-lwohvye
 
-对于连不上github的情况，编辑hosts文件，添加
+对于连不上github的情况，编辑hosts文件，添加\
 192.30.253.113  github.com
 51.101.25.194 github.global.ssl.fastly.net
 192.30.253.121 codeload.github.com
 即可解决
 
-shiro相关学习项目\
+springboot相关学习项目，用到mybatis、jpa、pageHelper、shiro、异步编程、数据源切换、druid、dubbo等技术\
 鉴于数据源切换的部分问题，当前多数据源只支持mybatis方法，jpa方式无效，可以改用注解的方式，也可进一步调整，推荐dao层mybatis与jpa只使用一种方式.后续可以开发一下项目jpa模式的分支，当前主用mybatis的方式\
 使用Mybatis时，使用PageHelper进行分页，\
 使用springboot jpa时，使用PageRequest进行分页，已开发对应的工具类PageUtil\
