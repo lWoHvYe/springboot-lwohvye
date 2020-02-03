@@ -33,7 +33,7 @@ public class MpCustomController {
     private MpCustomService mpCustomService;
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 获取列表
      * @params []
      * @author Hongyan Wang
@@ -52,7 +52,7 @@ public class MpCustomController {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 添加企业信息
      * @params [mpCustomEntity]
      * @author Hongyan Wang
@@ -78,7 +78,7 @@ public class MpCustomController {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 根据id获取客户信息
      * @params [customId]
      * @author Hongyan Wang
@@ -97,7 +97,7 @@ public class MpCustomController {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 根据企业id删除企业信息
      * @params [customId]
      * @author Hongyan Wang
@@ -118,7 +118,7 @@ public class MpCustomController {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 修改客户信息
      * @params [mpCustomEntity]
      * @author Hongyan Wang

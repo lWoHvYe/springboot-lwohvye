@@ -7,7 +7,7 @@ import org.opencv.videoio.VideoCapture;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.local.video2asc
+ * @packageName com.lwohvye.springboot.otherpart.local.video2asc
  * @className Video2Asc
  * @description 将视频转化为Asc码输出，通过分析每一帧的图像，根据颜色设置对应的Asc码，达到转换的效果，使用OpenCV相关类
  * 需要将src/main/resources/dll/x64/opencv_java410.dll手动引入，实际项目中，推荐将该dll放入jdk的bin目录中

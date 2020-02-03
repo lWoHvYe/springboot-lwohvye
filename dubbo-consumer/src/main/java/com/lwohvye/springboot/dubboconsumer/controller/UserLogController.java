@@ -26,7 +26,7 @@ public class UserLogController {
     private UserLogService userLogService;
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 获取日志列表
      * @params [username, searchTime, pages, limits]
      * @author Hongyan Wang

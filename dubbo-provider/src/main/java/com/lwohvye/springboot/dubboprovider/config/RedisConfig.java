@@ -15,7 +15,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.config
+ * @packageName com.lwohvye.springboot.dubboprovider.config
  * @className RedisConfig
  * @description redis配置类，使用redisTemplate的方式时，使用该类
  * @date 2019/10/6 16:32

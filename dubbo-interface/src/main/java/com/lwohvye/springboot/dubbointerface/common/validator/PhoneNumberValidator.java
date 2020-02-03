@@ -7,7 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 
 /**
  * @author Hongyan Wang
- * @description 身份证号校验
+ * @description 手机号校验
  * @date 2020/1/26 11:26
  */
 public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, String> {

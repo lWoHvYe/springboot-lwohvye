@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.common.aop
+ * @packageName com.lwohvye.springboot.dubboconsumer.common.aop
  * @className ControllerAopAspect
  * @description 用于捕获Controller层异常，转化为失败信息，与{@link ResultModel}配合使用
  * @date 2020/1/14 13:45

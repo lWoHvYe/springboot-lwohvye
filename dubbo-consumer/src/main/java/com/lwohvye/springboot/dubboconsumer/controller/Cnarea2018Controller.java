@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Hongyan Wang
- * @packageName com.springboot.shiro.shiro2spboot.controller
+ * @packageName com.lwohvye.springboot.dubboconsumer.controller
  * @className Cnarea2018Controller
  * @description
  * @date 2020/1/16 15:12
@@ -31,7 +31,7 @@ public class Cnarea2018Controller {
     private Cnarea2018Service cnarea2018Service;
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel<com.github.pagehelper.PageInfo < com.lwohvye.springboot.dubbo.entity.Cnarea2018>>
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel<com.github.pagehelper.PageInfo < com.lwohvye.springboot.dubbo.entity.Cnarea2018>>
      * @description 异步测试方法，province为使用逗号分隔的两位的省级区划名
      * @params [province, page, pageSize]
      * @author Hongyan Wang

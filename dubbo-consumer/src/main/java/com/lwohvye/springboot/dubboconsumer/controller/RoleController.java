@@ -23,7 +23,7 @@ public class RoleController {
 
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel
      * @description 获取角色列表
      * @params [role, pageUtil]
      * @author Hongyan Wang
@@ -41,7 +41,7 @@ public class RoleController {
     }
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel<java.lang.Integer>
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel<java.lang.Integer>
      * @description 添加或修改角色
      * @params [role, permissionId]
      * @author Hongyan Wang
@@ -61,7 +61,7 @@ public class RoleController {
 
 
     /**
-     * @return com.springboot.shiro.shiro2spboot.common.util.ResultModel<java.lang.Integer>
+     * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel<java.lang.Integer>
      * @description 删除角色
      * @params [role]
      * @author Hongyan Wang
