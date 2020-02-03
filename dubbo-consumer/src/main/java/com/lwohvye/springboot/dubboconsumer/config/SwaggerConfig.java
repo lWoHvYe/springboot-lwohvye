@@ -42,7 +42,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .select()
                 // 指定当前包路径
-                .apis(RequestHandlerSelectors.basePackage("com.springboot.shiro.shiro2spboot"))
+                .apis(RequestHandlerSelectors.basePackage("com.lwohvye.springboot.dubboconsumer"))
                 // 扫描所有 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
                 .build();
@@ -56,7 +56,7 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                 .title("标题：Springboot相关系统API文档")
                 .description("描述：用于进行系统相关API测试")
-                .contact(new Contact("Hongyan Wang", "https://github.com/lWoHvYe/shiro-springboot", "lWoHvYe@outlook.com"))
+                .contact(new Contact("Hongyan Wang", "https://github.com/lWoHvYe/springboot-lwohvye", "lWoHvYe@outlook.com"))
                 .version("0.1.2")
                 .build();
     }
