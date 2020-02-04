@@ -16,10 +16,13 @@ Mybatis一对多多对多配置已完成\
 重构代码，调整返回格式\
 逐渐弱化fastjson的使用，改用jackson\
 项目使用postman进行压力测试，测试异步方法，未出现线程安全问题\
-项目已构建dubbo分支，当前shiro及redis功能正常，但swagger和druid管理无法使用，视情况解决\
+项目已构建dubbo分支，当前shiro及redis功能正常\
+swagger由于配置扫描包错误，导致异常，已解决\
+druid管理模块在provider层，需要通过8085接口访问\
+分模块后，依赖分散，需寻找统一解决的方法
 下阶段，
 quartz定时任务框架的使用\
 需排查jpa的删除问题（角色删除及权限删除是否连带删除关联表中内容），若不删除最多会导致关联表有无用数据，由于采用内关联，不会出现程序问题\
 
-使用CentOS 7搭载Docker，使用mysql主从容器和redis容器\
+使用CentOS 7搭载Docker，使用mysql主从容器和redis容器,集成dubbo后使用了zookeeper容器\
 CentOS 8暂由于未知原因，无法正常使用docker相关，容器内部连不上网。
