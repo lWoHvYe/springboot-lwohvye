@@ -1,11 +1,8 @@
 package com.lwohvye.springboot.dubboprovider.serviceimpl;
 
-import com.lwohvye.springboot.dubbointerface.common.util.HttpContextUtil;
 import com.lwohvye.springboot.dubbointerface.common.util.PageUtil;
 import com.lwohvye.springboot.dubbointerface.entity.User;
-import com.lwohvye.springboot.dubbointerface.entity.UserLog;
 import com.lwohvye.springboot.dubbointerface.service.SysUserService;
-import com.lwohvye.springboot.dubboprovider.dao.master.MasterUserLogMapper;
 import com.lwohvye.springboot.dubboprovider.dao.master.MasterUserMapper;
 import com.lwohvye.springboot.dubboprovider.dao.slave.SlaveRoleMapper;
 import com.lwohvye.springboot.dubboprovider.dao.slave.SlaveUserMapper;
@@ -35,8 +32,6 @@ public class SysUserServiceImpl implements SysUserService {
     private SlaveUserMapper slaveUserMapper;
     @Autowired
     private SlaveRoleMapper slaveRoleMapper;
-    @Autowired
-    private MasterUserLogMapper masterUserLogMapper;
 
     @Override
     public PageUtil<User> findUser(String username, PageUtil<User> pageUtil) {
@@ -108,22 +103,6 @@ public class SysUserServiceImpl implements SysUserService {
             var roles = slaveRoleMapper.selectByPrimaryKey(user.getRoleId());
 //            设置用户角色
             user.setRoles(roles);
-
-//            加入日志中
-            UserLog log = new UserLog();
-            log.setActType("类名 :" + this.getClass().getName() + " ; 方法名 : login ; 方法描述 : 登陆系统");// 操作说明
-            log.setUsername(user.getUsername());
-//            获取并设置参数
-            String actParams = " 用户名 : " + username + " : 加密密码 : " + user.getPassword() + " : 盐 : " + user.getCredentialsSalt();
-            log.setActParams(actParams);
-            String ip = null;
-            try {
-                ip = HttpContextUtil.getIpAddress();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            log.setIpAddr(ip);
-            masterUserLogMapper.insertSelective(log);// 添加日志记录
         }
 //        返回结果
         return user;
