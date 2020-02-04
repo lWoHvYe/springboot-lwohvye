@@ -1,6 +1,8 @@
 package com.lwohvye.springboot.dubboconsumer.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.lwohvye.springboot.dubboconsumer.common.annotation.LogAnno;
+import com.lwohvye.springboot.dubboconsumer.common.util.ResultModel;
 import com.lwohvye.springboot.dubbointerface.entity.Cnarea2018;
 import com.lwohvye.springboot.dubbointerface.service.Cnarea2018Service;
 import io.swagger.annotations.ApiImplicitParam;
@@ -37,10 +39,11 @@ public class Cnarea2018Controller {
      * @author Hongyan Wang
      * @date 2020/1/16 22:13
      */
+    @LogAnno(operateType = "异步线程测试")
     @ApiOperation(value = "根据省名获取下属区划", notes = "多个省名使用逗号分隔")
     @ApiImplicitParam(name = "levels", value = "查询区划级别，实际可使用下拉选择 0省、直辖市 1市 2区县 3街道办事处 4社区居委会")
     @PostMapping("/list")
-    public List<PageInfo<Cnarea2018>> list(String province, String levels, int page, int pageSize) {
+    public ResultModel<List<PageInfo<Cnarea2018>>> list(String province, String levels, int page, int pageSize) {
 //        设置区划级别，0省、直辖市 1市 2区县 3街道办事处 4社区居委会
         Integer level = null;
         if (!StringUtils.isEmpty(levels)) {
@@ -53,10 +56,12 @@ public class Cnarea2018Controller {
 //                用map后获取一个新的流，可以继续操作，用foreach后流便没了
                 .map(name -> cnarea2018Service.list(name, finalLevel, page, pageSize))
                 .collect(Collectors.toList());
-        return completableFutureList.stream()
+        return new ResultModel<>(
+                completableFutureList.stream()
 //                将任务放入队列，等待结束
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList())
+        );
     }
 
 }
