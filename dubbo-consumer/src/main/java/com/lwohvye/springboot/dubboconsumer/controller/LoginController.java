@@ -2,12 +2,16 @@ package com.lwohvye.springboot.dubboconsumer.controller;
 
 import com.lwohvye.springboot.dubboconsumer.common.shiro.CaptchaEmptyException;
 import com.lwohvye.springboot.dubboconsumer.common.shiro.CaptchaErrorException;
-import com.lwohvye.springboot.dubboconsumer.common.shiro.CaptchaToken;
-import com.lwohvye.springboot.dubbointerface.common.util.DateTimeUtil;
-import com.lwohvye.springboot.dubboconsumer.common.util.VerifyCodeUtils;
 import com.lwohvye.springboot.dubboconsumer.common.shiro.CaptchaExpireException;
+import com.lwohvye.springboot.dubboconsumer.common.shiro.CaptchaToken;
+import com.lwohvye.springboot.dubboconsumer.common.util.VerifyCodeUtils;
+import com.lwohvye.springboot.dubbointerface.common.util.DateTimeUtil;
+import com.lwohvye.springboot.dubbointerface.common.util.HttpContextUtil;
+import com.lwohvye.springboot.dubbointerface.entity.UserLog;
+import com.lwohvye.springboot.dubbointerface.service.UserLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.dubbo.config.annotation.Reference;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -26,6 +30,9 @@ import java.util.Map;
 @Api(value = "用户登陆相关API")
 @Controller
 public class LoginController {
+
+    @Reference(version = "${lwohvye.service.version}")
+    private UserLogService userLogService;
 
     @ApiIgnore
     @RequestMapping(value = {"/", "/index"}, method = {RequestMethod.GET, RequestMethod.POST})
@@ -75,6 +82,20 @@ public class LoginController {
             map.put("msg", msg);
             return "/login";
         }
+
+        //            加入日志中
+        UserLog log = new UserLog();
+        log.setActType("类名 :" + this.getClass().getName() + " ; 方法名 : login ; 方法描述 : 登陆系统");// 操作说明
+        log.setUsername(username);
+//            获取并设置参数
+        String actParams = " 用户名 : " + username + " : 密码 : " + password;
+        log.setActParams(actParams);
+        String ip = HttpContextUtil.getIpAddress();
+        log.setIpAddr(ip);
+//        设置执行结果，只记录登陆成功的
+        log.setActResult(msg);
+        userLogService.insertSelective(log);// 添加日志记录
+
         map.put("msg", msg);
         return "/index";
     }
