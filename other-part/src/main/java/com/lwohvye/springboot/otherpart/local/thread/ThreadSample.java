@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * 抽卡模拟
@@ -115,8 +113,8 @@ public class ThreadSample {
         logger4j.info("500次以内：" + (double) countMap.get("s500") * 100 / simuCount + "%;");
         logger4j.info("500次以上：" + (double) countMap.get("other") * 100 / simuCount + "%;");
         System.out.println("总计模拟:" + (countMap.get("s50") + countMap.get("s100") + countMap.get("s150") + countMap.get("s200")
-                + countMap.get("s250") + countMap.get("s300") + countMap.get("s350") + countMap.get("s400") + countMap.get("s450")
-                + countMap.get("s500") + countMap.get("other")) + "次");
+                                      + countMap.get("s250") + countMap.get("s300") + countMap.get("s350") + countMap.get("s400") + countMap.get("s450")
+                                      + countMap.get("s500") + countMap.get("other")) + "次");
     }
 
     /**
@@ -129,7 +127,10 @@ public class ThreadSample {
      */
     private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
 //        使用线程池创建线程
-        var executor = Executors.newFixedThreadPool(6);
+//        var executor = Executors.newFixedThreadPool(6);
+//        自定义线程池，初始6，最大8，线程活跃200s，队列最大20，默认消息超队列长度时抛异常
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(6, 8,
+                200, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20));
 //        开启数个线程
         for (int i = 0; i < threadCount; i++) {
             SimuThread simuThread = new SimuThread(lists);
