@@ -6,6 +6,7 @@ import com.lwohvye.springboot.dubbointerface.service.Cnarea2018Service;
 import org.apache.dubbo.config.annotation.Reference;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,7 +38,7 @@ public class BloomFilterController {
      * @author Hongyan Wang
      * @date 2020/2/6 17:50
      */
-    @RequestMapping("/addCnareaPro")
+    @GetMapping("/addCnareaPro")
     public String addCnareaPro() {
         cnarea2018Service.listProName().forEach(pro -> redisUtil.addByBloomFilter(bloomFilterHelper, "cnareaPro", pro));
         return "success";
