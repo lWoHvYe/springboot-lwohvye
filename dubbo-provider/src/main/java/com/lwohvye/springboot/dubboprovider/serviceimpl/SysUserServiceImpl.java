@@ -1,5 +1,6 @@
 package com.lwohvye.springboot.dubboprovider.serviceimpl;
 
+import cn.hutool.core.util.IdUtil;
 import com.lwohvye.springboot.dubbointerface.common.util.PageUtil;
 import com.lwohvye.springboot.dubbointerface.entity.User;
 import com.lwohvye.springboot.dubbointerface.service.SysUserService;
@@ -16,8 +17,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import java.util.UUID;
 
 //这里的@Service注解使用dubbo的，需注意
 @Service(version = "${lwohvye.service.version}")
@@ -71,8 +70,7 @@ public class SysUserServiceImpl implements SysUserService {
     private void setUserParams(User user) {
         if (!StringUtils.isEmpty(user.getPassword())) {
             //    每次改密码都重新生成盐，提高安全性
-            String salt =
-                    UUID.randomUUID().toString().replace("-", "").toLowerCase();
+            String salt = IdUtil.simpleUUID();
             //    设置盐
             user.setSalt(salt);
             //     使用用户名+密码并反转的方式作为新密码

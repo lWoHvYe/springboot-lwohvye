@@ -1,5 +1,6 @@
 package com.lwohvye.springboot.dubboconsumer.controller;
 
+import cn.hutool.core.convert.Convert;
 import com.github.pagehelper.PageInfo;
 import com.lwohvye.springboot.dubboconsumer.common.annotation.LogAnno;
 import com.lwohvye.springboot.dubboconsumer.common.util.ResultModel;
@@ -8,7 +9,6 @@ import com.lwohvye.springboot.dubbointerface.service.Cnarea2018Service;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,16 +45,11 @@ public class Cnarea2018Controller {
     @PostMapping("/list")
     public ResultModel<List<PageInfo<Cnarea2018>>> list(String province, String levels, int page, int pageSize) {
 //        设置区划级别，0省、直辖市 1市 2区县 3街道办事处 4社区居委会
-        Integer level = null;
-        if (!StringUtils.isEmpty(levels)) {
-            level = Integer.parseInt(levels);
-        }
-//        设置参数值
-        Integer finalLevel = level;
+        Integer level = Convert.toInt(levels);
 //      切割字符串
         var completableFutureList = Arrays.stream(province.split(","))
 //                用map后获取一个新的流，可以继续操作，用foreach后流便没了
-                .map(name -> cnarea2018Service.list(name, finalLevel, page, pageSize))
+                .map(name -> cnarea2018Service.list(name, level, page, pageSize))
                 .collect(Collectors.toList());
         return new ResultModel<>(
                 completableFutureList.stream()
