@@ -3,12 +3,15 @@ package com.lwohvye.springboot.dubboconsumer.controller;
 import cn.hutool.core.convert.Convert;
 import com.github.pagehelper.PageInfo;
 import com.lwohvye.springboot.dubboconsumer.common.annotation.LogAnno;
+import com.lwohvye.springboot.dubboconsumer.common.util.BloomFilterHelper;
+import com.lwohvye.springboot.dubboconsumer.common.util.RedisUtil;
 import com.lwohvye.springboot.dubboconsumer.common.util.ResultModel;
 import com.lwohvye.springboot.dubbointerface.entity.Cnarea2018;
 import com.lwohvye.springboot.dubbointerface.service.Cnarea2018Service;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +34,10 @@ public class Cnarea2018Controller {
 
     @Reference(version = "${lwohvye.service.version}")
     private Cnarea2018Service cnarea2018Service;
+    @Autowired
+    private RedisUtil redisUtil;
+    @Autowired
+    private BloomFilterHelper<String> bloomFilterHelper;
 
     /**
      * @return com.lwohvye.springboot.dubboconsumer.common.util.ResultModel<com.github.pagehelper.PageInfo < com.lwohvye.springboot.dubbo.entity.Cnarea2018>>
@@ -48,6 +55,8 @@ public class Cnarea2018Controller {
         Integer level = Convert.toInt(levels);
 //      切割字符串
         var completableFutureList = Arrays.stream(province.split(","))
+//                使用布隆过滤器过滤掉不符合条件的省名
+                .filter(pro -> redisUtil.includeByBloomFilter(bloomFilterHelper, "cnareaPro", pro))
 //                用map后获取一个新的流，可以继续操作，用foreach后流便没了
                 .map(name -> cnarea2018Service.list(name, level, page, pageSize))
                 .collect(Collectors.toList());
