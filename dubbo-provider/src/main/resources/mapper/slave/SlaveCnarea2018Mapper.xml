@@ -74,4 +74,9 @@
             </if>
         </where>
     </select>
+    <select id="listProName" resultType="java.lang.String">
+        select short_name
+        from cnarea_2018
+        where `level` = 0
+    </select>
 </mapper>
