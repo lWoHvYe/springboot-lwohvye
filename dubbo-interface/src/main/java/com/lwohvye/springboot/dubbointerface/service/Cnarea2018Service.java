@@ -3,6 +3,7 @@ package com.lwohvye.springboot.dubbointerface.service;
 import com.github.pagehelper.PageInfo;
 import com.lwohvye.springboot.dubbointerface.entity.Cnarea2018;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface Cnarea2018Service{
@@ -21,4 +22,6 @@ public interface Cnarea2018Service{
     int updateByPrimaryKey(Cnarea2018 record);
 
     CompletableFuture<PageInfo<Cnarea2018>> list(String province, Integer level, int page, int pageSize);
+
+    List<String> listProName();
 }

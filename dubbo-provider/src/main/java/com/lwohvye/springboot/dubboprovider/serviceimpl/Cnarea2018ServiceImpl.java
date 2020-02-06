@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 //这里的@Service注解使用dubbo的，需注意
@@ -76,6 +77,18 @@ public class Cnarea2018ServiceImpl implements Cnarea2018Service {
         //返回一个已经用给定值完成的新的CompletableFuture。
         return CompletableFuture.completedFuture(pageInfo);
 
+    }
+
+    /**
+     * @description 获取省名列表，用于布隆过滤
+     * @params []
+     * @return java.util.List<java.lang.String>
+     * @author Hongyan Wang
+     * @date 2020/2/6 15:57
+     */
+    @Override
+    public List<String> listProName() {
+        return slaveCnarea2018Mapper.listProName();
     }
 
 }
