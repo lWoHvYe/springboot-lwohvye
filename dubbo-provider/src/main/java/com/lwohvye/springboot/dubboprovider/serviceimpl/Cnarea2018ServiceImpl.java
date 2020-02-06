@@ -58,11 +58,11 @@ public class Cnarea2018ServiceImpl implements Cnarea2018Service {
     //    标识异步方法
     @Async
     @Override
-    public CompletableFuture<PageInfo<Cnarea2018>> list(String province, Integer finalLevel, int page, int pageSize) {
+    public CompletableFuture<PageInfo<Cnarea2018>> list(String province, Integer level, int page, int pageSize) {
         log.warn(Thread.currentThread().getName() + " start this task!");
         Cnarea2018 cnarea2018 = new Cnarea2018();
         cnarea2018.setMergerName(province);
-        cnarea2018.setLevel(finalLevel);
+        cnarea2018.setLevel(level);
 //        当使用索引时，不要使用order by非查询的索引字段，即当查询条件与排序使用不同的字段时，即使两字段都建立索引，也会导致索引失效
         PageInfo<Cnarea2018> pageInfo = PageHelper.startPage(page, pageSize)
                 .doSelectPageInfo(() -> slaveCnarea2018Mapper.selectByAll(cnarea2018));
