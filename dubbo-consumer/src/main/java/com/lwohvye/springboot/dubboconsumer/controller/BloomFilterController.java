@@ -6,6 +6,7 @@ import com.lwohvye.springboot.dubbointerface.service.Cnarea2018Service;
 import org.apache.dubbo.config.annotation.Reference;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +41,23 @@ public class BloomFilterController {
      */
     @GetMapping("/addCnareaPro")
     public String addCnareaPro() {
-        cnarea2018Service.listProName().forEach(pro -> redisUtil.addByBloomFilter(bloomFilterHelper, "cnareaPro", pro));
+        addCnarea();
         return "success";
+    }
+
+    /**
+     * @description 定时任务，每天23点执行一次，更新欲过滤的内容，可以使用增量更新的方式，当前因为无更新字段，使用全量更新
+     * @params []
+     * @return void
+     * @author Hongyan Wang
+     * @date 2020/2/7 11:09
+     */
+    //TODO 方法不能为private的，这点需要特别注意
+    @Scheduled(cron = "0 0 23 * * ?")
+    public void addCnarea() {
+//        首先删除对应缓存
+        redisUtil.delete("cnareaPro");
+//        再重新添加
+        cnarea2018Service.listProName().forEach(pro -> redisUtil.addByBloomFilter(bloomFilterHelper, "cnareaPro", pro));
     }
 }
