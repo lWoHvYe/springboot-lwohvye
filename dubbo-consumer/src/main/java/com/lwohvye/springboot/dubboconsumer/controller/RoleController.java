@@ -1,5 +1,6 @@
 package com.lwohvye.springboot.dubboconsumer.controller;
 
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.lwohvye.springboot.dubboconsumer.common.util.ResultModel;
 import com.lwohvye.springboot.dubbointerface.common.util.PageUtil;
 import com.lwohvye.springboot.dubbointerface.entity.Role;
@@ -29,6 +30,8 @@ public class RoleController {
      * @author Hongyan Wang
      * @date 2019/9/23 17:05
      */
+    //    配置在api中不显示的参数
+    @ApiOperationSupport(ignoreParameters = {"pageData", "totalCount", "totalPages"})
     @RequestMapping(value = "/findRole", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("role:view")
     public ResultModel<PageUtil<Role>> findByRole(String roleName, PageUtil<Role> pageUtil) {
@@ -49,6 +52,7 @@ public class RoleController {
      */
     @ApiOperation(value = "添加或修改角色", notes = "根据角色是否存在进行添加或修改")
     @ApiImplicitParam(name = "permissionId", value = "权限id，多个id使用逗号分隔", dataType = "String")
+    @ApiOperationSupport(ignoreParameters = {"users", "permissions"})
     @RequestMapping(value = "/saveRole", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("role:add")
     public ResultModel<Integer> saveRole(@Valid Role role, String permissionId) {

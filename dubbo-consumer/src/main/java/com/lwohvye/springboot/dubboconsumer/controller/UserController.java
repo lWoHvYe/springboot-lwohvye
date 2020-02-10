@@ -1,5 +1,6 @@
 package com.lwohvye.springboot.dubboconsumer.controller;
 
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.lwohvye.springboot.dubboconsumer.common.annotation.LogAnno;
 import com.lwohvye.springboot.dubboconsumer.common.util.ResultModel;
 import com.lwohvye.springboot.dubbointerface.common.util.PageUtil;
@@ -54,6 +55,8 @@ public class UserController {
             @ApiImplicitParam(name = "username", value = "用户名称", dataType = "String"),
             @ApiImplicitParam(name = "pageUtil", value = "分页相关实体类", dataType = "PageUtil")
     })
+//    配置在api中不显示的参数,暂未生效
+    @ApiOperationSupport(ignoreParameters = {"pageData", "totalCount", "totalPages"})
     @RequestMapping(value = "/findUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:view")
     public ResultModel<PageUtil<User>> list(String username, PageUtil<User> pageUtil) {
@@ -88,6 +91,7 @@ public class UserController {
      */
     @LogAnno(operateType = "添加用户")
     @ApiOperation(value = "添加新用户", notes = "添加新用户，包含用户的授权")
+    @ApiOperationSupport(ignoreParameters = {"roles"})
     @RequestMapping(value = "/saveUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:add")
     public ResultModel<Integer> saveUser(@Valid User user) {
@@ -139,6 +143,7 @@ public class UserController {
      */
     @LogAnno(operateType = "修改用户信息")
     @ApiOperation(value = "修改用户信息", notes = "根据用户id修改用户信息，包含部分信息修改。用户名username不可修改")
+    @ApiOperationSupport(ignoreParameters = {"roles"})
     @RequestMapping(value = "/updateUser", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("user:update")
     public ResultModel<Integer> updateUser(@Valid User user) {

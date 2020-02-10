@@ -1,5 +1,6 @@
 package com.lwohvye.springboot.dubboconsumer.controller;
 
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.lwohvye.springboot.dubboconsumer.common.util.ResultModel;
 import com.lwohvye.springboot.dubbointerface.common.util.PageUtil;
 import com.lwohvye.springboot.dubbointerface.entity.Permission;
@@ -27,6 +28,8 @@ public class PermissionController {
      * @author Hongyan Wang
      * @date 2019/9/23 17:28
      */
+    //    配置在api中不显示的参数
+    @ApiOperationSupport(ignoreParameters = {"pageData", "totalCount", "totalPages"})
     @RequestMapping(value = "/findPermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:view")
     public ResultModel<PageUtil<Permission>> findByPermission(String name, PageUtil<Permission> pageUtil) {
@@ -45,6 +48,7 @@ public class PermissionController {
      * @param permission
      * @return
      */
+    @ApiOperationSupport(ignoreParameters = {"roles"})
     @RequestMapping(value = "/savePermission", method = {RequestMethod.GET, RequestMethod.POST})
     @RequiresPermissions("permission:add")
     public ResultModel<Integer> savePermission(@Valid Permission permission) {
