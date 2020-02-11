@@ -181,12 +181,14 @@ public class AnotherFutureSample {
         }
 
         /**
-         * @return java.util.Map<java.lang.String, java.lang.Integer>
+         * @return computed result
+         * @throws Exception if unable to compute a result
          * @description 不再使用同步变量，直接将各子线程结果返回，由主线程处理,
          * 池子是否乱序并不影响结果，若每次模拟都重新生成乱序池子将大幅降低效率，可以一个线程只使用一个乱序池子，但实际意义不大
          * @params []
          * @author Hongyan Wang
          * @date 2019/9/23 9:52
+         * Computes a result, or throws an exception if unable to do so.
          */
         @Override
         public Map<String, Integer> call() {
