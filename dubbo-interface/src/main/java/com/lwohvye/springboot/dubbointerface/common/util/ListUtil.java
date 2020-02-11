@@ -2,6 +2,7 @@ package com.lwohvye.springboot.dubbointerface.common.util;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +40,8 @@ public class ListUtil<T> {
     }
 
     private void subList(int limit) {
+//        这里需要先对resultList初始化
+        resultList = new ArrayList<>();
         //方法一：使用流遍历操作，获取指定索引范围数据，放入结果集中
         Stream.iterate(0, n -> n + 1).limit(limit).forEach(i -> resultList.add(subList.stream().skip(i * maxNumber).limit(maxNumber).collect(Collectors.toList())));
         System.out.println(resultList);
