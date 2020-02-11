@@ -1,5 +1,6 @@
 package com.lwohvye.springboot.dubbointerface.common.util;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -51,5 +52,10 @@ public class ListUtil<T> {
         //方法二：获取分割后的集合，将指定索引范围内数据创建集合，放入结果集
         resultList = Stream.iterate(0, n -> n + 1).limit(limit).parallel().map(a -> subList.stream().skip(a * maxNumber).limit(maxNumber).parallel().collect(Collectors.toList())).collect(Collectors.toList());
         System.out.println(resultList);
+    }
+
+    private void subList3(int limit){
+//        使用google guava对List进行分割
+        resultList = Lists.partition(subList,limit);
     }
 }
