@@ -32,7 +32,7 @@ public class FutureSampleAtomic {
 
     private Logger logger4j = LoggerFactory.getLogger(FutureSampleAtomic.class);
 
-//    使用原子类,较使用synchronized资源占用更少
+    //    使用原子类,较使用synchronized资源占用更少
     private AtomicInteger s50 = new AtomicInteger(0);
     private AtomicInteger s100 = new AtomicInteger(0);
     private AtomicInteger s150 = new AtomicInteger(0);
@@ -140,6 +140,14 @@ public class FutureSampleAtomic {
          * @params []
          * @author Hongyan Wang
          * @date 2019/9/23 9:52
+         * When an object implementing interface <code>Runnable</code> is used
+         * to create a thread, starting the thread causes the object's
+         * <code>run</code> method to be called in that separately executing
+         * thread.
+         * <p>
+         * The general contract of the method <code>run</code> is that it may
+         * take any action whatsoever.
+         * @see Thread#run()
          */
         @Override
         public void run() {
