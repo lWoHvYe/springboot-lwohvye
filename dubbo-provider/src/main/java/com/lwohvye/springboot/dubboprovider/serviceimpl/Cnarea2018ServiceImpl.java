@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -89,6 +90,21 @@ public class Cnarea2018ServiceImpl implements Cnarea2018Service {
     @Override
     public List<String> listProName() {
         return slaveCnarea2018Mapper.listProName();
+    }
+
+    @Override
+    public List<PageInfo<Cnarea2018>> listSingle(List<String> proList, Integer level, int page, int pageSize) {
+        List<PageInfo<Cnarea2018>> list = new ArrayList<>();
+        for (String province : proList) {
+            Cnarea2018 cnarea2018 = new Cnarea2018();
+            cnarea2018.setMergerName(province);
+            cnarea2018.setLevel(level);
+//        当使用索引时，不要使用order by非查询的索引字段，即当查询条件与排序使用不同的字段时，即使两字段都建立索引，也会导致索引失效
+            PageInfo<Cnarea2018> pageInfo = PageHelper.startPage(page, pageSize)
+                    .doSelectPageInfo(() -> slaveCnarea2018Mapper.selectByAll(cnarea2018));
+            list.add(pageInfo);
+        }
+        return list;
     }
 
 }

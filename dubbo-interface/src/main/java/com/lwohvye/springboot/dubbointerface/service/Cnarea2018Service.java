@@ -24,4 +24,6 @@ public interface Cnarea2018Service{
     CompletableFuture<PageInfo<Cnarea2018>> list(String province, Integer level, int page, int pageSize);
 
     List<String> listProName();
+
+    List<PageInfo<Cnarea2018>> listSingle(List<String> proList, Integer level, int page, int pageSize);
 }
