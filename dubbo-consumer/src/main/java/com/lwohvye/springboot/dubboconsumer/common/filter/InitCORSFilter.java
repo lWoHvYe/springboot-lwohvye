@@ -1,6 +1,7 @@
 package com.lwohvye.springboot.dubboconsumer.common.filter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,7 +27,7 @@ public class InitCORSFilter extends OncePerRequestFilter {
    * 解决跨域：Access-Control-Allow-Origin，值为*表示服务器端允许任意Domain访问请求
    */
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+  protected void doFilterInternal(@NotNull HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 //    if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.getMethod())) {
       response.addHeader("Access-Control-Allow-Origin", "*");
