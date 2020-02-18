@@ -37,7 +37,7 @@ public class LoginController {
     @ApiIgnore
     @RequestMapping(value = {"/", "/index"}, method = {RequestMethod.GET, RequestMethod.POST})
     public String index() {
-        return "/index";
+        return "index";
     }
 
     /**
@@ -53,7 +53,7 @@ public class LoginController {
         String exception = null;
 //        未传用户名，直接返回，主要解决项目启动及退出登陆时报用户名不存在的错误的问题
         if (StringUtils.isEmpty(username))
-            return "/login";
+            return "login";
         try {
             var subject = SecurityUtils.getSubject();
             //     使用用户名+密码并反转的方式作为验证密码
@@ -80,7 +80,7 @@ public class LoginController {
                 msg = "else --> " + exception;
             }
             map.put("msg", msg);
-            return "/login";
+            return "login";
         }
 
         //            加入日志中
@@ -97,7 +97,7 @@ public class LoginController {
         userLogService.insertSelective(log);// 添加日志记录
 
         map.put("msg", msg);
-        return "/index";
+        return "index";
     }
 
     /**
@@ -134,18 +134,18 @@ public class LoginController {
     @ApiIgnore
     @RequestMapping(value = "/403", method = {RequestMethod.GET, RequestMethod.POST})
     public String unauthorizedRole() {
-        return "/403";
+        return "403";
     }
 
     @ApiIgnore
     @RequestMapping(value = "/kickout", method = {RequestMethod.GET, RequestMethod.POST})
     public String kickout() {
-        return "/kickout";
+        return "kickout";
     }
 
     @ApiIgnore
     @RequestMapping(value = "/jsonTestPage", method = {RequestMethod.GET, RequestMethod.POST})
     public String jsonTestPage() {
-        return "/jsonTest";
+        return "jsonTest";
     }
 }
