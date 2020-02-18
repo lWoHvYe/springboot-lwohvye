@@ -43,6 +43,8 @@ public class LoginController {
     /**
      * @return java.lang.String
      * @description 登陆方法
+     * Controller层向页面跳转时，需注意，地址前不要加/ ，
+     * 比如跳转登陆页面 return "/login"; 在开发时能正常，但以jar部署时就会报错，所以需使用 return "login";
      * @params [username, password, captchaCode, request, map]
      * @author Hongyan Wang
      * @date 2019/10/14 16:13
