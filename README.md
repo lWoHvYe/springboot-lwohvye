@@ -27,12 +27,12 @@ druid管理模块在provider层，需要通过8085接口访问\
 使用redis的布隆过滤器，过滤掉无关的条件项，用于避免缓存穿透问题\
 使用SpringTask实现定时任务，定时更新布隆过滤器中内容\
 当把消费层异步调用生产层时，当存在多个生产层，也会类似负载均衡（比如行政区划的多线程接口，当存在多个provider时，会将任务分给多个provider，从而进一步提高效率）
-Controller层向页面跳转时，需注意，地址前不要加/ ，比如跳转登陆页面 return "/login" ;在开发时能正常，但以jar部署时就会报错，所以需使用 return "login"
-下阶段，
-quartz定时任务框架的使用\
-使用springSecurity和JWT用于认证和授权\
+Controller层向页面跳转时，需注意，地址前不要加/ ，比如跳转登陆页面 return "/login" ;在开发时能正常，但以jar部署时就会报错，所以需使用 return "login"; \
+quartz定时任务框架的使用，下阶段\
+使用springSecurity和JWT用于认证和授权，下阶段\
 当前knife4j框架的参数忽略依旧存在问题，待解决\
-集群与session共享\
+集群与session共享:由于当前已将session放入redis中，所以已实现session的共享，在jar方式部署的集群项目中，验证无问题;
+项目采用4个consumer层，2个provider层的方式，使用nginx进行反向代理，各consumer层能够正常获取session。已完成\
 需排查jpa的删除问题（角色删除及权限删除是否连带删除关联表中内容），若不删除最多会导致关联表有无用数据，由于采用内关联，不会出现程序问题\
 
 使用CentOS 7搭载Docker，使用mysql主从容器和redis容器,集成dubbo后使用了zookeeper容器\
