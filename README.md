@@ -36,6 +36,8 @@ quartz定时任务框架的使用，下阶段\
 项目采用4个consumer层，2个provider层的方式，使用nginx进行反向代理，各consumer层能够正常获取session。已完成\
 经验证，异步方法支持多个请求的情况，当多个请求时，当线程数达到核心线程数，会将后续的任务放入消息队列中，当有空闲线程时，会从队列中取任务执行。\
 需排查jpa的删除问题（角色删除及权限删除是否连带删除关联表中内容），若不删除最多会导致关联表有无用数据，由于采用内关联，不会出现程序问题\
+将内嵌web容器由tomcat改为undertow\
+other-part模块下，有多线程抽卡模拟、视频转asc输出、office转pdf、连连看小游戏
 
 使用CentOS 7搭载Docker，使用mysql主从容器和redis容器,集成dubbo后使用了zookeeper容器\
 CentOS 8暂由于未知原因，无法正常使用docker相关，容器内部连不上网。
