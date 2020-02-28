@@ -1,5 +1,6 @@
 package com.lwohvye.springboot.dubbointerface.common.util.excel;
 
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.metadata.BaseRowModel;
@@ -16,7 +17,7 @@ import java.util.List;
  * @author Hongyan Wang
  * @date 2020/2/26 8:38
  */
-public class ExcelUtil {
+public class ExcelUtil<T> {
     /**
      * 读取 Excel(多个 sheet)
      *
@@ -36,7 +37,7 @@ public class ExcelUtil {
             }
             reader.read(sheet);
         }
-        return excelListener.getDatas();
+        return excelListener.getList();
     }
 
     /**
@@ -68,7 +69,7 @@ public class ExcelUtil {
             return null;
         }
         reader.read(new Sheet(sheetNo, headLineNum, rowModel.getClass()));
-        return excelListener.getDatas();
+        return excelListener.getList();
     }
 
     /**
@@ -147,4 +148,29 @@ public class ExcelUtil {
         }
         return null;
     }
+
+    /*--------------------分割线---------------------*/
+    /**
+     * @description
+     * @params [response, list, t, sheetName]
+     * @return void
+     * @author Hongyan Wang
+     * @date 2020/2/28 13:16
+     */
+    public void download(HttpServletResponse response, List<T> list, T t,String sheetName) throws IOException {
+        EasyExcel.write(response.getOutputStream(),t.getClass()).sheet(sheetName).doWrite(list);
+    }
+
+    /**
+     * @description 上传样方法，具体参照样式令行编写
+     * @params [file, t]
+     * @return void
+     * @author Hongyan Wang
+     * @date 2020/2/28 14:08
+     */
+    @Deprecated
+    public void upload(MultipartFile file,T t) throws IOException {
+        EasyExcel.read(file.getInputStream(),t.getClass(),new ExcelListener()).sheet().doRead();
+    }
+
 }
