@@ -23,6 +23,7 @@ public class UserLog implements Serializable {
     private String actType;
     //  操作时间
     @ExcelProperty(value = {"操作信息", "操作时间"}, index = 3)
+    //  配置excel中日期的格式
     @DateTimeFormat("yyyy年MM月dd日HH时mm分ss秒")
     private Date actTime;
     //  操作参数
