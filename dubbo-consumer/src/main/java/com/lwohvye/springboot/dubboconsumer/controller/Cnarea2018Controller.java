@@ -12,9 +12,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,15 +48,20 @@ public class Cnarea2018Controller {
     @ApiOperation(value = "根据省名获取下属区划,多线程异步", notes = "多个省名使用逗号分隔")
     @ApiImplicitParam(name = "levels", value = "查询区划级别，实际可使用下拉选择 0省、直辖市 1市 2区县 3街道办事处 4社区居委会")
     @PostMapping("/list")
-    public ResultModel<List<PageInfo<Cnarea2018>>> list(String province, String levels, int page, int pageSize) {
+    public ResultModel<List<PageInfo<Cnarea2018>>> list(@RequestParam(value = "province") String province,
+                                                        @RequestParam(value = "levels") String levels,
+                                                        @RequestParam(value = "page", defaultValue = "1") String page,
+                                                        @RequestParam(value = "pageSize", defaultValue = "10") String pageSize) {
 //        设置区划级别，0省、直辖市 1市 2区县 3街道办事处 4社区居委会
         Integer level = Convert.toInt(levels);
+        Integer pages = Convert.toInt(page);
+        Integer pageSizes = Convert.toInt(pageSize);
 //      切割字符串
         var completableFutureList = Arrays.stream(province.split(","))
 //                使用布隆过滤器过滤掉不符合条件的省名
                 .filter(pro -> redisUtil.includeByBloomFilter(bloomFilterHelper, "cnareaPro", pro))
 //                用map后获取一个新的流，可以继续操作，用foreach后流便没了
-                .map(name -> cnarea2018Service.list(name, level, page, pageSize))
+                .map(name -> cnarea2018Service.list(name, level, pages, pageSizes))
                 .collect(Collectors.toList());
         return new ResultModel<>(
                 completableFutureList.stream()
@@ -88,5 +91,17 @@ public class Cnarea2018Controller {
                 .filter(pro -> redisUtil.includeByBloomFilter(bloomFilterHelper, "cnareaPro", pro))
                 .collect(Collectors.toList());
         return new ResultModel<>(cnarea2018Service.listSingle(proList, level, page, pageSize));
+    }
+
+    @GetMapping("/get/{id}")
+    public String get(@PathVariable("id") String id) {
+        System.out.println(id);
+        return "get";
+    }
+
+    @PostMapping("/post")
+    public String post(@RequestParam("id") String id, @RequestParam("name") String name) {
+        System.out.println(id + " : " + name);
+        return "post";
     }
 }
