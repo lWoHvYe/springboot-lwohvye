@@ -22,9 +22,9 @@ import java.util.concurrent.*;
 //TODO 但实际上只在最后交互了数据，无法达到预期的交互效果
 //TODO 这里使用了线程安全的ConcurrentHashMap替代HashTable，用于实时的交互，较HashTable效率高一些，但确保了线程的安全
 //@SpringBootTest
-public class ThreadSample {
+public class ThreadSampleCountDownLatch {
 
-    private Logger logger4j = LoggerFactory.getLogger(ThreadSample.class);
+    private Logger logger4j = LoggerFactory.getLogger(ThreadSampleCountDownLatch.class);
     //    用来存放模拟的结果，同步变量，使用线程安全的HashTable
     private volatile Map<String, Integer> countMap = new ConcurrentHashMap<>() {
         {
@@ -49,7 +49,7 @@ public class ThreadSample {
     private Integer simuCount = 1000000;
 
 
-    public ThreadSample() {
+    public ThreadSampleCountDownLatch() {
     }
 
     @Test
@@ -57,13 +57,13 @@ public class ThreadSample {
         try {
 //            记录开始时间
             long start = DateTimeUtil.getCurMilli();
-            ThreadSample threadSample = new ThreadSample();
+            ThreadSampleCountDownLatch threadSampleCountDownLatch = new ThreadSampleCountDownLatch();
 //            开始模拟
-            threadSample.startWork();
+            threadSampleCountDownLatch.startWork();
 //            因为把结果输出放在主线程，所以需要设计主线程等待其他线程结束
             latch.await();
 //            输出结果
-            threadSample.printResult();
+            threadSampleCountDownLatch.printResult();
 //            记录结束时间
             long end = DateTimeUtil.getCurMilli();
 //            输出模拟用时
