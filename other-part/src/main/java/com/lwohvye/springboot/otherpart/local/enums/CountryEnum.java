@@ -30,6 +30,7 @@ public enum CountryEnum {
 
     //一个取值的案例，可以是其他的值，这个是用于传一个retCode过来获取对应的值，
     // 如果能确定哪个枚举的话，也可以CountryEnum.TWO.getRetMsg()获取值
+    //CountryEnum.values()为将枚举转为数组
     public static CountryEnum list(int idx) {
         //获取所有枚举属性
         CountryEnum[] countryEnums = CountryEnum.values();

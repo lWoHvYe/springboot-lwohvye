@@ -1,3 +1,4 @@
+import com.lwohvye.springboot.dubbointerface.common.util.ListNode;
 import com.lwohvye.springboot.dubbointerface.common.util.TreeNode;
 import lombok.Getter;
 import lombok.Setter;
@@ -142,8 +143,9 @@ public class TestJava {
 
     @Test
     public void Test227() {
-        Solution40 solution227 = new Solution40();
-        var calculate = solution227.getLeastNumbers3(new int[]{0, 4, 6, 5, 6, 4, 5, 7, 2, 14, 4}, 3);
+
+        Solution876 solution227 = new Solution876();
+        var calculate = solution227.middleNode2(ListNode.makeNode(new int[]{0, 4, 6, 5, 6, 4, 5, 7, 2, 14, 4}));
         System.out.println(calculate);
     }
 
@@ -567,4 +569,47 @@ public class TestJava {
             return gcd(y, r);
         }
     }
+
+    class Solution876 {
+        //链表转为数组，然后取中间值即可
+        public ListNode middleNode(ListNode head) {
+            ListNode[] A = new ListNode[100];
+            int t = 0;
+            while (head != null) {
+                //把链表放入数组中
+                A[t++] = head;
+                head = head.next;
+            }
+            return A[t / 2];
+        }
+
+        //单指针法
+        public ListNode middleNode1(ListNode head) {
+            int n = 0;
+            ListNode cur = head;
+            while (cur != null) {
+                ++n;
+                cur = cur.next;
+            }
+            int k = 0;
+            cur = head;
+            while (k < n / 2) {
+                ++k;
+                cur = cur.next;
+            }
+            return cur;
+        }
+
+        //快慢指针，快指针一次两步，慢指针一次一步，快指针到头时，慢指针在中间
+        public ListNode middleNode2(ListNode head) {
+            ListNode slow = head, fast = head;
+            while (fast!=null&&fast.next!=null){
+                slow=slow.next;
+                fast=fast.next.next;
+            }
+            return slow;
+        }
+
+    }
+
 }
