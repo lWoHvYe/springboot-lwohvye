@@ -136,13 +136,17 @@ public class ThreadSampleCyclicBarrier {
 //        自定义线程池，初始6，最大8，线程活跃200s，队列最大20，默认消息超队列长度时抛异常
         ThreadPoolExecutor executor = new ThreadPoolExecutor(threadCount, threadCount << 1,
                 200, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20));
+        try {
 //        开启数个线程
-        for (int i = 0; i < threadCount; i++) {
-            SimuThread simuThread = new SimuThread(lists);
-            executor.execute(simuThread);
-        }
+            for (int i = 0; i < threadCount; i++) {
+                SimuThread simuThread = new SimuThread(lists);
+                executor.execute(simuThread);
+            }
+        } finally {
+
 //        关闭线程池
-        executor.shutdown();
+            executor.shutdown();
+        }
     }
 
     /**

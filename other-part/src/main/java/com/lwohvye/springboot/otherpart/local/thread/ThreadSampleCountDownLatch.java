@@ -68,17 +68,15 @@ public class ThreadSampleCountDownLatch {
             long end = DateTimeUtil.getCurMilli();
 //            输出模拟用时
             System.out.println(end - start);
-        } catch (InterruptedException | NoSuchAlgorithmException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * 模拟入口
-     *
-     * @throws NoSuchAlgorithmException
      */
-    private void startWork() throws NoSuchAlgorithmException {
+    private void startWork() {
 //        创建随机数
 //        池子集合
         List<List<Integer>> lists = new ArrayList<>();
@@ -125,19 +123,24 @@ public class ThreadSampleCountDownLatch {
      * @date 2019/9/24 13:19
      * @
      */
-    private void doWork(List<List<Integer>> lists) throws NoSuchAlgorithmException {
+    private void doWork(List<List<Integer>> lists) {
 //        使用线程池创建线程
 //        var executor = Executors.newFixedThreadPool(6);
 //        自定义线程池，初始6，最大8，线程活跃200s，队列最大20，默认消息超队列长度时抛异常
         ThreadPoolExecutor executor = new ThreadPoolExecutor(6, 8,
                 200, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20));
+        try {
 //        开启数个线程
-        for (int i = 0; i < threadCount; i++) {
-            SimuThread simuThread = new SimuThread(lists);
-            executor.execute(simuThread);
-        }
+            for (int i = 0; i < threadCount; i++) {
+                SimuThread simuThread = new SimuThread(lists);
+                executor.execute(simuThread);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } finally {
 //        关闭线程池
-        executor.shutdown();
+            executor.shutdown();
+        }
     }
 
     /**
