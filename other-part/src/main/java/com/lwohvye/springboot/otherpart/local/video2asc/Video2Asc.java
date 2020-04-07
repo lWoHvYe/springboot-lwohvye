@@ -26,7 +26,7 @@ public class Video2Asc {
         String ascii = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\\\"^`'.";
 //        打开视频文件
         VideoCapture videoCapture = new VideoCapture();
-        videoCapture.open("E:\\Workspaces\\change_vedio_to_txt\\vedio.mp4");
+        videoCapture.open("E:\\Workspaces\\change_vedio_to_txt\\d89dc1f54f441a2c02f1da717feba50f.jpg");
 
         if (!videoCapture.isOpened()) {
             System.out.println("could not load video data...");
