@@ -36,9 +36,9 @@ public class SortInteger {
 //        int[] selectionSort = selectionSort(array);
 //        int[] mergeSort = mergeSort(array);
 //        int[] quickSort = quickSort(array, 0, array.length - 1);
-//        int[] quickSort1 = quickSort1(array, 0, array.length - 1);
+        int[] quickSort1 = quickSort1(array, 0, array.length - 1);
 //        ArrayList<Integer> bucketSort = bucketSort(arrayList, 3);
-        int[] radixSort = radixSort(array);
+//         int[] radixSort = radixSort(array);
     }
 //----------------------------------------------------------------------
 
@@ -262,7 +262,7 @@ public class SortInteger {
 
     /**
      * @return int
-     * @description 快排算法-partition   虽不太明白，但执行后，基准左侧均小于基准，基准右侧均大于基准
+     * @description 快排算法-partition   仔细想了下，倒也不是不能理解
      * @params [array, start, end]
      * @author Hongyan Wang
      * @date 2020/3/20 18:00
@@ -280,6 +280,7 @@ public class SortInteger {
             //再此后，保持遇到小的就与大的换位，最后一次将end与smallIndex处的换位
             //首先smallIndex前的都是比end小的，之后遇到小的就与smallIndex处的大的换位
             //触发换位，显然smallIndex小于i，且所在位置比end要大
+            // 22-2-26：smallIndex为分界，其左侧都比基准小，而其所在的位置，可能比基准大（i > smallIndex），此时其为与i位置之间，首个比基准大的值
             if (array[i] <= array[end]) {
                 smallIndex++;
                 //i比smallIndex大，证明出现了end不是最大的情况，
@@ -314,7 +315,7 @@ public class SortInteger {
         if (lo >= hi) {
             return array;
         }
-        int index = partition1(array, lo, hi);
+        int index = partition2(array, lo, hi);
         quickSort1(array, lo, index - 1);
         quickSort1(array, index + 1, hi);
         return array;
@@ -348,6 +349,28 @@ public class SortInteger {
         //最后将hi位置的lo换成基准的
         array[hi] = key;
         return hi;
+    }
+
+    /**
+     * 快速排序，这个比partition1更容易理解
+     *
+     * @param array
+     * @param lo
+     * @param hi
+     * @return int
+     * @date 2022/2/26 5:05 PM
+     */
+    static int partition2(int[] array, int lo, int hi) {
+        int i = lo;
+        int j = hi + 1;
+        while (true) {
+            while (array[++i] < array[lo] && i < hi) ; // 在l左侧找一个比l大的
+            while (array[--j] > array[lo] && j > lo) ; // 在l右侧找一个比l小的
+            if (i >= j) break;
+            swap(array, i, j); // 交换两者，前提是i要小于j才行，所以**不能**把上面的break移除，并把while的条件改为i<j
+        }
+        swap(array, lo, j); // 把基准放到j的位置。
+        return j; // 此时，j的位置即为第j个元素
     }
 //------------------------------------------------------------------
 
