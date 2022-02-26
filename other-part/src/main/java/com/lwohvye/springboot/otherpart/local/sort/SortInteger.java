@@ -251,7 +251,7 @@ public class SortInteger {
      */
     public static int[] quickSort(int[] array, int start, int end) {
         if (start < 0 || end >= array.length || start > end)
-            return null;
+            return new int[0];
         int smallIndex = partition(array, start, end);
         if (smallIndex > start)
             quickSort(array, start, smallIndex - 1);
@@ -299,9 +299,13 @@ public class SortInteger {
      * @date 2020/3/20 18:04
      */
     private static void swap(int[] array, int i, int j) {
-        int temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+        // int temp = array[i];
+        // array[i] = array[j];
+        // array[j] = temp;
+        if (array[i] == array[j]) return; // 相等需直接返回
+        array[i] ^= array[j];
+        array[j] ^= array[i];
+        array[i] ^= array[j];
     }
 //------------------------------------------------------------------------
 
