@@ -35,8 +35,8 @@ public class SortInteger {
 //        int[] insertionSort = insertionSort(array);
 //        int[] selectionSort = selectionSort(array);
 //        int[] mergeSort = mergeSort(array);
-//        int[] quickSort = quickSort(array, 0, array.length - 1);
-        int[] quickSort1 = quickSort1(array, 0, array.length - 1);
+        int[] quickSort = quickSort(array, 0, array.length - 1);
+        // int[] quickSort1 = quickSort1(array, 0, array.length - 1);
 //        ArrayList<Integer> bucketSort = bucketSort(arrayList, 3);
 //         int[] radixSort = radixSort(array);
     }
@@ -292,6 +292,27 @@ public class SortInteger {
     }
 
     /**
+     * 这个更简单一些
+     *
+     * @param nums
+     * @param start
+     * @param end
+     * @return int
+     * @date 2022/2/26 5:59 PM
+     */
+    private static int partition3(int[] nums, int start, int end) {
+        int pivot = (int) (Math.random() * (end - start + 1)) + start; // 随机取一个标识，打乱一下，避免极端情况下（倒序）n^2的问题
+        swap(nums, start, pivot);
+        var index = start;
+        for (int i = start + 1; i <= end; i++) {
+            if (nums[i] < nums[start])  // 升序，这里带不带等于都行，把等于分到哪一侧好像区别不大
+                swap(nums, ++index, i); // 把index后移一位，再与其交换，这样index及其前的都不比基准大
+        }
+        swap(nums, start, index); // 最后把基准放到index处
+        return index;
+    }
+
+    /**
      * @return void
      * @description 交互数组内两个元素的位置
      * @params [array, i, j]
@@ -368,8 +389,8 @@ public class SortInteger {
         int i = lo;
         int j = hi + 1;
         while (true) {
-            while (array[++i] < array[lo] && i < hi) ; // 在l左侧找一个比l大的
-            while (array[--j] > array[lo] && j > lo) ; // 在l右侧找一个比l小的
+            while (array[++i] < array[lo] && i < hi) ; // 向右找一个比l大的
+            while (array[--j] > array[lo] && j > lo) ; // 向左找一个比l小的
             if (i >= j) break;
             swap(array, i, j); // 交换两者，前提是i要小于j才行，所以**不能**把上面的break移除，并把while的条件改为i<j
         }
